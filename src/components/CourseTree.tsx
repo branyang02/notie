@@ -167,6 +167,7 @@ export default function OrgChartTree() {
       style={{ width: '100%', height: '100vh' }}
     >
       <Tree
+        // @ts-ignore
         data={orgChart}
         rootNodeClassName="node_root"
         branchNodeClassName="node_branch"
