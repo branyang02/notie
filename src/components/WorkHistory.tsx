@@ -34,7 +34,7 @@ const renderListItems = () => {
       ),
     },
     {
-      date: 'May 2023 - August 2023',
+      date: 'May 2023 - Aug 2023',
       text: (
         <span>
           AI/ML Research Intern at{' '}
