@@ -135,18 +135,20 @@ const orgChart = {
 };
 
 export default function OrgChartTree() {
-  const treeContainerRef = useRef();
-  const [translate, setTranslate] = useState({ x: 0, y: 0 });
+  const treeContainerRef = useRef<HTMLDivElement>(null);
+  const [translate, setTranslate] = useState({ x: 100, y: 100 });
 
   useEffect(() => {
     const resizeTree = () => {
       const containerWidth = treeContainerRef.current?.clientWidth;
       const containerHeight = treeContainerRef.current?.clientHeight;
 
-      setTranslate({
-        x: containerWidth / 2,
-        y: containerHeight / 50, // Adjust 'y' as needed for better vertical positioning
-      });
+      if (containerWidth && containerHeight) {
+        setTranslate({
+          x: containerWidth / 2,
+          y: containerHeight / 50,
+        });
+      }
     };
 
     resizeTree();
