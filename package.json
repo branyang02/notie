@@ -2,6 +2,8 @@
   "name": "vite-reactts-eslint-prettier",
   "version": "0.0.0",
   "scripts": {
+    "start": "serve -s dist",
+    "heroku-postbuild": "npm run build",
     "dev": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
@@ -19,7 +21,8 @@
     "react-bootstrap": "^2.9.1",
     "react-d3-tree": "^3.6.1",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.19.0"
+    "react-router-dom": "^6.19.0",
+    "serve": "^14.2.1"
   },
   "devDependencies": {
     "@types/react": "^17.0.38",
