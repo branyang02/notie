@@ -1,0 +1,12 @@
+/* CourseTree.css */
+.node_root > circle {
+  fill: #35a58c;
+}
+
+.node_branch > circle {
+  fill: #35a58c;
+}
+
+.node_leaf > circle {
+  fill: #35a58c;
+}
