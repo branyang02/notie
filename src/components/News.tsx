@@ -3,7 +3,15 @@ import React from 'react';
 const newsData = [
   {
     date: '11/2023',
-    news: "Voy received $1,000 in funding from winner UVA's Entrepreneurship Cup!",
+    news: (
+      <span>
+        Voy received $1,000 in funding from winner{' '}
+        <a href="https://entrepreneurship.virginia.edu/ecup">
+          UVA's Entrepreneurship Cup
+        </a>
+        !
+      </span>
+    ),
   },
   {
     date: '11/2023',
@@ -23,7 +31,13 @@ const newsData = [
   },
   {
     date: '10/2023',
-    news: "Co-founded Voy, a startup that's building a platform for non-profit organizations to manage their volunteers.",
+    news: (
+      <span>
+        Co-founded{' '}
+        <a href="https://www.linkedin.com/company/voy/about/">Voy</a>, a startup that's
+        building a platform for non-profit organizations to manage their volunteers.
+      </span>
+    ),
   },
   {
     date: '09/2023',
@@ -89,10 +103,18 @@ const newsData = [
 ];
 
 const News: React.FC = () => {
+  const sortByDate = (a: { date: string }, b: { date: string }) => {
+    const dateA = new Date(a.date.split('/').reverse().join('-'));
+    const dateB = new Date(b.date.split('/').reverse().join('-'));
+    return +dateB - +dateA;
+  };
+
+  const sortedNewsData = [...newsData].sort(sortByDate);
+
   return (
     <div>
       <h3>News</h3>
-      {newsData.map((item, index) => (
+      {sortedNewsData.map((item, index) => (
         <div key={index}>
           <p>
             {item.date}: {item.news}

@@ -180,13 +180,11 @@ export default function OrgChartTree() {
         shouldCollapseNeighborNodes={false}
         translate={translate}
         enableLegacyTransitions={true}
-        // dimensions={{height: translate.x * 2, width: translate.y * 50}}
         zoom={1}
         hasInteractiveNodes={true}
         nodeSize={{ x: 200, y: 200 }}
         scaleExtent={{ min: 0.1, max: 5 }}
         separation={{ siblings: 3, nonSiblings: 1.5 }}
-        // transitionDuration={800}
       />
     </div>
   );
