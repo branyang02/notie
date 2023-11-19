@@ -5,7 +5,7 @@ const newsData = [
     date: '11/2023',
     news: (
       <span>
-        Voy received $1,000 in funding from winner{' '}
+        Voy received $1,000 in funding from winning{' '}
         <a href="https://entrepreneurship.virginia.edu/ecup">
           UVA's Entrepreneurship Cup
         </a>
