@@ -1,14 +1,18 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './styles/App.css';
+
+import React from 'react';
 import Container from 'react-bootstrap/Container';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+
 import Biography from './components/Biography';
+import Contact from './components/Contact';
 import NavBar from './components/NavBar';
 import News from './components/News';
 import WorkHistory from './components/WorkHistory';
-import Courses from './pages/Courses';
 import About from './pages/About';
-import Contact from './components/Contact';
+import Courses from './pages/Courses';
+import Projects from './pages/Projects';
+import SpellingBee from './pages/spelling_bee/SpellingBee';
 
 function App() {
   return (
@@ -27,11 +31,10 @@ function App() {
             }
           />
           <Route path="/courses" element={<Courses />} />
-          {/* <Route path='/cv' element={<CV />} />
-          <Route path='/resume' element={<Resume />} /> */}
           <Route path="/about" element={<About />} />
+          <Route path="/projects" element={<Projects />} />
           <Route path="/contact" element={<Contact />} />
-          {/* Add other routes here */}
+          <Route path="projects/spelling-bee" element={<SpellingBee />} />
         </Routes>
       </Container>
     </Router>
