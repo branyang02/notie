@@ -11,12 +11,18 @@ type Player = {
   score: number;
 };
 
+type Dictionary = {
+  word: string;
+};
+
 function App() {
   const [gameStarted, setGameStarted] = useState(false);
   const [players, setPlayers] = useState<Player[]>([]);
+  const [dictionary, setDictionary] = useState<Dictionary[]>([]);
 
-  const startGame = (players: Player[]) => {
+  const startGame = (players: Player[], dictionary: Dictionary[]) => {
     setPlayers(players);
+    setDictionary(dictionary);
     setGameStarted(true);
   };
 
@@ -30,15 +36,15 @@ function App() {
     );
   };
 
+  console.log(dictionary);
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} md={8}>
         <Grid container spacing={2}>
           {players.map((player) => (
-            // eslint-disable-next-line react/jsx-key
-            <Grid item xs={12} sm={6} md={4} lg={3}>
+            <Grid item xs={12} sm={6} md={4} lg={3} key={player.name}>
               <ScoreCounter
-                key={player.name}
                 participantName={player.name}
                 score={player.score}
                 updateScore={updateScore}
