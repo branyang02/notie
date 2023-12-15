@@ -10,6 +10,14 @@ type WordType = {
   example: string;
 };
 
+type Dictionary = {
+  word: string;
+};
+
+type WordProps = {
+  wordDictionary: Dictionary[];
+};
+
 const rnd_2 = [
   {
     word: 'Connoisseur',
@@ -19,48 +27,10 @@ const rnd_2 = [
     example:
       "When it came to instant noodles, he proudly declared himself a connoisseur, saying, 'I can tell a good noodle from a mediocre one just by the sound of the microwave!'",
   },
-  {
-    word: 'Krankenwagen',
-    origin: 'German',
-    definition:
-      "The German word for 'ambulance,' used for transporting sick or injured people to the hospital.",
-    example:
-      "After a minor mishap, he jokingly said, 'I had to call the krankenwagen. Turns out, even my bruises have a strong German accent!'",
-  },
-  {
-    word: 'Reykjavik',
-    origin: 'Icelandic',
-    definition:
-      'The capital and largest city of Iceland, known for its stunning landscapes, geothermal springs, and vibrant culture.',
-    example:
-      "He chuckled and said, 'Iceland has Reykjavik, a city that's so cool, it's like the Arctic's answer to Las Vegas, but with fewer slot machines and more icebergs!'",
-  },
-  {
-    word: 'Rhinorrhagia',
-    origin: 'Greek',
-    definition:
-      'A medical term for a severe and prolonged nosebleed or nasal hemorrhage.',
-    example:
-      "He chuckled and said, 'Rhinorrhagia is like a nosebleed's way of making an entrance. It's the grand finale of sneezing!'",
-  },
-  {
-    word: 'Beethovenian',
-    origin: 'German (inspired by Ludwig van Beethoven)',
-    definition:
-      'Relating to or characteristic of the renowned composer Ludwig van Beethoven or his music.',
-    example:
-      "She chuckled and said, 'When it comes to air guitar, he's truly Beethovenian. He turns every living room into a symphony hall!'",
-  },
-  {
-    word: 'Kaffeeklatsch',
-    origin: 'German',
-    definition: 'A social gathering where people chat and gossip over coffee and cake.',
-    example:
-      "He chuckled and said, 'A Kaffeeklatsch is like a caffeine-fueled therapy session. We spill the beans while sipping the coffee!'",
-  },
 ];
 
-const Word: React.FC = () => {
+const Word: React.FC<WordProps> = ({ wordDictionary }) => {
+  console.log(wordDictionary);
   const [dictionary, setDictionary] = useState<WordType[]>(rnd_2);
   const [currentWord, setCurrentWord] = useState<WordType | null>(null);
   const [isBlurred, setIsBlurred] = useState(true);
