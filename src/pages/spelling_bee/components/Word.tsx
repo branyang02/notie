@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Alert, Button } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import React, { useEffect, useState } from 'react';
@@ -10,76 +10,59 @@ type WordType = {
   example: string;
 };
 
-const rnd_2 = [
-  {
-    word: 'Connoisseur',
-    origin: 'French',
-    definition:
-      'A person who is an expert in a particular area, especially when it comes to appreciating or identifying fine arts, food, or wines.',
-    example:
-      "When it came to instant noodles, he proudly declared himself a connoisseur, saying, 'I can tell a good noodle from a mediocre one just by the sound of the microwave!'",
-  },
-  {
-    word: 'Krankenwagen',
-    origin: 'German',
-    definition:
-      "The German word for 'ambulance,' used for transporting sick or injured people to the hospital.",
-    example:
-      "After a minor mishap, he jokingly said, 'I had to call the krankenwagen. Turns out, even my bruises have a strong German accent!'",
-  },
-  {
-    word: 'Reykjavik',
-    origin: 'Icelandic',
-    definition:
-      'The capital and largest city of Iceland, known for its stunning landscapes, geothermal springs, and vibrant culture.',
-    example:
-      "He chuckled and said, 'Iceland has Reykjavik, a city that's so cool, it's like the Arctic's answer to Las Vegas, but with fewer slot machines and more icebergs!'",
-  },
-  {
-    word: 'Rhinorrhagia',
-    origin: 'Greek',
-    definition:
-      'A medical term for a severe and prolonged nosebleed or nasal hemorrhage.',
-    example:
-      "He chuckled and said, 'Rhinorrhagia is like a nosebleed's way of making an entrance. It's the grand finale of sneezing!'",
-  },
-  {
-    word: 'Beethovenian',
-    origin: 'German (inspired by Ludwig van Beethoven)',
-    definition:
-      'Relating to or characteristic of the renowned composer Ludwig van Beethoven or his music.',
-    example:
-      "She chuckled and said, 'When it comes to air guitar, he's truly Beethovenian. He turns every living room into a symphony hall!'",
-  },
-  {
-    word: 'Kaffeeklatsch',
-    origin: 'German',
-    definition: 'A social gathering where people chat and gossip over coffee and cake.',
-    example:
-      "He chuckled and said, 'A Kaffeeklatsch is like a caffeine-fueled therapy session. We spill the beans while sipping the coffee!'",
-  },
-];
+type Dictionary = {
+  word: string;
+};
 
-const Word: React.FC = () => {
-  const [dictionary, setDictionary] = useState<WordType[]>(rnd_2);
+type WordProps = {
+  wordDictionary: Dictionary[];
+};
+
+const Word: React.FC<WordProps> = ({ wordDictionary }) => {
+  const [dictionary, setDictionary] = useState<Dictionary[]>(wordDictionary);
   const [currentWord, setCurrentWord] = useState<WordType | null>(null);
   const [isBlurred, setIsBlurred] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    selectWord();
-  }, []);
+    console.log(currentWord);
+  }, [currentWord]);
 
-  const selectWord = () => {
+  const selectWord = async () => {
     if (dictionary.length > 0) {
       const randomIndex = Math.floor(Math.random() * dictionary.length);
       const selectedWord = dictionary[randomIndex];
-      setCurrentWord(selectedWord);
-      console.log(
-        `Word: ${selectedWord.word}, \nOrigin: ${selectedWord.origin}, \nDefinition: ${selectedWord.definition}, \nExample: ${selectedWord.example}`,
-      );
-      setDictionary(dictionary.filter((_, index) => index !== randomIndex));
-      setIsBlurred(true);
+
+      try {
+        const response = await fetch(
+          `https://api.dictionaryapi.dev/api/v2/entries/en/${selectedWord.word}`,
+        );
+        if (response.ok) {
+          setError(null);
+          const wordDetails = await response.json();
+          setCurrentWord({
+            word: selectedWord.word,
+            origin: wordDetails[0].origin,
+            definition: wordDetails[0].meanings[0].definitions[0].definition,
+            example: wordDetails[0].meanings[0].definitions[0].example,
+          });
+          setIsBlurred(true);
+          // Removing the selected word from the dictionary array
+          setDictionary((dictionary) =>
+            dictionary.filter((_, index) => index !== randomIndex),
+          );
+        } else {
+          // remove the word from the dictionary array
+          setDictionary((dictionary) =>
+            dictionary.filter((_, index) => index !== randomIndex),
+          );
+          console.error('Failed to fetch word details');
+          setError('Error fetching word details.');
+        }
+      } catch (error) {
+        console.error('Error fetching word details:', error);
+      }
     } else {
       setIsEnd(true);
     }
@@ -92,6 +75,7 @@ const Word: React.FC = () => {
     <div>
       <div style={{ filter: isBlurred ? 'blur(19px)' : 'none' }}>
         <h1>{currentWord?.word}</h1>
+        <h5>{currentWord?.definition}</h5>
       </div>
       <Button variant="contained" onClick={selectWord} sx={{ mr: 3 }}>
         Next Word
@@ -99,6 +83,7 @@ const Word: React.FC = () => {
       <Button variant="contained" onClick={handleBlurToggle}>
         {isBlurred ? 'Unblur Word' : 'Blur Word'}
       </Button>
+      {error && <Alert severity="error">{error}</Alert>}
       <Dialog open={isEnd}>
         <DialogTitle>
           You reached the end of your dictionary. Congratulations!
