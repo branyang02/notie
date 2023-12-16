@@ -33,19 +33,20 @@ const Word: React.FC<WordProps> = ({ wordDictionary }) => {
     if (dictionary.length > 0) {
       const randomIndex = Math.floor(Math.random() * dictionary.length);
       const selectedWord = dictionary[randomIndex];
-
+      console.log('Choosing word:', selectedWord.word);
       try {
         const response = await fetch(
-          `https://api.dictionaryapi.dev/api/v2/entries/en/${selectedWord.word}`,
+          // `/api/word-details/${selectedWord.word}`
+          `http://localhost:1234/api/word-details/${selectedWord.word}`,
         );
         if (response.ok) {
           setError(null);
           const wordDetails = await response.json();
           setCurrentWord({
             word: selectedWord.word,
-            origin: wordDetails[0].origin,
-            definition: wordDetails[0].meanings[0].definitions[0].definition,
-            example: wordDetails[0].meanings[0].definitions[0].example,
+            origin: wordDetails.language_of_origin,
+            definition: wordDetails.definition,
+            example: wordDetails.example_usage,
           });
           setIsBlurred(true);
           // Removing the selected word from the dictionary array
@@ -75,7 +76,9 @@ const Word: React.FC<WordProps> = ({ wordDictionary }) => {
     <div>
       <div style={{ filter: isBlurred ? 'blur(19px)' : 'none' }}>
         <h1>{currentWord?.word}</h1>
-        <h5>{currentWord?.definition}</h5>
+        <h6>Origin: {currentWord?.origin}</h6>
+        <h6>Definition: {currentWord?.definition}</h6>
+        <h6>Example: {currentWord?.example}</h6>
       </div>
       <Button variant="contained" onClick={selectWord} sx={{ mr: 3 }}>
         Next Word
