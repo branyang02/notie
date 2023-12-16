@@ -36,8 +36,7 @@ const Word: React.FC<WordProps> = ({ wordDictionary }) => {
       console.log('Choosing word:', selectedWord.word);
       try {
         const response = await fetch(
-          // `/api/word-details/${selectedWord.word}`
-          `http://localhost:1234/api/word-details/${selectedWord.word}`,
+          `https://yang-website-backend-c3338735a47f.herokuapp.com/api/word-details/${selectedWord.word}`,
         );
         if (response.ok) {
           setError(null);
