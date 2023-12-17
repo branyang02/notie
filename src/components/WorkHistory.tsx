@@ -1,5 +1,6 @@
-import React from 'react';
 import '../styles/WorkHistory.css';
+
+import React from 'react';
 
 const WorkHistory = () => {
   return (
@@ -29,7 +30,7 @@ const renderListItems = () => {
       date: 'Oct 2023 - Current',
       text: (
         <span>
-          Software Developer at <a>Voy</a>
+          Co-Founder & Software Developer at <a>Voy</a>
         </span>
       ),
     },
