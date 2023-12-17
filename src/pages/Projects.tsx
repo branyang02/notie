@@ -12,6 +12,32 @@ import MediaCard from '../components/MediaCard';
 const Projects: React.FC = () => {
   const projects = [
     {
+      image: glomaImage,
+      title: 'GLOMA: Grounded Location for Object Manipulation',
+      description:
+        'An AI Image Editing pipeline that allows robotic agents to generate goal images.',
+      button: 'Research Poster',
+      link: 'https://drive.google.com/file/d/1PLoZ6p8e6VdFqBiyeravGCCNG5YKkQlR/view?usp=sharing',
+      techStack: ['Python', 'PyTorch', 'LlaMA2', 'HuggingFace 🤗'],
+    },
+    {
+      gif: TetrisGIF,
+      title: 'Multi-agent Tetris AI',
+      description: 'A Multi-agent Tetris AI trained using Reinforcement Learning.',
+      button: 'GitHub',
+      link: 'https://github.com/branyang02/multiagent_tetris',
+      techStack: ['Python', 'PyTorch'],
+    },
+    {
+      image: PandaImage,
+      title: 'Multi-Agent RL with IsaacGym',
+      description:
+        'Added a series of MARL takss involving Panda Robots in Nvidia IsaacGym.',
+      button: 'GitHub',
+      link: 'https://github.com/branyang02/PandaFactory/tree/main',
+      techStack: ['Python', 'PyTorch', 'Nvidia IsaacGym'],
+    },
+    {
       image: AICalendarImage,
       title: 'AI Calendar Maps',
       description:
@@ -44,32 +70,6 @@ const Projects: React.FC = () => {
         'Express',
         'FastAPI',
       ],
-    },
-    {
-      image: glomaImage,
-      title: 'GLOMA: Grounded Location for Object Manipulation',
-      description:
-        'An AI Image Editing pipeline that allows robotic agents to generate goal images.',
-      button: 'Research Poster',
-      link: 'https://drive.google.com/file/d/1PLoZ6p8e6VdFqBiyeravGCCNG5YKkQlR/view?usp=sharing',
-      techStack: ['Python', 'PyTorch', 'LlaMA2', 'HuggingFace 🤗'],
-    },
-    {
-      gif: TetrisGIF,
-      title: 'Multi-agent Tetris AI',
-      description: 'A Multi-agent Tetris AI trained using Reinforcement Learning.',
-      button: 'GitHub',
-      link: 'https://github.com/branyang02/multiagent_tetris',
-      techStack: ['Python', 'PyTorch'],
-    },
-    {
-      image: PandaImage,
-      title: 'Multi-Agent RL with IsaacGym',
-      description:
-        'Added a series of MARL takss involving Panda Robots in Nvidia IsaacGym.',
-      button: 'GitHub',
-      link: 'https://github.com/branyang02/PandaFactory/tree/main',
-      techStack: ['Python', 'PyTorch', 'Nvidia IsaacGym'],
     },
   ];
 
