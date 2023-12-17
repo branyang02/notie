@@ -7,6 +7,7 @@ import {
   SiHeroku,
   SiJavascript,
   SiMeta,
+  SiNvidia,
   SiOpenai,
   SiPython,
   SiPytorch,
@@ -63,6 +64,8 @@ function getLogo(tech: string) {
       return <SiMeta color="#000000" size={24} />;
     case 'LlaMA2':
       return <SiMeta color="#000000" size={24} />;
+    case 'Nvidia IsaacGym':
+      return <SiNvidia color="#76B900" size={24} />;
     default:
       return null;
   }
