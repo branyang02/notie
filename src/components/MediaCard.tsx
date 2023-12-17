@@ -4,7 +4,9 @@ import {
   SiFastapi,
   SiFlask,
   SiGooglecloud,
+  SiHeroku,
   SiJavascript,
+  SiMeta,
   SiOpenai,
   SiPython,
   SiPytorch,
@@ -51,10 +53,16 @@ function getLogo(tech: string) {
       return <SiFlask color="#000000" size={24} />;
     case 'PyTorch':
       return <SiPytorch color="#EE4C2C" size={24} />;
+    case 'Heroku':
+      return <SiHeroku color="#430098" size={24} />;
     case 'FastAPI':
       return <SiFastapi color="#009688" size={24} />;
     case 'Express':
       return <SiExpress color="#000000" size={24} />;
+    case 'Meta':
+      return <SiMeta color="#000000" size={24} />;
+    case 'LlaMA2':
+      return <SiMeta color="#000000" size={24} />;
     default:
       return null;
   }

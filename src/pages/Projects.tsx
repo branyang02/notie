@@ -2,6 +2,8 @@ import Grid from '@mui/material/Grid';
 import React from 'react';
 
 import AICalendarImage from '../assets/ai-calendar.png';
+import glomaImage from '../assets/gloma.png';
+import PandaImage from '../assets/panda.jpeg';
 import SmartOHImage from '../assets/smart_oh.png';
 import spellingBeeImage from '../assets/spelling_bee.png';
 import TetrisGIF from '../assets/tetris.gif';
@@ -10,25 +12,25 @@ import MediaCard from '../components/MediaCard';
 const Projects: React.FC = () => {
   const projects = [
     {
-      image: spellingBeeImage,
-      title: 'Spelling Bee',
-      description: 'Fun Party Spelling Bee Game with score counter and word list.',
-      techStack: ['TypeScript', 'React', 'Flask'],
-      button: 'Try Live',
-      link: '/projects/spelling-bee',
-    },
-    {
       image: AICalendarImage,
       title: 'AI Calendar Maps',
       description:
         'An AI Places Recommendation app that recommends based on your calendar.',
-      button: 'Try Live',
+      button: 'Try it now Live!!',
       link: 'https://ai-calendar.vercel.app/',
-      techStack: ['Python', 'JavaScript', 'Django', 'OpenAI', 'Google Cloud'],
+      techStack: ['Python', 'JavaScript', 'Django', 'OpenAI', 'Google Cloud', 'Heroku'],
+    },
+    {
+      image: spellingBeeImage,
+      title: 'Spelling Bee',
+      description: 'Fun Party Spelling Bee Game with score counter and word list.',
+      techStack: ['TypeScript', 'React'],
+      button: 'Try it now Live!!',
+      link: '/projects/spelling-bee',
     },
     {
       image: SmartOHImage,
-      title: 'Smart OH',
+      title: 'Smart OH (VTHacks Winner)',
       description:
         'AI powered office hour queue system that streamlines the process of office hours.',
       button: 'GitHub',
@@ -44,6 +46,15 @@ const Projects: React.FC = () => {
       ],
     },
     {
+      image: glomaImage,
+      title: 'GLOMA: Grounded Location for Object Manipulation',
+      description:
+        'An AI Image Editing pipeline that allows robotic agents to generate goal images.',
+      button: 'Research Poster',
+      link: 'https://drive.google.com/file/d/1PLoZ6p8e6VdFqBiyeravGCCNG5YKkQlR/view?usp=sharing',
+      techStack: ['Python', 'PyTorch', 'LlaMA2', 'HuggingFace 🤗'],
+    },
+    {
       gif: TetrisGIF,
       title: 'Multi-agent Tetris AI',
       description: 'A Multi-agent Tetris AI trained using Reinforcement Learning.',
@@ -51,7 +62,15 @@ const Projects: React.FC = () => {
       link: 'https://github.com/branyang02/multiagent_tetris',
       techStack: ['Python', 'PyTorch'],
     },
-    // TODO: more perojects
+    {
+      image: PandaImage,
+      title: 'Multi-Agent RL with IsaacGym',
+      description:
+        'Added a series of MARL takss involving Panda Robots in Nvidia IsaacGym.',
+      button: 'GitHub',
+      link: 'https://github.com/branyang02/PandaFactory/tree/main',
+      techStack: ['Python', 'PyTorch', 'Nvidia IsaacGym'],
+    },
   ];
 
   return (
