@@ -1,6 +1,7 @@
-import Tree from 'react-d3-tree';
 import '../styles/CourseTree.css';
+
 import React, { useEffect, useRef, useState } from 'react';
+import Tree from 'react-d3-tree';
 
 const orgChart = {
   name: 'UVA',
@@ -18,6 +19,14 @@ const orgChart = {
             Achievement: "Lab Lead Teaching Assistant for Spring '23",
             Language: 'C, x86 Assembly',
           },
+          children: [
+            {
+              name: 'Computer Systems & Architecture',
+              attributes: {
+                Status: 'In Progress',
+              },
+            },
+          ],
         },
         {
           name: 'Software Development Essentials',
@@ -83,6 +92,12 @@ const orgChart = {
                   children: [
                     {
                       name: 'Natural Language Processing',
+                      attributes: {
+                        Status: 'In Progress',
+                      },
+                    },
+                    {
+                      name: 'Probabilistic ML',
                       attributes: {
                         Status: 'In Progress',
                       },
