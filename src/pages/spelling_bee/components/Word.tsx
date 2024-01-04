@@ -111,11 +111,17 @@ const Word: React.FC<WordProps> = ({ wordDictionary }) => {
           <CircularProgress />
         </Box>
       ) : (
-        <div style={{ filter: isBlurred ? 'blur(19px)' : 'none' }}>
+        <div
+          style={{
+            filter: isBlurred ? 'blur(19px)' : 'none',
+            marginTop: 2,
+            marginBottom: 2,
+          }}
+        >
           <h1>{currentWord?.word}</h1>
-          <h6>Origin: {currentWord?.origin}</h6>
+          {/* <h6>Origin: {currentWord?.origin}</h6>
           <h6>Definition: {currentWord?.definition}</h6>
-          <h6>Example: {currentWord?.example}</h6>
+          <h6>Example: {currentWord?.example}</h6> */}
         </div>
       )}
       {audioSrc && (
