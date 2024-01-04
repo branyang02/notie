@@ -1,7 +1,9 @@
 // src/pages/About.js
-import React from 'react';
-import OrgChartTree from '../components/CourseTree';
 import '../styles/Courses.css';
+
+import React from 'react';
+
+import OrgChartTree from '../components/CourseTree';
 
 const Courses = () => {
   return (
