@@ -25,7 +25,7 @@ const Word: React.FC<WordProps> = ({ wordDictionary }) => {
   const [isEnd, setIsEnd] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [audioSrc, setAudioSrc] = useState(''); // State to hold audio source URL
+  const [audioSrc, setAudioSrc] = useState('');
 
   useEffect(() => {
     selectWord();
@@ -59,8 +59,8 @@ const Word: React.FC<WordProps> = ({ wordDictionary }) => {
 
           try {
             const ttsResponse = await fetch(
-              // `https://yang-website-backend-c3338735a47f.herokuapp.com/api/text-to-speech`,
-              `http://127.0.0.1:5000/api/text-to-speech`,
+              `https://yang-website-backend-c3338735a47f.herokuapp.com/api/text-to-speech`,
+              // `http://127.0.0.1:5000/api/text-to-speech`,
               {
                 method: 'POST',
                 headers: {
