@@ -1,10 +1,12 @@
 import './styles/App.css';
 
+import Divider from '@mui/material/Divider';
 import React from 'react';
 import Container from 'react-bootstrap/Container';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import Biography from './components/Biography';
+import ClustrMapsWidget from './components/ClusterMapsWidget';
 import Contact from './components/Contact';
 import NavBar from './components/NavBar';
 import News from './components/News';
@@ -36,6 +38,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="projects/spelling-bee" element={<SpellingBee />} />
         </Routes>
+        <ClustrMapsWidget />
       </Container>
     </Router>
   );
