@@ -2,6 +2,10 @@ import React from 'react';
 
 const newsData = [
   {
+    date: '01/2024',
+    news: 'Started working as a TA for CS 3120: Theory of Computation at UVA!',
+  },
+  {
     date: '11/2023',
     news: (
       <span>
@@ -33,9 +37,9 @@ const newsData = [
     date: '10/2023',
     news: (
       <span>
-        Co-founded{' '}
-        <a href="https://www.linkedin.com/company/voy/about/">Voy</a>, a startup that's
-        building a platform for non-profit organizations to manage their volunteers.
+        Co-founded <a href="https://www.linkedin.com/company/voy/about/">Voy</a>, a
+        startup that's building a platform for non-profit organizations to manage their
+        volunteers.
       </span>
     ),
   },

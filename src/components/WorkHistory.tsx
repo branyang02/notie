@@ -18,6 +18,10 @@ const WorkHistory = () => {
 const renderListItems = () => {
   const listItems = [
     {
+      date: 'Jan 2024 - Current',
+      text: <span>TA for Theory of Computation (UVA CS 3120)</span>,
+    },
+    {
       date: 'May 2022 - Current',
       text: (
         <span>
