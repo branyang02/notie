@@ -1,8 +1,9 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // If using Font Awesome
-import { faEnvelope, faLink } from '@fortawesome/free-solid-svg-icons'; // Email icon
-import { faLinkedin, faGithub } from '@fortawesome/free-brands-svg-icons'; // Social media icons
 import '../styles/Contact.css';
+
+import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons'; // Social media icons
+import { faEnvelope, faLink } from '@fortawesome/free-solid-svg-icons'; // Email icon
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // If using Font Awesome
+import React from 'react';
 
 const Contact = () => {
   return (

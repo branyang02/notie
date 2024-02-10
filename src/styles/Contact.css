@@ -10,11 +10,11 @@
 .contact-list {
   list-style: none;
   padding: 10px;
-  margin-bottom: 0; 
+  margin-bottom: 0;
 }
 
 .contact-list li {
-  margin-bottom: 0px; 
+  margin-bottom: 0px;
   font-size: 1.1em;
   display: flex;
   align-items: center;
