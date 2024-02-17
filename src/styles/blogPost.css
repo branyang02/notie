@@ -1,0 +1,46 @@
+/* blogPost.css */
+.blog-content {
+    font-family: 'Arial', sans-serif;
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+  }
+  
+  /* Table Styles */
+  .blog-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 20px;
+  }
+  
+  .blog-content th, .blog-content td {
+    border: 1px solid #ddd;
+    text-align: left;
+    padding: 8px;
+  }
+  
+  .blog-content th {
+    background-color: #f2f2f2;
+  }
+  
+  /* Image Styles */
+  .blog-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-top: 20px;
+  }
+  
+  /* Task List Styles */
+  .blog-content ul {
+    list-style-type: none;
+  }
+  
+  .blog-content li {
+    margin-bottom: 10px;
+  }
+  
+  .blog-content input[type="checkbox"] {
+    margin-right: 10px;
+  }
+  

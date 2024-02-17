@@ -16,15 +16,15 @@ function NavBar() {
             Brandon (Yifan) Yang
           </Navbar.Brand>
           <Nav className="justify-content-end">
-            <Nav.Link as={Link} to="/">
+            <Nav.Link as={Link} to="/" className="navbar-brand-custom">
               Home
             </Nav.Link>
             <Nav.Link as={Link} to="/courses" className="navbar-brand-custom">
               Relevant Coursework
             </Nav.Link>
-            {/* <Nav.Link as={Link} to="/cv">
-              Curriculum Vitae (CV)
-            </Nav.Link> */}
+            <Nav.Link as={Link} to="/blog" className="navbar-brand-custom">
+              Blog
+            </Nav.Link>
             <Nav.Link as={Link} to="/projects" className="navbar-brand-custom">
               Projects
             </Nav.Link>
