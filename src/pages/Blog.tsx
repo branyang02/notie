@@ -3,12 +3,41 @@ import '../styles/blogPost.css';
 
 import ReactMarkdown from 'react-markdown';
 import rehypeKatex from 'rehype-katex';
+import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
+import supersub from 'remark-supersub';
 
-// Updated markdown content with the table that includes images
 const markdownContent = `
 # **Vision Transformer (ViT)**
+
+**Transformers**<sup>[[1]](https://arxiv.org/abs/1706.03762)</sup> 
+have been widely used in natural language processing (NLP) tasks, such as language modeling, translation, 
+and summarization. However, they have not been as popular in computer vision tasks. 
+Convolutional neural networks (CNNs) have been the dominant architecture for image classification tasks. 
+The **Vision Transformer (ViT)** <sup>[[2]](https://arxiv.org/abs/2010.11929)</sup> is a transformer-based model 
+that has shown promising results in image classification tasks. This blog post will provide an overview of 
+the ViT architecture and its performance on image classification tasks.
+
+## **ViT Architecture**
+ViT receives an input image instead of a 1D sequence of text token embeddings.
+$$
+\\begin{align*}
+\\textbf{x} \\in \\mathbb{R}^{H \\times W \\times C}
+\\end{align*}
+$$
+where $H$ is the height, $W$ is the width, and $C$ is the number of channels of the input image.
+We faltten the image into a sequence of 2D patches:
+$$
+\\begin{align*}
+\\textbf{x} \\in \\mathbb{R}^{N \\times (P \\times P \\times C)}
+\\end{align*}
+$$
+where $N$ is the number of patches, and $P \\times P$ is the size of each patch.
+
+
+# References
+
 
 Welcome to the Markdown features demonstration.
 
@@ -49,13 +78,13 @@ Inline math: $E = mc^2$
 
 Block math:
 
-\`\`\`
+$$
 \\begin{align}
 a &= b + c \\\\
 x &= y - z \\\\
-\\mathbb{N} &\\subseteq \\mathbb{Z} \\\\
+\\mathbb{N} &\\subseteq \\mathbb{Z}
 \\end{align}
-\`\`\`
+$$
 
 ## Images
 
@@ -70,8 +99,9 @@ const Blog = () => {
   return (
     <div className="blog-content">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkMath]}
-        rehypePlugins={[rehypeKatex]}
+        remarkPlugins={[remarkGfm, remarkMath, supersub]}
+        rehypePlugins={[rehypeKatex, rehypeRaw]}
+        // eslint-disable-next-line react/no-children-prop
         children={markdownContent}
       />
     </div>

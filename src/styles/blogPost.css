@@ -5,7 +5,11 @@
     margin: auto;
     padding: 20px;
   }
-  
+
+  .katex {
+    font-size: 1.3em; /* Adjust the scale as needed */
+  }
+
   /* Table Styles */
   .blog-content table {
     border-collapse: collapse;
