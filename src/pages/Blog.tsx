@@ -8,8 +8,18 @@ import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 
+const todaysDate = new Date().toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
 const markdownContent = `
 # **Vision Transformer (ViT)**
+<span class="subtitle">
+Date: ${todaysDate} | Author: Brandon Yang
+</span>
+
 **Transformers**[^1] have been widely used in natural language processing (NLP) tasks, such as language modeling, translation, 
 and summarization. However, they have not been as popular in computer vision tasks. 
 Convolutional neural networks (CNNs) have been the dominant architecture for image classification tasks. 

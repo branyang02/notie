@@ -50,12 +50,12 @@
 
   .blog-content a {
     color: #172b41; 
-    text-decoration: underline; 
+    text-decoration: none; 
 }
 
   .blog-content a:hover,
   .blog-content a:focus {
-      color: #757575; 
+      color: #777777; 
       text-decoration: underline; 
   }
 
@@ -67,8 +67,7 @@
     text-align: center; 
     font-style: italic;
     color: #555;
-    margin: 20x auto;
-    padding-bottom: 3%;
+    margin: 20px auto;
   }
 
   .caption a {
@@ -77,4 +76,13 @@
 
   .caption a:hover {
     color: #8f8f8f;
+  }
+
+  .subtitle {
+    display: block; 
+    font-size: smaller; 
+    text-align: left; 
+    font-style: italic; 
+    color: #555; 
+    margin: 20px auto; 
   }
