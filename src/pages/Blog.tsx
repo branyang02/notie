@@ -17,24 +17,40 @@ const todaysDate = new Date().toLocaleDateString('en-US', {
 });
 
 const markdownContent = `
-# **Vision Transformer (ViT)**
+# **A Deep Dive into OpenAI's Sora**
 <span class="subtitle">
 Date: ${todaysDate} | Author: Brandon Yang
 </span>
 
-**Transformers**[^1] have been widely used in natural language processing (NLP) tasks, such as language modeling, translation, 
+# **Introduction**
+OpenAI's **Sora**[^1] represents a groundbreaking step in video generation, 
+leveraging advanced diffusion models and transformer architectures to 
+interpret and generate complex visual narratives from textual prompts, images, and videos.
+In this blog post, we delve into the _potential_ underlying mechanisms of Sora,
+exploring its training, architecture, and capabilities to understand its
+remarkable video generation capabilities. As a **closed-source** model, we do not have access to the
+exact details of Sora's architecture and training. Therefore, the following
+discussion is based on our understanding of the underlying principles of diffusion models and transformers.
+![](https://cdn.openai.com/tmp/s/prompting_4.png)
+
+Sora is a **_diffusion transformer_** model, which combines the strengths of diffusion models and transformers to
+generate high-quality videos from textual prompts. Before we dive into the details of Sora, let's first
+understand the underlying principles of diffusion models and transformers, more specifically, the **Vision Transformer (ViT)**[^3].
+
+## **Vision Transformer (ViT)**
+**Transformers**[^2] have been widely used in natural language processing (NLP) tasks, such as language modeling, translation, 
 and summarization. However, they have not been as popular in computer vision tasks. 
 Convolutional neural networks (CNNs) have been the dominant architecture for image classification tasks. 
-The **Vision Transformer (ViT)**[^2] is a transformer-based model 
-that has shown promising results in image classification tasks. This blog post will provide an overview of 
+The **Vision Transformer (ViT)**[^3] is a transformer-based model 
+that has shown promising results in image classification tasks. This section will provide an overview of 
 the ViT architecture and its performance on image classification tasks.
 
-## **ViT Architecture**
+### **ViT Architecture**
 ![](https://1.bp.blogspot.com/-_mnVfmzvJWc/X8gMzhZ7SkI/AAAAAAAAG24/8gW2AHEoqUQrBwOqjhYB37A7OOjNyKuNgCLcBGAsYHQ/s1600/image1.gif)
 <span id="fig1" 
 class="caption">Fig. 1: Vision Transformer treats an input image as a sequence of patches. (Source: <a href="https://blog.research.google/2020/12/transformers-for-image-recognition-at.html">Gooble AI Blog</a>)
 </span>
-#### **Image to Patch Embeddings**
+#### **Image Input to Patch Embeddings**
 ViT receives an input image instead of a 1D sequence of text token embeddings in a standard transformer architecture.
 $$
 \\begin{align*}
@@ -82,12 +98,12 @@ Here, $$\\textbf{Z}_0$$ is the initial input matrix to the transformer encoder, 
 which are added to each patch embedding and the class token embedding.
 
 
-#### **Transformer Encoder**
+#### **Feeding Into Transformer Encoder**
 Next, we feed our text embeddings to a Transformer encoder, which consists of Multi-Head 
 Self-Attention (MSA) and Feedforward Neural Network (FNN) as shown in [_Fig. 2_](#fig2).
-![Example Image](https://branyang02.github.io/images/transformer-encoder.jpg "Placeholder Image")
+![](https://branyang02.github.io/images/transformer-encoder.jpg "Standard Transformer Encoder")
 <span id="fig2" 
-class="caption">Fig. 1: Standard Transformer Encoder. (Source: Yu Meng, <a href="https://yumeng5.github.io/teaching/2024-spring-cs6501">UVA CS 6501 NLP</a>)
+class="caption">Fig. 2: Standard Transformer Encoder. (Source: Yu Meng, <a href="https://yumeng5.github.io/teaching/2024-spring-cs6501">UVA CS 6501 NLP</a>)
 </span>
 First we pass through the Multi-Head Self-Attention (MSA) layer, which computes the attention
 weights for each token in the sequence. The MSA layer is defined as follows:
@@ -119,8 +135,22 @@ $$
 \\end{align*}
 $$
 where $\\textbf{U}_{msa} \\in \\mathbb{R}^{k \\cdot d_{head} \\times D}$ is a learnable parameter.
-More details about MSA can be found in the original transformer paper[^1], and the [Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/) by Jay Alammar.
+More details about MSA can be found in the original transformer paper[^2], and the [Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/) by Jay Alammar.
 
+</details>
+
+<details><summary>Layer Normalization (LN)</summary>
+
+Layer normalization is used to normalize the input to each layer of the transformer.
+It is defined as follows:
+$$
+\\begin{align*}
+\\text{LN}(\\textbf{x}) = \\frac{\\textbf{x} - \\mu}{\\sigma} \\odot \\gamma + \\beta
+\\end{align*}
+$$
+where $$\\mu$$ and $$\\sigma$$ are the mean and standard deviation of the input $$\\textbf{x}$$,
+$$\\gamma$$ and $$\\beta$$ are learnable parameters, and $$\\odot$$ denotes element-wise multiplication.
+More details and performance about layer normalization can be found in _Ba et al._[^4].
 </details>
 
 where $$\\textbf{Z}_{l-1}$$ is the input to the $$l$$-th layer, $$\\textbf{Z}^\\prime_l$$ is the output of the $$l$$-th layer,
@@ -172,9 +202,33 @@ $l$-th layer FNN are represented as $$\\textbf{W}_{1,l}, \\textbf{b}_{1,l}, \\te
 - **Output Projection Parameters**: The output projection of the last layer of the transformer is represented as $$\\textbf{W}_{out}, \\textbf{b}_{out}$$.
   - $$\\textbf{W}_{out} \\in \\mathbb{R}^{D \\times C}, \\textbf{b}_{out} \\in \\mathbb{R}^C$$.
 
+#### **ViT vs. CNN**
+The Vision Transformer has shown promising results in image classification tasks,
+outperforming convolutional neural networks (CNNs) on several benchmarks. 
+The key advantages of ViT over CNNs are:
+- **Scalability**: ViT can handle images of arbitrary size, while CNNs require resizing the input images.
+- **Global Context**: ViT captures global context information by treating the input image as a sequence of patches,
+while CNNs use local receptive fields to capture spatial information.
+- **Fewer Parameters**: ViT has fewer parameters than CNNs, making it more efficient for training and inference.
+- **Transfer Learning**: ViT can be fine-tuned on downstream tasks with fewer labeled examples,
+while CNNs require a large amount of labeled data to achieve good performance.
 
-[^1]: Vaswani, A., et al. "Attention is all you need," in Advances in neural information processing systems, vol. 30, 2017.
-[^2]: Dosovitskiy, A., et al. "An image is worth 16x16 words: Transformers for image recognition at scale," in arXiv preprint arXiv:2010.11929, 2020.
+![](https://branyang02.github.io/images/vit_performance.png "ViT Performance vs SOTA CNNs")
+<span id="fig3"
+class="caption">Fig. 3: ViT Performance on ImageNet Classification. (Source: Dosovitskiy et al.[^3])
+</span>
+
+## **Diffusion Models**
+
+
+
+
+
+
+[^1]: Brooks, Peebles, et al., "Video generation models as world simulators,", 2024.
+[^2]: Vaswani, A., et al. "Attention is all you need," in Advances in neural information processing systems, vol. 30, 2017.
+[^3]: Dosovitskiy, A., et al. "An image is worth 16x16 words: Transformers for image recognition at scale," in arXiv preprint arXiv:2010.11929, 2020.
+[^4]: J. Ba, J. Kiros, G. Hinton. "Layer normalization," in arXiv preprint arXiv:1607.06450, 2016.
 
 `;
 
