@@ -1,8 +1,6 @@
 // src/pages/About.js
 import '../styles/Courses.css';
 
-import React from 'react';
-
 import OrgChartTree from '../components/CourseTree';
 
 const Courses = () => {
