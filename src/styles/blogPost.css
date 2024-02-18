@@ -7,7 +7,7 @@
   }
 
   .katex {
-    font-size: 1.3em; /* Adjust the scale as needed */
+    font-size: 1.25em; 
   }
 
   /* Table Styles */
@@ -32,12 +32,12 @@
     max-width: 100%;
     height: auto;
     display: block;
-    margin-top: 20px;
+    margin: 20px auto;
   }
   
   /* Task List Styles */
   .blog-content ul {
-    list-style-type: none;
+    list-style-type: disc;
   }
   
   .blog-content li {
@@ -47,4 +47,34 @@
   .blog-content input[type="checkbox"] {
     margin-right: 10px;
   }
+
+  .blog-content a {
+    color: #172b41; 
+    text-decoration: underline; 
+}
+
+  .blog-content a:hover,
+  .blog-content a:focus {
+      color: #007bff; 
+      text-decoration: underline; 
+  }
+
   
+  /* Caption Styles */
+  .caption {
+    display: block; 
+    font-size: smaller;
+    text-align: center; 
+    font-style: italic;
+    color: #555;
+    margin: 20x auto;
+    padding-bottom: 3%;
+  }
+
+  .caption a {
+    color: #555;
+  }
+
+  .caption a:hover {
+    color: #8f8f8f;
+  }

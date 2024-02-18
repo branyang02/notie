@@ -1,18 +1,16 @@
 import 'katex/dist/katex.min.css'; // Ensure KaTeX CSS is imported to style the equations
 import '../styles/blogPost.css';
 
+import { useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
-import supersub from 'remark-supersub';
 
 const markdownContent = `
 # **Vision Transformer (ViT)**
-
-**Transformers**<sup>[[1]](https://arxiv.org/abs/1706.03762)</sup> 
-have been widely used in natural language processing (NLP) tasks, such as language modeling, translation, 
+**Transformers**[^1] have been widely used in natural language processing (NLP) tasks, such as language modeling, translation, 
 and summarization. However, they have not been as popular in computer vision tasks. 
 Convolutional neural networks (CNNs) have been the dominant architecture for image classification tasks. 
 The **Vision Transformer (ViT)** <sup>[[2]](https://arxiv.org/abs/2010.11929)</sup> is a transformer-based model 
@@ -20,86 +18,112 @@ that has shown promising results in image classification tasks. This blog post w
 the ViT architecture and its performance on image classification tasks.
 
 ## **ViT Architecture**
-ViT receives an input image instead of a 1D sequence of text token embeddings.
+![](https://1.bp.blogspot.com/-_mnVfmzvJWc/X8gMzhZ7SkI/AAAAAAAAG24/8gW2AHEoqUQrBwOqjhYB37A7OOjNyKuNgCLcBGAsYHQ/s1600/image1.gif)
+<span id="fig1" 
+class="caption">Fig. 1: Vision Transformer treats an input image as a sequence of patches. (Source: <a href="https://blog.research.google/2020/12/transformers-for-image-recognition-at.html">Gooble AI Blog</a>)
+</span>
+#### **Image to Patch Embeddings**
+ViT receives an input image instead of a 1D sequence of text token embeddings in a standard transformer architecture.
 $$
 \\begin{align*}
 \\textbf{x} \\in \\mathbb{R}^{H \\times W \\times C}
 \\end{align*}
 $$
 where $H$ is the height, $W$ is the width, and $C$ is the number of channels of the input image.
-We faltten the image into a sequence of 2D patches:
+We flatten the image into a sequence of 2D patches:
 $$
 \\begin{align*}
-\\textbf{x} \\in \\mathbb{R}^{N \\times (P \\times P \\times C)}
+\\textbf{x}_p &\\in \\mathbb{R}^{ (P^2 \\times C) \\times N}
 \\end{align*}
 $$
-where $N$ is the number of patches, and $P \\times P$ is the size of each patch.
+where $$N = \\frac{HW}{P^2}$$ is the number of patches, and $P \\times P$ is the size of each patch. 
 
-
-# References
-
-
-Welcome to the Markdown features demonstration.
-
-## Basic Syntax
-
-- **Bold text** with \`**\` or \`__\`
-- *Italic text* with \`*\` or \`_\`
-- ~~Strikethrough~~ with \`~~\`
-
-## GitHub Flavored Markdown (GFM)
-
-This includes:
-
-- Tables
-- Task lists
-- Strikethrough
-- Autolinked URLs
-
-### Adding a Link
-
-Here is an example of adding a link to [OpenAI's Website](https://openai.com "OpenAI Homepage").
-
-### Table Example
-
-| Branch  | Commit           | Image                          |
-| ------- | ---------------- | ------------------------------ |
-| main    | 0123456789abcdef | ![Example Image](https://via.placeholder.com/150 "Placeholder Image") |
-| staging | fedcba9876543210 | ![Example Image](https://via.placeholder.com/150 "Placeholder Image") |
-
-### Task List
-
-- [x] Completed task
-- [ ] Incomplete task
-
-## Math Equations
-
-Inline math: $E = mc^2$
-
-Block math:
-
+To process these patches using a Transformer, we need to convert the patches into a sequence with 
+positional embeddings. This is done by projecting the flattened patch vectors into a 
+$$D$$-dimensional embedding space. The transformation is performed using
+a learnable linear projection $\\mathbf{E}$. The projection transforms each patch vector
+from $\\mathbb{R}^{P^2 \\times C}$ to $\\mathbb{R}^D$.
 $$
-\\begin{align}
-a &= b + c \\\\
-x &= y - z \\\\
-\\mathbb{N} &\\subseteq \\mathbb{Z}
-\\end{align}
+\\begin{align*}
+\\textbf{E} \\in \\mathbb{R}^{(P^2 \\times C) \\times D}
+\\end{align*}
 $$
+Therefore, for each patch $$i \\in [1, N]$$, its flattened vector $$\\textbf{x}_p^i$$ is
+transformed via the projection $$\\textbf{E}$$ to produce its embedding $$\\textbf{z}_0^i$$ as follows:
+$$
+\\begin{align*}
+\\textbf{z}_0^i =  \\textbf{x}_p^i \\textbf{E}
+\\end{align*}
+$$
+where $$\\textbf{z}_0^i \\in \\mathbb{R}^D$$. Next, we consider all the patches as a sequence of embeddings
+$$\\textbf{Z}_0$$:
+$$
+\\begin{align*}
+\\textbf{Z}_0 = \\left[\\mathbf{x}_{class},   \\textbf{z}_0^1, \\textbf{z}_0^2, \\ldots, \\textbf{z}_0^N\\right] + \\textbf{E}_{pos}
+\\end{align*}
+$$
+Here, $$\\textbf{Z}_0$$ is the initial input matrix to the transformer encoder, containing:
 
-## Images
+* The class token $$\\mathbf{x}_{class}$$, which is a learnable parameter representing the entire image.
+* The sequence of $$N$$ patch embeddings that have been projected into the $$D$$-dimensional space.
+* The positional embeddings $$\\textbf{E}_{pos} \\in \\mathbb{R}^{(N + 1) \\times D}$$, 
+which are added to each patch embedding and the class token embedding.
 
-Here's another example image:
 
-![Example Image](https://branyang02.github.io/images/Brandon_big.jpg "Placeholder Image")
+#### **Transformer Encoder**
+Next, we feed our text embeddings to a Transformer encoder, which consists of Multi-Head 
+Self-Attention (MSA) and Feedforward Neural Network (FNN) as shown in [_Fig. 2_](#fig2).
+![Example Image](https://branyang02.github.io/images/transformer-encoder.jpg "Placeholder Image")
+<span id="fig2" 
+class="caption">Fig. 1: Standard Transformer Encoder. (Source: Yu Meng, <a href="https://yumeng5.github.io/teaching/2024-spring-cs6501">UVA CS 6501 NLP</a>)
+</span>
+First we pass through the Multi-Head Self-Attention (MSA) layer, which computes the attention
+weights for each token in the sequence. The MSA layer is defined as follows:
+$$
+\\begin{align*}
+\\textbf{Z}^\\prime_l = \\text{MSA}\\left(\\text{LN}(\\textbf{Z}_{l-1})\\right) + \\textbf{Z}_{l-1} \\quad \\text{for} \\quad l = 1, 2, \\ldots, L
+\\end{align*}
+$$
+where $$\\textbf{Z}_{l-1}$$ is the input to the $$l$$-th layer, $$\\textbf{Z}^\\prime_l$$ is the output of the $$l$$-th layer,
+$$\\text{LN}$$ is the layer normalization, and $$L$$ is the number of layers in the transformer encoder.
 
-Enjoy writing and rendering Markdown with advanced features!
+The MSA layer is followed by a Feedforward Neural Network (FNN) layer, which applies a pointwise feedforward transformation
+to each token in the sequence independently. The FNN layer is defined as follows:
+$$
+\\begin{align*}
+\\textbf{Z}_l = \\text{FNN}\\left(\\text{LN}(\\textbf{Z}^\\prime_l)\\right) + \\textbf{Z}^\\prime_l \\quad \\text{for} \\quad l = 1, 2, \\ldots, L
+\\end{align*}
+$$
+where $$\\textbf{Z}^\\prime_l$$ is the input to the $$l$$-th layer, $$\\textbf{Z}_l$$ is the output of the $$l$$-th layer.
+
+Finally, the output of the last layer of the transformer encoder is used for classification.
+$$
+\\begin{align*}
+\\textbf{y} = \\text{softmax}\\left(\\text{LN}(\\textbf{Z}_L)\\right)
+\\end{align*}
+$$
+where $$\\textbf{y}$$ represents the class probabilities given the input image in a multi-class classification task.
+
+
+
+
+
+[^1]: Big note.
+
 `;
 
 const Blog = () => {
+  useEffect(() => {
+    const footnotesTitle = document.querySelector('.footnotes h2');
+    if (footnotesTitle) {
+      footnotesTitle.textContent = 'References';
+    }
+  }, []);
+
   return (
     <div className="blog-content">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkMath, supersub]}
+        remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[rehypeKatex, rehypeRaw]}
         // eslint-disable-next-line react/no-children-prop
         children={markdownContent}
