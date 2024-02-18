@@ -117,7 +117,7 @@ const Blog = () => {
   useEffect(() => {
     const footnotesTitle = document.querySelector('.footnotes h2');
     if (footnotesTitle) {
-      footnotesTitle.textContent = 'References';
+      footnotesTitle.innerHTML = '<strong>References</strong>';
     }
   }, []);
 
