@@ -13,7 +13,7 @@ const markdownContent = `
 **Transformers**[^1] have been widely used in natural language processing (NLP) tasks, such as language modeling, translation, 
 and summarization. However, they have not been as popular in computer vision tasks. 
 Convolutional neural networks (CNNs) have been the dominant architecture for image classification tasks. 
-The **Vision Transformer (ViT)** <sup>[[2]](https://arxiv.org/abs/2010.11929)</sup> is a transformer-based model 
+The **Vision Transformer (ViT)**[^2] is a transformer-based model 
 that has shown promising results in image classification tasks. This blog post will provide an overview of 
 the ViT architecture and its performance on image classification tasks.
 
@@ -108,7 +108,8 @@ where $$\\textbf{y}$$ represents the class probabilities given the input image i
 
 
 
-[^1]: Big note.
+[^1]: Vaswani, A., et al. "Attention is all you need," in Advances in neural information processing systems, vol. 30, 2017.
+[^2]: Dosovitskiy, A., et al. "An image is worth 16x16 words: Transformers for image recognition at scale," in arXiv preprint arXiv:2010.11929, 2020.
 
 `;
 
