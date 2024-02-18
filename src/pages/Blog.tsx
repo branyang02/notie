@@ -41,8 +41,8 @@ understand the underlying principles of diffusion models and transformers, more 
 **Transformers**[^2] have been widely used in natural language processing (NLP) tasks, such as language modeling, translation, 
 and summarization. However, they have not been as popular in computer vision tasks. 
 Convolutional neural networks (CNNs) have been the dominant architecture for image classification tasks. 
-The **Vision Transformer (ViT)**[^3] is a transformer-based model 
-that has shown promising results in image classification tasks. This section will provide an overview of 
+The **Vision Transformer (ViT)**[^3] is a transformer-based **_classification_** model 
+that has shown promising results. This section will provide an overview of 
 the ViT architecture and its performance on image classification tasks.
 
 ### **ViT Architecture**
@@ -219,7 +219,11 @@ class="caption">Fig. 3: ViT Performance on ImageNet Classification. (Source: Dos
 </span>
 
 ## **Diffusion Models**
-
+Now that we have discussed the Vision Transformer, we can move on to diffusion models.
+Diffusion models are a class of **_generative models_** that learn to generate high-quality images from a sequence of noise vectors.
+The key idea behind diffusion models is to _diffuse_ the noise vectors to generate realistic images.
+We will be discussing the difussion process and the U-Net architecture introcuded in the paper 
+_Denoising Diffusion Probabilistic Models_ by Ho et al.[^5].
 
 
 
@@ -229,6 +233,7 @@ class="caption">Fig. 3: ViT Performance on ImageNet Classification. (Source: Dos
 [^2]: Vaswani, A., et al. "Attention is all you need," in Advances in neural information processing systems, vol. 30, 2017.
 [^3]: Dosovitskiy, A., et al. "An image is worth 16x16 words: Transformers for image recognition at scale," in arXiv preprint arXiv:2010.11929, 2020.
 [^4]: J. Ba, J. Kiros, G. Hinton. "Layer normalization," in arXiv preprint arXiv:1607.06450, 2016.
+[^5]: J. Ho, A. Jain, P. Abbeel. "Denoising diffusion probabilistic models," in Advances in neural information processing systems, vol. 33, pp. 6840–6851, 2020.
 
 `;
 
