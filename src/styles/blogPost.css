@@ -50,7 +50,7 @@
 
   .blog-content a {
     color: #172b41; 
-    text-decoration: none; 
+    text-decoration: underline; 
 }
 
   .blog-content a:hover,
@@ -86,3 +86,14 @@
     color: #555; 
     margin: 20px auto; 
   }
+
+  .blog-content details {
+    background-color: #f0f0f0; /* Keeps the desired grey-ish background */
+    padding: 10px;
+    margin-bottom: 20px; /* Space below the block */
+    border-radius: 10px; /* Rounded corners */
+    overflow: hidden; /* Ensures content transitions smoothly */
+    box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.1); /* Adds a shadow */
+  }
+
+  

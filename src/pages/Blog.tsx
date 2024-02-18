@@ -1,8 +1,10 @@
 import 'katex/dist/katex.min.css'; // Ensure KaTeX CSS is imported to style the equations
 import '../styles/blogPost.css';
 
+// import 'highlight.js/styles/github.css';
 import { useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
+import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
@@ -94,6 +96,33 @@ $$
 \\textbf{Z}^\\prime_l = \\text{MSA}\\left(\\text{LN}(\\textbf{Z}_{l-1})\\right) + \\textbf{Z}_{l-1} \\quad \\text{for} \\quad l = 1, 2, \\ldots, L
 \\end{align*}
 $$
+<details><summary>Multihead Self-Attention (MSA)</summary>
+
+For each element in an input sequence $\\textbf{z} \\in \\mathbb{R}^{N \\times D}$,
+we compute a weighted sum over all values $\\textbf{v}$ in the sequence.
+The attention weights $A_{ij}$ are based on the pairwise similarity between 
+two elements of the sequence and their respective query $\\textbf{q}^i$ and key $\\textbf{k}^j$ vectors.
+
+$$
+\\begin{align*}
+[\\textbf{q}, \\textbf{k}, \\textbf{v}] &= \\textbf{z} \\textbf{U}_{q,k,v} \\quad &&\\text{where} \\quad \\textbf{U}_{q,k,v} \\in \\mathbb{R}^{D \\times 3d_{head}} \\\\
+A &= \\text{softmax}\\left(\\frac{\\textbf{q} \\textbf{k}^T}{\\sqrt{d_{head}}}\\right) &&\\text{where} \\quad A \\in \\mathbb{R}^{N \\times N} \\\\
+\\text{SA}(\\textbf{z}) &= A \\textbf{v} \\quad &&\\text{where} \\quad \\textbf{v} \\in \\mathbb{R}^{N \\times D}
+\\end{align*}
+$$
+where $d_{head}$ is the dimension of the query, key, and value vectors in each head, and $N$ is the number of tokens in the sequence.
+MSA is an extention of SA, where we run $k$ self-attention operations, called "heads", in parallel, 
+and project their concatenated outputs. The MSA layer is defined as follows:
+$$
+\\begin{align*}
+\\text{MSA}(\\textbf{z}) &= \\left[ \\text{SA}_1(\\textbf{z}), \\text{SA}_2(\\textbf{z}), \\ldots, \\text{SA}_k(\\textbf{z}) \\right] \\textbf{U}_{msa}
+\\end{align*}
+$$
+where $\\textbf{U}_{msa} \\in \\mathbb{R}^{k \\cdot d_{head} \\times D}$ is a learnable parameter.
+More details about MSA can be found in the original transformer paper[^1], and the [Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/) by Jay Alammar.
+
+</details>
+
 where $$\\textbf{Z}_{l-1}$$ is the input to the $$l$$-th layer, $$\\textbf{Z}^\\prime_l$$ is the output of the $$l$$-th layer,
 $$\\text{LN}$$ is the layer normalization, and $$L$$ is the number of layers in the transformer encoder.
 
@@ -109,13 +138,39 @@ where $$\\textbf{Z}^\\prime_l$$ is the input to the $$l$$-th layer, $$\\textbf{Z
 Finally, the output of the last layer of the transformer encoder is used for classification.
 $$
 \\begin{align*}
-\\textbf{y} = \\text{softmax}\\left(\\text{LN}(\\textbf{Z}_L)\\right)
+y = \\text{softmax}\\left(\\text{LN}(\\textbf{Z}_L)\\right)
 \\end{align*}
 $$
-where $$\\textbf{y}$$ represents the class probabilities given the input image in a multi-class classification task.
+where $$y \\in \\textbf{Y}$$ represents the predicted class given the input image and class labels $$\\textbf{Y}$$ in a multi-class classification task.
 
-
-
+#### **Training Setup**
+Now that we have defined the architecture of the Vision Transformer, we can train the model using
+a standard cross-entropy loss function. The loss function is defined as follows:
+$$
+\\begin{align*}
+\\mathcal{L}(\\theta) = -\\frac{1}{N} \\sum_{i=1}^{N} \\sum_{j=1}^{C} y_{ij} \\log \\hat{y}_{ij}
+\\end{align*}
+$$
+where $$\\theta$$ are the learnable parameters of the model, $$N$$ is the number of training samples, $$C$$ is the number of classes,
+$$y_{ij}$$ is the true label of the $$i$$-th sample for class $$j$$, and $$\\hat{y}_{ij}$$ is the predicted probability of the $$i$$-th sample for class $$j$$.
+We can train the model using backpropagation and the Adam optimizer to minimize the loss function.
+Here is a list of all parameters that need to be learned during training:
+- **Patch Projection Parameters**: $$\\textbf{E} \\in \\mathbb{R}^{(P^2 \\times C) \\times D}$$.
+- **Positional Embeddings**: $$\\textbf{E}_{pos} \\in \\mathbb{R}^{(N + 1) \\times D}$$.
+- **Class Token**: $$\\textbf{x}_{class} \\in \\mathbb{R}^D$$.
+- **Transformer Parameters**: 
+  - **Attention Parameters**: For each attention head $i$ in the MSA, $$\\textbf{Q}_i, \\textbf{K}_i, \\textbf{V}_i \\in \\mathbb{R}^{D \\times d_{head}}$$.
+  - **Output Projection of MSA**: $$\\textbf{U}_{msa} \\in \\mathbb{R}^{k \\cdot d_{head} \\times D}$$.
+- **Feedforward Network Parameters**: Each FNN layer consists of two linear transformations with a ReLU activation in between.
+The weight matrices and bias vectors for the first and second linear transformations in the 
+$l$-th layer FNN are represented as $$\\textbf{W}_{1,l}, \\textbf{b}_{1,l}, \\textbf{W}_{2,l}, \\textbf{b}_{2,l}$$.
+  - $$\\textbf{W}_{1,l} \\in \\mathbb{R}^{D \\times D_{fnn}}, \\textbf{b}_{1,l} \\in \\mathbb{R}^{D_{fnn}}$$.
+  - $$\\textbf{W}_{2,l} \\in \\mathbb{R}^{D_{fnn} \\times D}, \\textbf{b}_{2,l} \\in \\mathbb{R}^{D}$$.
+  - $$D_{fnn}$$ is the dimension of the hidden layer in the FNN.
+- **Layer Normalization Parameters**: For each layer normalization step, the scale ($\\gamma$) and shift ($\\beta$) parameters are learned, where:
+  - $$\\gamma, \\beta \\in \\mathbb{R}^D$$.
+- **Output Projection Parameters**: The output projection of the last layer of the transformer is represented as $$\\textbf{W}_{out}, \\textbf{b}_{out}$$.
+  - $$\\textbf{W}_{out} \\in \\mathbb{R}^{D \\times C}, \\textbf{b}_{out} \\in \\mathbb{R}^C$$.
 
 
 [^1]: Vaswani, A., et al. "Attention is all you need," in Advances in neural information processing systems, vol. 30, 2017.
@@ -135,7 +190,7 @@ const Blog = () => {
     <div className="blog-content">
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
-        rehypePlugins={[rehypeKatex, rehypeRaw]}
+        rehypePlugins={[rehypeKatex, rehypeRaw, rehypeHighlight]}
         // eslint-disable-next-line react/no-children-prop
         children={markdownContent}
       />
