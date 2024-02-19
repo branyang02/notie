@@ -10,11 +10,21 @@ import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 
+import CodeBlock from '../components/CodeBlock';
+
+type CodeProps = React.HTMLAttributes<HTMLElement> & { children?: React.ReactNode };
+
 const todaysDate = new Date().toLocaleDateString('en-US', {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
 });
+
+const components = {
+  code({ children }: CodeProps) {
+    return <CodeBlock code={String(children)} language="python" />;
+  },
+};
 
 const markdownContent = `
 # **A Deep Dive into OpenAI's Sora**
@@ -219,14 +229,41 @@ class="caption">Fig. 3: ViT Performance on ImageNet Classification. (Source: Dos
 </span>
 
 ## **Diffusion Models**
-Now that we have discussed the Vision Transformer, we can move on to diffusion models.
+Now that we have discussed the Vision Transformer, a model that can _classify_ images, we can move on to diffusion models, models that can _generate_ images.
 Diffusion models are a class of **_generative models_** that learn to generate high-quality images from a sequence of noise vectors.
 The key idea behind diffusion models is to _diffuse_ the noise vectors to generate realistic images.
-We will be discussing the difussion process and the U-Net architecture introcuded in the paper 
+We will be discussing the difussion process and the U-Net architecture introduced in the paper 
 _Denoising Diffusion Probabilistic Models_ by Ho et al.[^5].
 
+#### **Problem Definition**
+Let's start by defining the problem of image generation.
+Suppose we have a dataset of images $$\\textbf{X} = \\{\\textbf{x}_1, \\textbf{x}_2, \\ldots, \\textbf{x}_N\\}$$, where $$\\textbf{x}_i \\in \\mathbb{R}^{H \\times W \\times C}$$.
+Suppose we also know the underlying distribution $$q(\\textbf{x})$$ of the training data.
+Our goal is to fit a probabilistic model $$p(\\textbf{x})$$ to the data such that it can generate realistic images $$\\textbf{x}$$ that are similar to the training data.
+
+To learn the distribution $$p(\\textbf{x})$$, we follow a two-step process:
+1. **Forward Process**: We continuously add Gaussian noise to the input image to _destroy_ the image.
+2. **Backward Process**: We continuously _denoise_ the noisy image to _recover_ the original image.
+
+![](https://www.assemblyai.com/blog/content/images/2022/05/image.png)
+![](https://www.assemblyai.com/blog/content/images/2022/05/image-1.png)
+<span id="fig4"
+class="caption">Fig. 4: Foward(Top) and Backward(Bottom) Process. (Source:  <a href="https://www.assemblyai.com/blog/diffusion-models-for-machine-learning-introduction/">AssemblyAI Blog</a>)
+</span>
+
+The first step 
+#### **Forward Process**
+The forward process, aka the _noise process_, is when we add Gaussian noise to the input image to _destroy_ the image.
+We sample a training data point at random $$\\textbf{x}_0 \\sim q(\\textbf{x})$$  and progressively add more noise 
+to the data point to geenerate a sequence of noisy images $$\\textbf{x}_t$$, where $$t = 1, 2, \\ldots, T$$.
 
 
+\`\`\`execute
+test = []
+for i in range(10):
+    test.append(i)
+print(test)
+\`\`\`
 
 
 [^1]: Brooks, Peebles, et al., "Video generation models as world simulators,", 2024.
@@ -234,7 +271,7 @@ _Denoising Diffusion Probabilistic Models_ by Ho et al.[^5].
 [^3]: Dosovitskiy, A., et al. "An image is worth 16x16 words: Transformers for image recognition at scale," in arXiv preprint arXiv:2010.11929, 2020.
 [^4]: J. Ba, J. Kiros, G. Hinton. "Layer normalization," in arXiv preprint arXiv:1607.06450, 2016.
 [^5]: J. Ho, A. Jain, P. Abbeel. "Denoising diffusion probabilistic models," in Advances in neural information processing systems, vol. 33, pp. 6840–6851, 2020.
-
+[^6]: R. O'Connor, "Introduction to Diffusion Models for Machine Learning," in AssemblyAI Blog, 2022.
 `;
 
 const Blog = () => {
@@ -250,6 +287,8 @@ const Blog = () => {
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[rehypeKatex, rehypeRaw, rehypeHighlight]}
+        // eslint-disable-next-line react/no-children-prop
+        components={components}
         // eslint-disable-next-line react/no-children-prop
         children={markdownContent}
       />
