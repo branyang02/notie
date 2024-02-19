@@ -259,15 +259,7 @@ to the data point to geenerate a sequence of noisy images $$\\textbf{x}_t$$, whe
 \`\`\`execute
 import numpy as np
 from scipy.stats import entropy
-
-# Assuming a simplistic representation of the number "9" in a 10x10 grid
-def create_number_9_image():
-    image = np.zeros((10, 10))
-    image[1:3, 4:6] = 1  # Top of the 9
-    image[2:4, 3:5] = 1  # Upper loop of the 9
-    image[3:6, 5:7] = 1  # Right side of the 9
-    image[4:6, 4:6] = 1  # Bottom loop of the 9
-    return image
+import matplotlib.pyplot as plt
 
 # Forward diffusion process
 def forward_diffusion(image, beta_schedule):
@@ -281,32 +273,54 @@ def forward_diffusion(image, beta_schedule):
         diffused_images.append(image)
     return diffused_images
 
-# Function to evaluate the randomness of an image using entropy
-def evaluate_randomness(images):
-    randomness_scores = []
-    for image in images:
-        # Calculate histogram
-        hist, _ = np.histogram(image.ravel(), bins=256, range=(0, 1))
-        # Normalize histogram
-        hist = hist / np.sum(hist)
-        # Calculate entropy
-        ent = entropy(hist, base=2)
-        randomness_scores.append(ent)
-    return randomness_scores
+
+# Function to plot all diffused images
+def plot_diffused_images(diffused_images, images_per_row=3):
+    n = len(diffused_images)
+    rows = (n + images_per_row - 1) // images_per_row
+    fig, axes = plt.subplots(
+        rows, images_per_row, figsize=(images_per_row * 3, rows * 3)
+    )
+    for i, image in enumerate(diffused_images):
+        r, c = divmod(i, images_per_row)
+        if n <= images_per_row:
+            ax = axes[c]
+        else:
+            ax = axes[r, c]
+        ax.imshow(image, cmap="gray")
+        ax.axis("off")
+    plt.tight_layout()
+    return fig
+
 
 # Initialize
-image_9 = create_number_9_image()
-T = 10
-beta_schedule = np.linspace(0.1, 0.2, T)
+image_9 = np.array(
+    [
+        [0, 0, 0, 255, 255, 255, 255, 255, 0, 0],
+        [0, 0, 255, 0, 0, 0, 0, 255, 0, 0],
+        [0, 255, 0, 0, 0, 0, 0, 255, 0, 0],
+        [0, 255, 0, 0, 0, 0, 0, 255, 0, 0],
+        [0, 0, 255, 255, 255, 255, 255, 255, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 255, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 255, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 255, 0, 0],
+        [0, 255, 255, 255, 255, 255, 255, 255, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ]
+)
 
-# Diffuse
-diffused_images = forward_diffusion(image_9, beta_schedule)
+if __name__ == "__main__":
+    T = 100
+    beta_schedule = np.linspace(0.1, 0.5, T)
 
-# Evaluate randomness
-randomness_scores = evaluate_randomness(diffused_images)
+    # Diffuse
+    diffused_images = forward_diffusion(image_9, beta_schedule)
 
-# Print results
-print(randomness_scores)
+    fig = plot_diffused_images(diffused_images)
+
+    # Save the composite image
+    get_image(fig)
+
 \`\`\`
 
 

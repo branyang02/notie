@@ -1,5 +1,7 @@
 import { python } from '@codemirror/lang-python';
+import { indentUnit } from '@codemirror/language';
 import { nord } from '@uiw/codemirror-theme-nord';
+import { tokyoNightStorm } from '@uiw/codemirror-theme-tokyo-night-storm';
 import CodeMirror from '@uiw/react-codemirror';
 import {
   Button,
@@ -18,6 +20,7 @@ const CodeBlock = ({ initialCode }: { initialCode: string }) => {
   const [output, setOutput] = useState('');
   const [error, setError] = useState(false);
   const [code, setCode] = useState(initialCode);
+  const [image, setImage] = useState('');
 
   const onChange = useCallback((value: string) => {
     setCode(value);
@@ -29,6 +32,7 @@ const CodeBlock = ({ initialCode }: { initialCode: string }) => {
       console.log(code);
       const result = await fetch(
         'https://yang-website-backend-c3338735a47f.herokuapp.com/api/run-code',
+        // 'http://127.0.0.1:1234/api/run-code',
         {
           method: 'POST',
           headers: {
@@ -48,6 +52,9 @@ const CodeBlock = ({ initialCode }: { initialCode: string }) => {
         setError(false);
       }
       setOutput(data.output);
+      if (data.image !== '') {
+        setImage(data.image);
+      }
     } catch (error) {
       setOutput(`Execution failed: ${error}`);
       setError(true);
@@ -58,6 +65,7 @@ const CodeBlock = ({ initialCode }: { initialCode: string }) => {
 
   const clearOutput = () => {
     setOutput('');
+    setImage('');
     setError(false);
     setIsLoading(false);
   };
@@ -67,9 +75,9 @@ const CodeBlock = ({ initialCode }: { initialCode: string }) => {
       <Pane position="relative" borderRadius={8} overflow="hidden" marginBottom={16}>
         <CodeMirror
           value={code}
-          extensions={[python()]}
+          extensions={[python(), indentUnit.of('    ')]}
           height="500px"
-          theme={nord}
+          theme={tokyoNightStorm}
           onChange={onChange}
         />
         <Pane position="absolute" top={0} right={0} padding={8}>
@@ -94,7 +102,7 @@ const CodeBlock = ({ initialCode }: { initialCode: string }) => {
         </Pane>
       </Pane>
       {/* Output box */}
-      {(isLoading || output) && (
+      {(isLoading || output || image) && (
         <Pane position="relative" borderRadius={8} overflow="hidden" marginBottom={16}>
           <Card
             background="tint1"
@@ -102,7 +110,7 @@ const CodeBlock = ({ initialCode }: { initialCode: string }) => {
             elevation={1}
             borderRadius={8}
             style={{
-              maxHeight: '300px',
+              maxHeight: '500px',
               overflowY: 'auto',
             }}
           >
@@ -116,21 +124,29 @@ const CodeBlock = ({ initialCode }: { initialCode: string }) => {
                 Clear Output
               </Button>
             </Pane>
-
             {isLoading ? (
               <Spinner />
             ) : (
-              <Code
-                appearance="minimal"
-                color={error ? 'red' : 'black'}
-                style={{
-                  wordBreak: 'break-word',
-                  overflowWrap: 'break-word',
-                  whiteSpace: 'pre-wrap',
-                }}
-              >
-                {output}
-              </Code>
+              <>
+                <Code
+                  appearance="minimal"
+                  color={error ? 'red' : 'black'}
+                  style={{
+                    wordBreak: 'break-word',
+                    overflowWrap: 'break-word',
+                    whiteSpace: 'pre-wrap',
+                  }}
+                >
+                  {output}
+                </Code>
+                {image && (
+                  <img
+                    src={`data:image/png;base64,${image}`}
+                    alt="Output"
+                    style={{ maxWidth: '100%', marginBottom: '10px' }}
+                  />
+                )}
+              </>
             )}
           </Card>
         </Pane>
