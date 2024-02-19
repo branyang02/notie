@@ -257,34 +257,57 @@ The forward process, aka the _noise process_, is when we add Gaussian noise to t
 We sample a training data point at random $$\\textbf{x}_0 \\sim q(\\textbf{x})$$  and progressively add more noise 
 to the data point to geenerate a sequence of noisy images $$\\textbf{x}_t$$, where $$t = 1, 2, \\ldots, T$$.
 
-
 \`\`\`execute
 import numpy as np
+from scipy.stats import entropy
 
-image_9 = np.random.rand(10, 10)  # Mock image
-
-# Initialize the variance schedule (beta values) for T=10 time steps
-T = 10
-beta_schedule = np.linspace(0.1, 0.2, T)
+# Assuming a simplistic representation of the number "9" in a 10x10 grid
+def create_number_9_image():
+    image = np.zeros((10, 10))
+    image[1:3, 4:6] = 1  # Top of the 9
+    image[2:4, 3:5] = 1  # Upper loop of the 9
+    image[3:6, 5:7] = 1  # Right side of the 9
+    image[4:6, 4:6] = 1  # Bottom loop of the 9
+    return image
 
 # Forward diffusion process
 def forward_diffusion(image, beta_schedule):
-    # List to store the diffused images at each time step
+    T = len(beta_schedule)
     diffused_images = [image]
     for t in range(T):
         beta = beta_schedule[t]
-        # Calculate the variance for the Gaussian noise
         variance = 1 - beta
-        # Add Gaussian noise to the image
         noise = np.random.normal(0, np.sqrt(variance), image.shape)
-        # Update the image
         image = np.sqrt(1 - beta) * image + noise
-        # Save the diffused image
         diffused_images.append(image)
     return diffused_images
 
+# Function to evaluate the randomness of an image using entropy
+def evaluate_randomness(images):
+    randomness_scores = []
+    for image in images:
+        # Calculate histogram
+        hist, _ = np.histogram(image.ravel(), bins=256, range=(0, 1))
+        # Normalize histogram
+        hist = hist / np.sum(hist)
+        # Calculate entropy
+        ent = entropy(hist, base=2)
+        randomness_scores.append(ent)
+    return randomness_scores
+
+# Initialize
+image_9 = create_number_9_image()
+T = 10
+beta_schedule = np.linspace(0.1, 0.2, T)
+
+# Diffuse
 diffused_images = forward_diffusion(image_9, beta_schedule)
-print(diffused_images)
+
+# Evaluate randomness
+randomness_scores = evaluate_randomness(diffused_images)
+
+# Print results
+print(randomness_scores)
 \`\`\`
 
 

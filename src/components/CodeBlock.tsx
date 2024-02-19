@@ -29,8 +29,12 @@ const CodeBlock = ({ initialCode }: { initialCode: string }) => {
         },
       );
       const data = await result.json();
+      if (data.output.startsWith('Traceback')) {
+        setError(true);
+      } else {
+        setError(false);
+      }
       setOutput(data.output);
-      setError(false);
     } catch (error) {
       setOutput(`Execution failed: ${error}`);
       setError(true);
@@ -80,8 +84,13 @@ const CodeBlock = ({ initialCode }: { initialCode: string }) => {
               overflowY: 'auto',
             }}
           >
-            <Pane position="absolute" top={0} right={0} padding={8}>
-              <Button appearance="minimal" intent="danger" onClick={clearOutput}>
+            <Pane>
+              <Button
+                appearance="minimal"
+                intent="danger"
+                onClick={clearOutput}
+                style={{ float: 'right' }}
+              >
                 Clear Output
               </Button>
             </Pane>
