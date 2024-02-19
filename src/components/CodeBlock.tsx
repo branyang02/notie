@@ -1,4 +1,4 @@
-import { Button, Card, Code, Pane, PlayIcon } from 'evergreen-ui';
+import { Button, Card, Pane, Paragraph, PlayIcon, Spinner } from 'evergreen-ui';
 import React, { useState } from 'react';
 import { CopyBlock, nord } from 'react-code-blocks';
 
@@ -11,20 +11,24 @@ const CodeBlock = ({ code, language }: { code: string; language: string }) => {
   const runCode = async () => {
     setIsLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      // await fetch('https://api.example.com/run-code', {
-      //   method: 'POST',
-      //   body: JSON.stringify({ code }),
-      // });
-      const simulatedResult = 'Execution result: Success!';
-      setOutput(simulatedResult);
+      console.log(code);
+      const result = await fetch(
+        'https://yang-website-backend-c3338735a47f.herokuapp.com/api/run-code',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ code }),
+        },
+      );
+      const data = await result.json();
+      setOutput(data.output);
       setError(false);
     } catch (error) {
-      // Handle errors if the API call fails
       setOutput(`Execution failed: ${error}`);
       setError(true);
     } finally {
-      // Ensure loading state is cleared after execution or error
       setIsLoading(false);
     }
   };
@@ -55,13 +59,14 @@ const CodeBlock = ({ code, language }: { code: string; language: string }) => {
         </Pane>
       </Pane>
       {/* Output box */}
-      {output && (
-        <Card background="tint1" padding={16} elevation={1} borderRadius={8}>
-          <Code appearance="minimal" color={error ? 'red' : 'black'}>
-            {output}
-          </Code>
-        </Card>
-      )}
+      {output &&
+        (isLoading ? (
+          <Spinner />
+        ) : (
+          <Card background="tint1" padding={16} elevation={1} borderRadius={8}>
+            <Paragraph color={error ? 'red' : 'black'}>{output}</Paragraph>
+          </Card>
+        ))}
     </Pane>
   );
 };
