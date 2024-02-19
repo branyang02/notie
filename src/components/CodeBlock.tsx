@@ -33,6 +33,12 @@ const CodeBlock = ({ code, language }: { code: string; language: string }) => {
     }
   };
 
+  const clearOutput = () => {
+    setOutput('');
+    setError(false);
+    setIsLoading(false);
+  };
+
   return (
     <Pane>
       <Pane position="relative" borderRadius={8} overflow="hidden" marginBottom={16}>
@@ -59,14 +65,32 @@ const CodeBlock = ({ code, language }: { code: string; language: string }) => {
         </Pane>
       </Pane>
       {/* Output box */}
-      {output &&
-        (isLoading ? (
-          <Spinner />
-        ) : (
+      {(isLoading || output) && (
+        <Pane position="relative" borderRadius={8} overflow="hidden" marginBottom={16}>
           <Card background="tint1" padding={16} elevation={1} borderRadius={8}>
-            <Paragraph color={error ? 'red' : 'black'}>{output}</Paragraph>
+            <Pane position="absolute" top={0} right={0} padding={8}>
+              <Button appearance="minimal" intent="danger" onClick={clearOutput}>
+                Clear Output
+              </Button>
+            </Pane>
+
+            {isLoading ? (
+              <Spinner />
+            ) : (
+              <Paragraph
+                color={error ? 'red' : 'black'}
+                style={{
+                  wordBreak: 'break-word', // Breaks words to prevent overflow
+                  overflowWrap: 'break-word', // Allows long words to be able to break and wrap onto the next line
+                  whiteSpace: 'pre-wrap', // Maintains whitespace formatting but allows text to wrap
+                }}
+              >
+                {output}
+              </Paragraph>
+            )}
           </Card>
-        ))}
+        </Pane>
+      )}
     </Pane>
   );
 };

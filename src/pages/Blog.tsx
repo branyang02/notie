@@ -259,14 +259,32 @@ to the data point to geenerate a sequence of noisy images $$\\textbf{x}_t$$, whe
 
 
 \`\`\`execute
-test = []
-for i in range(10):
-    test.append(i)
-print(test)
-test = []
-for i in range(10):
-    test.append(i)
-print(test)
+import numpy as np
+
+image_9 = np.random.rand(10, 10)  # Mock image
+
+# Initialize the variance schedule (beta values) for T=10 time steps
+T = 10
+beta_schedule = np.linspace(0.1, 0.2, T)
+
+# Forward diffusion process
+def forward_diffusion(image, beta_schedule):
+    # List to store the diffused images at each time step
+    diffused_images = [image]
+    for t in range(T):
+        beta = beta_schedule[t]
+        # Calculate the variance for the Gaussian noise
+        variance = 1 - beta
+        # Add Gaussian noise to the image
+        noise = np.random.normal(0, np.sqrt(variance), image.shape)
+        # Update the image
+        image = np.sqrt(1 - beta) * image + noise
+        # Save the diffused image
+        diffused_images.append(image)
+    return diffused_images
+
+diffused_images = forward_diffusion(image_9, beta_schedule)
+print(diffused_images)
 \`\`\`
 
 
