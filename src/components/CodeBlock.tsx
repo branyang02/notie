@@ -1,12 +1,18 @@
+import { python } from '@codemirror/lang-python';
+import { nord } from '@uiw/codemirror-theme-nord';
+import CodeMirror from '@uiw/react-codemirror';
 import { Button, Card, Pane, Paragraph, PlayIcon, Spinner } from 'evergreen-ui';
-import React, { useState } from 'react';
-import { CopyBlock, nord } from 'react-code-blocks';
+import { useCallback, useState } from 'react';
 
-const CodeBlock = ({ code, language }: { code: string; language: string }) => {
+const CodeBlock = ({ initialCode }: { initialCode: string }) => {
   const [isLoading, setIsLoading] = useState(false);
-  // State to store the output or error message
   const [output, setOutput] = useState('');
   const [error, setError] = useState(false);
+  const [code, setCode] = useState(initialCode);
+
+  const onChange = useCallback((value: string) => {
+    setCode(value);
+  }, []);
 
   const runCode = async () => {
     setIsLoading(true);
@@ -42,15 +48,12 @@ const CodeBlock = ({ code, language }: { code: string; language: string }) => {
   return (
     <Pane>
       <Pane position="relative" borderRadius={8} overflow="hidden" marginBottom={16}>
-        <CopyBlock
-          customStyle={{
-            height: '500px',
-            overflow: 'scroll',
-          }}
-          text={code}
-          language={language}
-          showLineNumbers
+        <CodeMirror
+          value={code}
+          extensions={[python()]}
+          height="500px"
           theme={nord}
+          onChange={onChange}
         />
         <Pane position="absolute" bottom={0} right={0} padding={8}>
           <Button
@@ -67,7 +70,16 @@ const CodeBlock = ({ code, language }: { code: string; language: string }) => {
       {/* Output box */}
       {(isLoading || output) && (
         <Pane position="relative" borderRadius={8} overflow="hidden" marginBottom={16}>
-          <Card background="tint1" padding={16} elevation={1} borderRadius={8}>
+          <Card
+            background="tint1"
+            padding={16}
+            elevation={1}
+            borderRadius={8}
+            style={{
+              maxHeight: '300px',
+              overflowY: 'auto',
+            }}
+          >
             <Pane position="absolute" top={0} right={0} padding={8}>
               <Button appearance="minimal" intent="danger" onClick={clearOutput}>
                 Clear Output
@@ -80,9 +92,9 @@ const CodeBlock = ({ code, language }: { code: string; language: string }) => {
               <Paragraph
                 color={error ? 'red' : 'black'}
                 style={{
-                  wordBreak: 'break-word', // Breaks words to prevent overflow
-                  overflowWrap: 'break-word', // Allows long words to be able to break and wrap onto the next line
-                  whiteSpace: 'pre-wrap', // Maintains whitespace formatting but allows text to wrap
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  whiteSpace: 'pre-wrap',
                 }}
               >
                 {output}

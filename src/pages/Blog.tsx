@@ -22,7 +22,7 @@ const todaysDate = new Date().toLocaleDateString('en-US', {
 
 const components = {
   code({ children }: CodeProps) {
-    return <CodeBlock code={String(children)} language="python" />;
+    return <CodeBlock initialCode={String(children)} />;
   },
 };
 

@@ -13,6 +13,7 @@
     "type-check": "tsc"
   },
   "dependencies": {
+    "@codemirror/lang-python": "^6.1.4",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@fortawesome/free-brands-svg-icons": "^6.4.2",
@@ -21,6 +22,8 @@
     "@icons-pack/react-simple-icons": "^9.2.0",
     "@mui/icons-material": "^5.15.0",
     "@mui/material": "^5.15.0",
+    "@uiw/codemirror-theme-nord": "^4.21.22",
+    "@uiw/react-codemirror": "^4.21.22",
     "axios": "^1.6.7",
     "bibtex": "^0.9.0",
     "bootstrap": "^5.3.2",
@@ -29,7 +32,6 @@
     "lowlight": "^3.1.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.1",
-    "react-code-blocks": "^0.1.6",
     "react-d3-tree": "^3.6.1",
     "react-dom": "^18.2.0",
     "react-markdown": "^9.0.1",
