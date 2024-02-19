@@ -1,7 +1,16 @@
 import { python } from '@codemirror/lang-python';
 import { nord } from '@uiw/codemirror-theme-nord';
 import CodeMirror from '@uiw/react-codemirror';
-import { Button, Card, Pane, Paragraph, PlayIcon, Spinner } from 'evergreen-ui';
+import {
+  Button,
+  Card,
+  Code,
+  IconButton,
+  Pane,
+  PlayIcon,
+  ResetIcon,
+  Spinner,
+} from 'evergreen-ui';
 import { useCallback, useState } from 'react';
 
 const CodeBlock = ({ initialCode }: { initialCode: string }) => {
@@ -29,7 +38,11 @@ const CodeBlock = ({ initialCode }: { initialCode: string }) => {
         },
       );
       const data = await result.json();
-      if (data.output.startsWith('Traceback')) {
+      if (
+        data.output.startsWith('Traceback') ||
+        data.output.startsWith('File') ||
+        data.output.startsWith('Exception')
+      ) {
         setError(true);
       } else {
         setError(false);
@@ -59,6 +72,15 @@ const CodeBlock = ({ initialCode }: { initialCode: string }) => {
           theme={nord}
           onChange={onChange}
         />
+        <Pane position="absolute" top={0} right={0} padding={8}>
+          <IconButton
+            size="small"
+            appearance="minimal"
+            icon={ResetIcon}
+            intent="danger"
+            onClick={() => setCode(initialCode)}
+          />
+        </Pane>
         <Pane position="absolute" bottom={0} right={0} padding={8}>
           <Button
             iconAfter={PlayIcon}
@@ -98,7 +120,8 @@ const CodeBlock = ({ initialCode }: { initialCode: string }) => {
             {isLoading ? (
               <Spinner />
             ) : (
-              <Paragraph
+              <Code
+                appearance="minimal"
                 color={error ? 'red' : 'black'}
                 style={{
                   wordBreak: 'break-word',
@@ -107,7 +130,7 @@ const CodeBlock = ({ initialCode }: { initialCode: string }) => {
                 }}
               >
                 {output}
-              </Paragraph>
+              </Code>
             )}
           </Card>
         </Pane>

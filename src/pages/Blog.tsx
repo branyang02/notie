@@ -251,7 +251,6 @@ To learn the distribution $$p(\\textbf{x})$$, we follow a two-step process:
 class="caption">Fig. 4: Foward(Top) and Backward(Bottom) Process. (Source:  <a href="https://www.assemblyai.com/blog/diffusion-models-for-machine-learning-introduction/">AssemblyAI Blog</a>)
 </span>
 
-The first step 
 #### **Forward Process**
 The forward process, aka the _noise process_, is when we add Gaussian noise to the input image to _destroy_ the image.
 We sample a training data point at random $$\\textbf{x}_0 \\sim q(\\textbf{x})$$  and progressively add more noise 
