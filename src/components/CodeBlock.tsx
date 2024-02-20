@@ -58,6 +58,7 @@ const CodeBlock = ({ initialCode }: { initialCode: string }) => {
     } catch (error) {
       setOutput(`Execution failed: ${error}`);
       setError(true);
+      setImage('');
     } finally {
       setIsLoading(false);
     }

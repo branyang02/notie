@@ -252,9 +252,32 @@ class="caption">Fig. 4: Foward(Top) and Backward(Bottom) Process. (Source:  <a h
 </span>
 
 #### **Forward Process**
-The forward process, aka the _noise process_, is when we add Gaussian noise to the input image to _destroy_ the image.
-We sample a training data point at random $$\\textbf{x}_0 \\sim q(\\textbf{x})$$  and progressively add more noise 
-to the data point to geenerate a sequence of noisy images $$\\textbf{x}_t$$, where $$t = 1, 2, \\ldots, T$$.
+We sample a training data point at random $$\\textbf{x}_0 \\sim q(\\textbf{x}_0)$$  and progressively add more noise 
+to the data point to generate a sequence of images $$\\textbf{x}_{1:T} = [\\textbf{x}_1, \\textbf{x}_2, \\ldots, \\textbf{x}_T]$$ that is
+treated as the _posterior_ distribution $$q(\\textbf{x}_{1:T} \\mid \\textbf{x}_0)$$ for $$p_{\\theta}$$, which is the parameter that we want to 
+learn to generate images.
+This process is fixed to a Markov chain, meaning the next noised image $$\\textbf{x}_{t+1}$$ is only depended on the current image $$\\textbf{x}_t$$. 
+We sample using a fixed number of steps $$T$$, with a variance schedule $$\\beta_1, \\ldots \\beta_T$$ that is either fixed or learned.
+
+The forward process is defined as follows:
+$$
+\\begin{align*}
+q(\\textbf{x}_t \\mid \\textbf{x}_{t-1}) &= \\mathcal{N}\\left(\\textbf{x}_t ; \\sqrt{1 - \\beta_t} \\textbf{x}_{t-1}, \\beta_t \\textbf{I}\\right) \\quad \\text{for} \\quad t = 1, 2, \\ldots, T \\\\
+&= \\sqrt{1 - \\beta_t} \\textbf{x}_{t-1} + \\mathcal{N} \\left(0, \\beta_t \\textbf{I}\\right)
+\\end{align*}
+$$
+where $$\\mathcal{N}\\left(\\textbf{x} ; \\mu, \\Sigma\\right)$$ is the [Multivariate Gaussian distribution](https://en.wikipedia.org/wiki/Multivariate_normal_distribution) with mean $$\\mu$$ and covariance $$\\Sigma$$,
+$$\\textbf{I}$$ is the identity matrix, and $$\\beta_t$$ is the variance schedule.
+
+Therefore, the posterior is defined as:
+$$
+\\begin{align*}
+q(\\textbf{x}_{1:T} \\mid \\textbf{x}_0) &= q(\\textbf{x}_1 \\mid \\textbf{x}_0) q(\\textbf{x}_2 \\mid \\textbf{x}_1) \\ldots q(\\textbf{x}_T \\mid \\textbf{x}_{T-1}) \\\\
+&= \\prod_{t=1}^{T} q(\\textbf{x}_t \\mid \\textbf{x}_{t-1})
+\\end{align*}
+$$
+
+We can visualize the forward process using the following **_interactive live_** code editor, which continuously adds noise the input image that represents the number 9:
 
 \`\`\`execute
 import numpy as np
@@ -267,15 +290,14 @@ def forward_diffusion(image, beta_schedule):
     diffused_images = [image]
     for t in range(T):
         beta = beta_schedule[t]
-        variance = 1 - beta
-        noise = np.random.normal(0, np.sqrt(variance), image.shape)
+        noise = np.random.normal(0, np.sqrt(beta), image.shape)
         image = np.sqrt(1 - beta) * image + noise
         diffused_images.append(image)
     return diffused_images
 
 
 # Function to plot all diffused images
-def plot_diffused_images(diffused_images, images_per_row=3):
+def plot_diffused_images(diffused_images, images_per_row=10):
     n = len(diffused_images)
     rows = (n + images_per_row - 1) // images_per_row
     fig, axes = plt.subplots(
@@ -310,7 +332,7 @@ image_9 = np.array(
 )
 
 if __name__ == "__main__":
-    T = 100
+    T = 109
     beta_schedule = np.linspace(0.1, 0.5, T)
 
     # Diffuse
@@ -318,10 +340,13 @@ if __name__ == "__main__":
 
     fig = plot_diffused_images(diffused_images)
 
-    # Save the composite image
+    # get_image is a predefined function to display a matplotlib figure
     get_image(fig)
 
 \`\`\`
+
+#### **Reverse Process**
+
 
 
 [^1]: Brooks, Peebles, et al., "Video generation models as world simulators,", 2024.
