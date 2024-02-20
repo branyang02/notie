@@ -101,3 +101,48 @@
   }
 
   
+
+
+  body.dark-mode {
+    background-color: #333;
+    color: #fff;
+  }
+  
+  body.dark-mode .blog-content {
+    background-color: #333;
+    color: #fff;
+  }
+  
+  body.dark-mode .blog-content a {
+    color: #fff;
+  }
+  
+  body.dark-mode .blog-content a:hover,
+  body.dark-mode .blog-content a:focus {
+    color: #bbb;
+  }
+
+  body.dark-mode .blog-content details {
+    background-color: #444; 
+    color: #fff; 
+  }
+
+  body.dark-mode .navbar {
+    color: #fff; 
+  }
+  
+  body.dark-mode .navbar a {
+    color: #fff; 
+  }
+
+  body.dark-mode .navbar a.active {
+    color: #fff; 
+  }
+
+  body.dark-mode .subtitle {
+    color: #fff;
+  }
+
+  body.dark-mode .caption {
+    color: #fff;
+  }

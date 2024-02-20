@@ -1,6 +1,5 @@
 import { python } from '@codemirror/lang-python';
 import { indentUnit } from '@codemirror/language';
-import { nord } from '@uiw/codemirror-theme-nord';
 import { tokyoNightStorm } from '@uiw/codemirror-theme-tokyo-night-storm';
 import CodeMirror from '@uiw/react-codemirror';
 import {
