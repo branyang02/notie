@@ -421,7 +421,9 @@ $$
 `;
 
 const Blog = () => {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(
+    new Date().getHours() >= 18 || new Date().getHours() < 6,
+  );
 
   useEffect(() => {
     const footnotesTitle = document.querySelector('.footnotes h2');
