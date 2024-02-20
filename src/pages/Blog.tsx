@@ -253,7 +253,7 @@ class="caption">Fig. 4: Foward(Top) and Backward(Bottom) Process. (Source:  <a h
 
 #### **Forward Process**
 We sample a training data point at random $$\\textbf{x}_0 \\sim q(\\textbf{x}_0)$$  and progressively add more noise 
-to the data point to generate a sequence of images $$\\textbf{x}_{1:T} = [\\textbf{x}_1, \\textbf{x}_2, \\ldots, \\textbf{x}_T]$$ that is
+to the data point to generate a sequence of images $$\\textbf{x}_{1:T} = \\textbf{x}_1, \\textbf{x}_2, \\ldots, \\textbf{x}_T$$ that is
 treated as the _posterior_ distribution $$q(\\textbf{x}_{1:T} \\mid \\textbf{x}_0)$$ for $$p_{\\theta}$$, which is the parameter that we want to 
 learn to generate images.
 This process is fixed to a Markov chain, meaning the next noised image $$\\textbf{x}_{t+1}$$ is only depended on the current image $$\\textbf{x}_t$$. 
@@ -346,7 +346,70 @@ if __name__ == "__main__":
 \`\`\`
 
 #### **Reverse Process**
+The reverse process is the _denoising_ process that aims to recover the original image from the diffused image.
+It is defined as a Markov chain starting at $$p(\\textbf{x}_T) = \\mathcal{N}\\left(\\textbf{x}_T ; \\textbf{0}, \\textbf{I}\\right)$$.
+The reverse process is defined as follows:
+$$
+\\begin{align*}
+p_{\\theta}({\\textbf{x}_{t-1} \\mid \\textbf{x}_t}) &= \\mathcal{N}\\left(\\textbf{x}_{t-1} ; \\boldsymbol{\\mu}_\\theta(\\textbf{x}_t, t), \\boldsymbol{\\Sigma}_\\theta (\\textbf{x}_t, t) \\right) \\quad \\text{for} \\quad t = T, T-1, \\ldots, 1 \\\\
+\\end{align*}
+$$
+where $$\\boldsymbol{\\mu}_\\theta(\\textbf{x}_t, t)$$ and $$\\boldsymbol{\\Sigma}_\\theta (\\textbf{x}_t, t)$$ are the mean and covariance of the Gaussian distribution, respectively.
+The mean and covariance are parameterized by a neural network $$\\theta$$, which is learned during training.
 
+Therefore, the joint distribution of the reverse process is defined as:
+$$
+\\begin{align*}
+p_{\\theta}(\\textbf{x}_{0:T}) &= p(\\textbf{x}_T) p_{\\theta}(\\textbf{x}_{T-1} \\mid \\textbf{x}_T) \\ldots p_{\\theta}(\\textbf{x}_0 \\mid \\textbf{x}_1) \\\\
+&= p(\\textbf{x}_T) \\prod_{t=1}^{T} p_{\\theta}(\\textbf{x}_{t-1} \\mid \\textbf{x}_{t})
+\\end{align*}
+$$
+and the likelihood of the reverse process is defined as:
+$$
+\\begin{align*}
+p_{\\theta}(\\textbf{x}_0) &= \\int p_{\\theta}(\\textbf{x}_0 \\mid \\textbf{x}_1) p_{\\theta}(\\textbf{x}_1 \\mid \\textbf{x}_2) \\ldots p_{\\theta}(\\textbf{x}_{T-1} \\mid \\textbf{x}_T) p(\\textbf{x}_T) d\\textbf{x}_1 d\\textbf{x}_2 \\ldots d\\textbf{x}_{T} \\\\
+ &= \\int p_{\\theta}(\\textbf{x}_{0 : T} ) d\\textbf{x}_{1:T}
+\\end{align*}
+$$
+where $\\theta$ are the learnable parameters of the model, and $p_{\\theta}(\\textbf{x}_0)$ is the likelihood of the original image $\\textbf{x}_0$.
+
+#### **Training Setup**
+Our goal is to maximize the likelihood of the observed data under the model $p_{\\theta}(\\textbf{x}_0)$.
+Parameters $\\theta$ can be obtained from maximum likelihood estimation (MLE):
+$$
+\\begin{align*}
+\\hat{\\theta}_{\\text{MLE}} = \\arg\\max_{\\theta} \\log p_{\\theta}(\\textbf{x}_0)
+\\end{align*}
+$$
+However, we would have to integrate over the whole latent space, which is infeasible. 
+To address this issue, we can use the _diffusion process_ to sample from the posterior distribution $q(\\textbf{x}_{1:T} \\mid \\textbf{x}_0)$.
+
+$$
+\\begin{align*}
+\\log p_{\\theta}(\\textbf{x}_0) &= \\log \\int p_{\\theta}(\\textbf{x}_{0 : T} ) d\\textbf{x}_{1:T} \\\\
+&= \\log \\int p_{\\theta}(\\textbf{x}_{0 : T} ) \\frac{q(\\textbf{x}_{1:T} \\mid \\textbf{x}_0)}{q(\\textbf{x}_{1:T} \\mid \\textbf{x}_0)} d\\textbf{x}_{1:T} \\\\
+&= \\log \\mathbb{E}_{q(\\textbf{x}_{1:T} \\mid \\textbf{x}_0)} \\left[ \\frac{p_{\\theta}(\\textbf{x}_{0 : T} )}{q(\\textbf{x}_{1:T} \\mid \\textbf{x}_0)} \\right] \\\\
+&\\geq \\mathbb{E}_{q(\\textbf{x}_{1:T} \\mid \\textbf{x}_0)} \\left[ \\log \\frac{p_{\\theta}(\\textbf{x}_{0 : T} )}{q(\\textbf{x}_{1:T} \\mid \\textbf{x}_0)} \\right] \\quad &&\\text{by Jensen's inequality}\\\\
+\\end{align*}
+$$
+
+<details><summary>Jansen's Inequality</summary>
+
+Jensen's inequality states that for a convex function $$f$$, the expected value of $$f$$ is greater than or equal to the function of the expected value:
+$$
+\\begin{align*}
+\\mathbb{E}[f(x)] \\geq f(\\mathbb{E}[x])
+\\end{align*}
+$$
+where $$x$$ is a random variable.
+</details>
+
+Therefore, we can formulize the loss funciton as:
+$$
+\\begin{align*}
+\\mathcal{L}(\\theta) &= \\mathbb{E}_{q(\\textbf{x}_{1:T} \\mid \\textbf{x}_0)} \\left[ \\log \\frac{p_{\\theta}(\\textbf{x}_{0 : T} )}{q(\\textbf{x}_{1:T} \\mid \\textbf{x}_0)} \\right] \\\\
+\\end{align*}
+$$
 
 
 [^1]: Brooks, Peebles, et al., "Video generation models as world simulators,", 2024.

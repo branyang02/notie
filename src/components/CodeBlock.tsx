@@ -43,9 +43,9 @@ const CodeBlock = ({ initialCode }: { initialCode: string }) => {
       );
       const data = await result.json();
       if (
-        data.output.startsWith('Traceback') ||
-        data.output.startsWith('File') ||
-        data.output.startsWith('Exception')
+        data.output.trim().startsWith('Traceback') ||
+        data.output.trim().startsWith('File') ||
+        data.output.trim().startsWith('Exception')
       ) {
         setError(true);
       } else {
