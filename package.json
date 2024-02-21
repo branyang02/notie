@@ -43,6 +43,7 @@
     "remark-gfm": "^4.0.0",
     "remark-math": "^6.0.0",
     "remark-supersub": "^1.0.0",
+    "remark-toc": "^9.0.0",
     "serve": "^14.2.1"
   },
   "devDependencies": {

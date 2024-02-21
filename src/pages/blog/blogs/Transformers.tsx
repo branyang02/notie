@@ -9,6 +9,7 @@ import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
+import remarkToc from 'remark-toc';
 
 import CodeBlock from '../../../components/CodeBlock';
 
@@ -32,21 +33,23 @@ const markdownContent = `
 Date: ${todaysDate} | Author: Brandon Yang
 </span>
 
+## Contents
+
 ## **Introduction**
-There are **_a lot_** of resources out there that explain transformers, but I wanted 
-to create a blog post that explains transformers in a way that I understand. This blog post will include 
+There are **_a lot_** of resources out there that explain transformers, but I wanted
+to create a blog post that explains transformers in a way that I understand. This blog post will include
 mathematical derivation of each component of the transformer, and will also include PyTorch code examples.
 
 #### **Architecture Overview**
 <img src="https://branyang02.github.io/images/transformer.png" width="50%" height="auto" margin="20px auto" display="block">
-<span id="fig1" 
+<span id="fig1"
 class="caption">Fig. 1: The transformer architecture
 </span>
 
 #### **Input Embeddings**
 The transformer takes in a sequence of tokens, and converts each token into a vector representation.
 Token embeddings are learned during training, and are used to represent the input tokens.
-Check out Hugging Face's [Tokenizer Tutorial](https://huggingface.co/transformers/tokenizer_summary.html) for more information on tokenization. 
+Check out Hugging Face's [Tokenizer Tutorial](https://huggingface.co/transformers/tokenizer_summary.html) for more information on tokenization.
 
 In this blog post, we define the token embeddings as a matrix $$\\textbf{X} \\in \\mathbb{R}^{n \\times d_{\\text{model}}}$$, where
 $$n$$ is the number of words (sequence length) in the input sequence and $$d_{\\text{model}}$$ is the dimension of the input embeddings.
@@ -96,14 +99,14 @@ class PositionalEncoding(nn.Module):
             token_embeddings: Tensor, shape [seq_len, d_model]
         """
         seq_len, d_model = token_embeddings.size()
-        
+
         # Generate positional encoding dynamically based on seq_len
         position = torch.arange(0, seq_len, dtype=torch.float).unsqueeze(1)
         div_term = torch.exp(torch.arange(0, d_model, 2).float() * -(math.log(10000.0) / d_model))
         encoding = torch.zeros(seq_len, d_model)
         encoding[:, 0::2] = torch.sin(position * div_term)
         encoding[:, 1::2] = torch.cos(position * div_term)
-        
+
         # Add positional encoding to token embedding
         token_embeddings = token_embeddings + encoding.to(token_embeddings.device)
         return token_embeddings
@@ -126,7 +129,6 @@ print("Output: ")
 print(f"Token Embeddings with Positional Encoding Shape: {token_embeddings_with_pos.shape}")
 \`\`\`
 
-
 #### **Attention**
 The attention mechanism is a key component of the transformer architecture.
 It can be described as mapping a **query** and a set of **key-value** pairs to an output, where the query, keys, values, and output are all vectors.
@@ -139,7 +141,7 @@ $$
 \\mathbf{V} &= \\mathbf{Z} \\mathbf{W}^V
 \\end{align*}
 $$
-where $\\mathbf{W}^Q, \\mathbf{W}^K, \\in \\mathbb{R}^{d_{\\text{model}} \\times d_k}$ and $\\mathbf{W}^V \\in \\mathbb{R}^{d_{\\text{model}} \\times d_v}$ are the query, key, and value weight matrices, respectively, 
+where $\\mathbf{W}^Q, \\mathbf{W}^K, \\in \\mathbb{R}^{d_{\\text{model}} \\times d_k}$ and $\\mathbf{W}^V \\in \\mathbb{R}^{d_{\\text{model}} \\times d_v}$ are the query, key, and value weight matrices, respectively,
 and they are learned during training. $$d_k$$ and $$d_v$$ are the dimensions of the query and value vectors, respectively.
 
 Therefore, the sizes of the matrices are:
@@ -162,7 +164,7 @@ class SelfAttention(nn.Module):
         super(SelfAttention, self).__init__()
         self.d_k = d_k
         self.d_v = d_v
-        
+
         # Initialize Query, Key, Value Weight Matrices
         self.W_Q = nn.Linear(d_model, d_k)
         self.W_K = nn.Linear(d_model, d_k)
@@ -202,7 +204,7 @@ First we look at the **_scaled dot-product attention_** mechanism, and then we w
 
 ##### **Scaled Dot-Product Attention**
 <img src="https://branyang02.github.io/images/scaled-dot-product.png" width="30%" height="auto" margin="20px auto" display="block">
-<span id="fig2" 
+<span id="fig2"
 class="caption">Fig. 2: Scaled Dot-Product Attention
 </span>
 
@@ -230,13 +232,13 @@ class ScaledDotProductAttention(nn.Module):
             V: Tensor, shape [seq_len, d_v]
         """
         d_k = Q.size(-1)
-        
+
         # Compute Attention Scores
         scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(d_k)
-        
+
         # Compute Attention Weights
         attention_weights = torch.nn.functional.softmax(scores, dim=-1)
-        
+
         # Compute Attention Output
         attention_output = torch.matmul(attention_weights, V)
         return attention_output
@@ -268,7 +270,7 @@ Each head has its own query, key, and value weight matrices, which are learned d
 The output of each head is concatenated and linearly transformed to produce the final output.
 
 <img src="https://branyang02.github.io/images/MHA.png" width="30%" height="auto" margin="20px auto" display="block">
-<span id="fig3" 
+<span id="fig3"
 class="caption">Fig. 3: Multi-Head Attention
 </span>
 
@@ -309,7 +311,6 @@ import torch
 import torch.nn as nn
 import math
 
-
 class SelfAttention(nn.Module):
     def __init__(self, d_model, d_k, d_v):
         super(SelfAttention, self).__init__()
@@ -332,7 +333,6 @@ class SelfAttention(nn.Module):
         V = self.W_V(Z)
         return Q, K, V
 
-
 class ScaledDotProductAttention(nn.Module):
     def __init__(self):
         super(ScaledDotProductAttention, self).__init__()
@@ -352,7 +352,6 @@ class ScaledDotProductAttention(nn.Module):
         # Compute the Weighted Sum
         attention_output = torch.matmul(attention_weights, V)
         return attention_output
-
 
 class MultiHeadAttention(nn.Module):
     def __init__(self, d_model, d_k, d_v, n_heads):
@@ -383,7 +382,6 @@ class MultiHeadAttention(nn.Module):
         multi_head_output = self.W_O(results)
         return multi_head_output
 
-
 # Usage
 d_model = 512
 seq_length = 32
@@ -403,6 +401,43 @@ output = multi_head_attention(Z)
 print("Output: ")
 print(f"Output Shape: {output.shape}")
 \`\`\`
+
+#### **Add & Norm**
+The Add & Norm layer is a **residual connection** followed by **layer normalization**.
+
+##### **Residual Connection**
+A residual connection involves adding the input of a sub-layer
+(e.g., self-attention or feed-forward network) to its output before passing it to the next layer.
+This technique helps in mitigating the vanishing gradient problem in deep networks, allowing gradients
+to flow directly through the architecture. The operation can be mathematically represented as follows:
+$$
+\\text{Output} = \\text{Input} + \\text{SubLayer}(\\text{Input})
+$$
+where $$\\text{SubLayer}(\\cdot)$$ is an operation performed by either the self-attention mechanism or the feed-forward network within the transformer block.
+
+##### **Layer Normalization**
+After adding the input and output of the sub-layer,
+layer normalization is applied. Layer normalization involves computing the mean and variance used for normalization
+across the features (not across the batch as in batch normalization) for each data point individually.
+It stabilizes the learning process and improves the training speed and effectiveness.
+
+Layer normalization is a function $$\\text{LayerNorm} : \\mathbb{R}^{n \\times d_{\\text{model}}} \\rightarrow \\mathbb{R}^{n \\times d_{\\text{model}}}$$
+$$
+\\text{LayerNorm}(\\mathbf{X}) = \\frac{\\mathbf{X} - \\mu}{\\sqrt{\\sigma^2 + \\epsilon}} \\odot \\gamma + \\beta
+$$
+where $$\\mu$$ and $$\\sigma$$ are the mean and standard deviation of the input tensor $$\\mathbf{X}$$, respectively.
+$\\epsilon$ is a small constant added for numerical stability,
+and $\\gamma$ and $\\beta$ are learnable parameters of the layer normalization that allow for rescaling and recentering the normalized values.
+
+#### **Feed-Forward Network**
+The feed-forward network consists of two linear transformations with a ReLU activation function in between.
+It can be definied as a function $$\\text{FFN} : \\mathbb{R}^{n \\times d_{\\text{model}}} \\rightarrow \\mathbb{R}^{n \\times d_{\\text{model}}}$$
+$$
+\\text{FFN}(\\mathbf{X}) = \\text{ReLU}(\\mathbf{X}\\mathbf{W}_1 + \\mathbf{b}_1)\\mathbf{W}_2 + \\mathbf{b}_2
+$$
+where $$\\mathbf{W}_1 \\in \\mathbb{R}^{d_{\\text{model}} \\times d_{\\text{ff}}}, \\mathbf{b}_1 \\in \\mathbb{R}^{d_{\\text{ff}}}, \\mathbf{W}_2 \\in \\mathbb{R}^{d_{\\text{ff}} \\times d_{\\text{model}}}, \\mathbf{b}_2 \\in \\mathbb{R}^{d_{\\text{model}}},$$
+and $$d_{\\text{ff}}$$ is the dimension of the feed-forward network.
+
 `;
 
 const Transformers = () => {
@@ -432,7 +467,7 @@ const Transformers = () => {
       />
       <div className="blog-content">
         <ReactMarkdown
-          remarkPlugins={[remarkGfm, remarkMath]}
+          remarkPlugins={[remarkGfm, remarkMath, remarkToc]}
           rehypePlugins={[rehypeKatex, rehypeRaw, rehypeHighlight]}
           // eslint-disable-next-line react/no-children-prop
           components={components}
