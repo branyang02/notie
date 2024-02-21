@@ -140,8 +140,7 @@ $$
 \\end{align*}
 $$
 where $\\mathbf{W}^Q, \\mathbf{W}^K, \\in \\mathbb{R}^{d_{\\text{model}} \\times d_k}$ and $\\mathbf{W}^V \\in \\mathbb{R}^{d_{\\text{model}} \\times d_v}$ are the query, key, and value weight matrices, respectively, 
-and they are learned during training.
-In many Transformer implementations, $d_k = d_v = d_{\\text{model}} / h$, where $h$ is the number of heads in the multi-head attention mechanism.
+and they are learned during training. $$d_k$$ and $$d_v$$ are the dimensions of the query and value vectors, respectively.
 
 Therefore, the sizes of the matrices are:
 $$
@@ -182,8 +181,7 @@ class SelfAttention(nn.Module):
 
 # Example Usage
 d_model = 512  # Dimension of the model (i.e., token embeddings)
-n_heads = 8  # Number of heads
-d_k = d_v = d_model // n_heads  # Dimension of the key and value
+d_k = d_v = 64  # Dimension of the key and value
 seq_length = 32  # Length of the input sequence
 
 # Initialize Token Embeddings
@@ -244,9 +242,7 @@ class ScaledDotProductAttention(nn.Module):
         return attention_output
 
 # Example Usage
-d_model = 512  # Dimension of the model (i.e., token embeddings)
-n_heads = 8  # Number of heads
-d_k = d_v = d_model // n_heads  # Dimension of the key and value
+d_k = d_v = 64 # Dimension of the key and value
 seq_length = 32  # Length of the input sequence
 
 # Initialize Q, K, V
@@ -276,9 +272,137 @@ The output of each head is concatenated and linearly transformed to produce the 
 class="caption">Fig. 3: Multi-Head Attention
 </span>
 
+Therefore, we need to redefine the query, key, and value weight matrices for each head:
+$$
+\\begin{align*}
+\\mathbf{W}^Q_i &\\in \\mathbb{R}^{d_{\\text{model}} \\times d_k} \\\\
+\\mathbf{W}^K_i &\\in \\mathbb{R}^{d_{\\text{model}} \\times d_k} \\\\
+\\mathbf{W}^V_i &\\in \\mathbb{R}^{d_{\\text{model}} \\times d_v}
+\\end{align*}
+$$
+where $i = 1, 2, \\ldots, h$. In many Transformer implementations, $d_k = d_v = d_{\\text{model}} / h$, where $h$ is the number of heads.
+
+This means that the query, key, and value matrices for each head are computed as:
+$$
+\\begin{align*}
+\\mathbf{Q}_i &= \\mathbf{Z} \\mathbf{W}^Q_i \\\\
+\\mathbf{K}_i &= \\mathbf{Z} \\mathbf{W}^K_i \\\\
+\\mathbf{V}_i &= \\mathbf{Z} \\mathbf{W}^V_i
+\\end{align*}
+$$
+
+The output of each head is computed as:
+$$
+\\text{head}_i = \\text{Attention}(\\mathbf{Q}_i, \\mathbf{K}_i, \\mathbf{V}_i) \\quad \\text{for} \\quad i = 1, 2, \\ldots, h
+$$
+
+The output of the multi-head attention mechanism is a function $$\\text{MultiHeadAttention} : \\mathbb{R}^{n \\times d_{\\text{model}}} \\rightarrow \\mathbb{R}^{n \\times d_{\\text{model}}}$$
+$$
+\\text{MultiHeadAttention}(\\mathbf{Z}) = \\text{Concat}(\\text{head}_1, \\text{head}_2, \\ldots, \\text{head}_h)\\mathbf{W}^O
+$$
+where $\\mathbf{W}^O \\in \\mathbb{R}^{hd_v \\times d_{\\text{model}}}$ is a learned weight matrix.
+
+Therefore, putting the Attention mechanism and the Multi-Head Attention mechanism together, we get the following code snippet:
+
+\`\`\`execute
+import torch
+import torch.nn as nn
+import math
 
 
+class SelfAttention(nn.Module):
+    def __init__(self, d_model, d_k, d_v):
+        super(SelfAttention, self).__init__()
+        self.d_k = d_k
+        self.d_v = d_v
 
+        # Initialize Query, Key, Value Weight Matrices
+        self.W_Q = nn.Linear(d_model, d_k)
+        self.W_K = nn.Linear(d_model, d_k)
+        self.W_V = nn.Linear(d_model, d_v)
+
+    def forward(self, Z):
+        """
+        Args:
+            Z: Tensor, shape [seq_len, d_model]
+        """
+        # Compute Q, K, V
+        Q = self.W_Q(Z)
+        K = self.W_K(Z)
+        V = self.W_V(Z)
+        return Q, K, V
+
+
+class ScaledDotProductAttention(nn.Module):
+    def __init__(self):
+        super(ScaledDotProductAttention, self).__init__()
+
+    def forward(self, Q, K, V):
+        """
+        Args:
+            Q: Tensor, shape [seq_len, d_k]
+            K: Tensor, shape [seq_len, d_k]
+            V: Tensor, shape [seq_len, d_v]
+        """
+        d_k = Q.size(-1)
+        # Compute Attention Scores
+        scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(d_k)
+        # Compute Attention Scores
+        attention_weights = torch.nn.functional.softmax(scores, dim=-1)
+        # Compute the Weighted Sum
+        attention_output = torch.matmul(attention_weights, V)
+        return attention_output
+
+
+class MultiHeadAttention(nn.Module):
+    def __init__(self, d_model, d_k, d_v, n_heads):
+        super(MultiHeadAttention, self).__init__()
+        self.n_heads = n_heads
+        self.d_k = d_k
+        self.d_v = d_v
+        self.d_model = d_model
+        self.W_O = nn.Linear(n_heads * d_v, d_model)
+        self.attentions = [SelfAttention(d_model, d_k, d_v) for _ in range(n_heads)]
+        self.scaled_dot_product_attentions = [
+            ScaledDotProductAttention() for _ in range(n_heads)
+        ]
+
+    def forward(self, Z):
+        """
+        Args:
+            Z: Tensor, shape [seq_len, d_model]
+        """
+        results = []
+        for i in range(self.n_heads):
+            Q, K, V = self.attentions[i](Z)
+            attention_output = self.scaled_dot_product_attentions[i](Q, K, V)
+            results.append(attention_output)
+        # Concatenate the results
+        results = torch.cat(results, dim=-1)
+        # Apply Linear Transformation
+        multi_head_output = self.W_O(results)
+        return multi_head_output
+
+
+# Usage
+d_model = 512
+seq_length = 32
+h = 8
+d_k = d_v = d_model // h
+
+# Create a random tensor as input
+Z = torch.rand(seq_length, d_model)
+print("Input: ")
+print(f"Z Shape: {Z.shape}\\n")
+
+# Initialize Multi-Head Attention
+multi_head_attention = MultiHeadAttention(d_model, d_k, d_v, h)
+
+# Forward Pass
+output = multi_head_attention(Z)
+print("Output: ")
+print(f"Output Shape: {output.shape}")
+\`\`\`
 `;
 
 const Transformers = () => {
