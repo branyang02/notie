@@ -1,5 +1,5 @@
 import 'katex/dist/katex.min.css'; // Ensure KaTeX CSS is imported to style the equations
-import '../styles/blogPost.css';
+import '../../../styles/blogPost.css';
 
 import { Button, IconButton, LightbulbIcon, MoonIcon } from 'evergreen-ui';
 import { useEffect, useState } from 'react';
@@ -10,7 +10,7 @@ import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 
-import CodeBlock from '../components/CodeBlock';
+import CodeBlock from '../../../components/CodeBlock';
 
 type CodeProps = React.HTMLAttributes<HTMLElement> & { children?: React.ReactNode };
 
@@ -420,7 +420,7 @@ $$
 [^6]: R. O'Connor, "Introduction to Diffusion Models for Machine Learning," in AssemblyAI Blog, 2022.
 `;
 
-const Blog = () => {
+const Sora = () => {
   const [darkMode, setDarkMode] = useState(
     new Date().getHours() >= 18 || new Date().getHours() < 6,
   );
@@ -459,4 +459,4 @@ const Blog = () => {
   );
 };
 
-export default Blog;
+export default Sora;
