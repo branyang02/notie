@@ -126,6 +126,9 @@ $$
 \text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{softmax}\left(\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}\right)\mathbf{V}
 $$
 
+Note that in [Figure 2](#fig2), we have a optional mask that can be applied to the attention weights. This is used in the decoder layers of the transformer to prevent the model from looking at future tokens in the sequence, therefore creating autoregressive generation of the output sequence. We implment this by masking out (setting to $-\infty$) all values in the input of the softmax which correspond to illegal connections.
+
+
 The following code snippet shows how to implement a simple scaled dot-product attention in PyTorch:
 
 ```execute
@@ -191,7 +194,7 @@ ${multi_head_attention}
 In the decoder block of the transformer, we use a masked multi-head attention mechanism to prevent the model from looking at future tokens in the sequence.
 This is done by applying a mask to the scaled dot-product attention mechanism, which sets the attention weights to 0 for the future tokens.
 
-The following code snippet shows how to implement a simple masked multi-head attention in PyTorch:
+We can simply add a mask to the scaled dot-product attention mechanism to get the masked multi-head attention mechanism:
 
 ```execute
 ${masked_multi_head_attention}

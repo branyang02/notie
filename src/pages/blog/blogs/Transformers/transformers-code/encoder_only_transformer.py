@@ -56,16 +56,21 @@ class ScaledDotProductAttention(nn.Module):
     def __init__(self):
         super(ScaledDotProductAttention, self).__init__()
 
-    def forward(self, Q, K, V):
+    def forward(self, Q, K, V, mask=None):
         """
         Args:
             Q: Tensor, shape [seq_len, d_k]
             K: Tensor, shape [seq_len, d_k]
             V: Tensor, shape [seq_len, d_v]
+            mask: Tensor, shape [seq_len, seq_len]
         """
         d_k = Q.size(-1)
         # Compute Attention Scores
         scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(d_k)
+
+        if mask is not None:
+            scores = scores.masked_fill(mask == 0, -1e9)
+
         # Compute Attention Scores
         attention_weights = torch.nn.functional.softmax(scores, dim=-1)
         # Compute the Weighted Sum
