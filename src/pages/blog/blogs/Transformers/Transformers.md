@@ -186,6 +186,18 @@ Therefore, putting the Attention mechanism and the Multi-Head Attention mechanis
 ${multi_head_attention}
 ```
 
+##### **Masked Multi-Head Attention**
+
+In the decoder block of the transformer, we use a masked multi-head attention mechanism to prevent the model from looking at future tokens in the sequence.
+This is done by applying a mask to the scaled dot-product attention mechanism, which sets the attention weights to 0 for the future tokens.
+
+The following code snippet shows how to implement a simple masked multi-head attention in PyTorch:
+
+```execute
+${masked_multi_head_attention}
+```
+
+
 #### **Add & Norm**
 
 The Add & Norm layer is a **residual connection** followed by **layer normalization**.
@@ -264,7 +276,7 @@ The encoder block consists of the following components:
 
 In a encoder-only transformer, the output of the encoder block $\textbf{Z}'$ is then fed to the next encoder block, without passing through the positional encoding again.
 
-The following code snippet shows how to implement the encoder block in PyTorch:
+The following code snippet shows how to implement the encoder block in PyTorch by using the components we have defined earlier:
 
 ```execute
 ${encoder_only_transformer}
