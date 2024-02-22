@@ -1,4 +1,4 @@
-# **Transformer Model in PyTorch**
+# **Transformer: Explained in Math and PyTorch**
 
 <span class="subtitle">
 Date: 2/20/2024 | Author: Brandon Yang
@@ -12,7 +12,7 @@ Date: 2/20/2024 | Author: Brandon Yang
 4. [Attention](#attention)
 5. [Add & Norm](#add-norm)
 6. [Feed-Forward Network](#feed-forward-network)
-7. [Conclusion](#conclusion)
+7. [Encoder Block](#encoder-block)
 
 </details>
 
@@ -74,55 +74,7 @@ $$
 The following code snippet shows how to implement a simple positional encoding in PyTorch:
 
 ```execute
-import torch
-import torch.nn as nn
-import math
-
-
-class PositionalEncoding(nn.Module):
-    def __init__(self, d_model):
-        super(PositionalEncoding, self).__init__()
-        self.d_model = d_model
-
-    def forward(self, token_embeddings):
-        """
-        Args:
-            token_embeddings: Tensor, shape [seq_len, d_model]
-        """
-        seq_len, d_model = token_embeddings.size()
-
-        # Generate positional encoding dynamically based on seq_len
-        position = torch.arange(0, seq_len, dtype=torch.float).unsqueeze(1)
-        div_term = torch.exp(
-            torch.arange(0, d_model, 2).float() * -(math.log(10000.0) / d_model)
-        )
-        encoding = torch.zeros(seq_len, d_model)
-        encoding[:, 0::2] = torch.sin(position * div_term)
-        encoding[:, 1::2] = torch.cos(position * div_term)
-
-        # Add positional encoding to token embedding
-        token_embeddings = token_embeddings + encoding.to(token_embeddings.device)
-        return token_embeddings
-
-
-# Example Usage
-d_model = 512  # Dimension of the model (i.e., token embeddings)
-seq_length = 32  # Length of the input sequence
-
-# Adjust token_embeddings to have a shape [seq_length, d_model]
-token_embeddings = torch.randn(seq_length, d_model)
-print("Input: ")
-print(f"Token Embeddings Shape: {token_embeddings.shape}\n")
-
-# Initialize Positional Encoding
-pos_encoder = PositionalEncoding(d_model)
-
-# Apply Positional Encoding to Token Embeddings
-token_embeddings_with_pos = pos_encoder(token_embeddings)
-print("Output: ")
-print(
-    f"Token Embeddings with Positional Encoding Shape: {token_embeddings_with_pos.shape}"
-)
+${positional_encoding}
 ```
 
 #### **Attention**
@@ -156,50 +108,7 @@ $$
 Let's see what this looks like in code:
 
 ```execute
-import torch
-import torch.nn as nn
-
-
-class SelfAttention(nn.Module):
-    def __init__(self, d_model, d_k, d_v):
-        super(SelfAttention, self).__init__()
-        self.d_k = d_k
-        self.d_v = d_v
-
-        # Initialize Query, Key, Value Weight Matrices
-        self.W_Q = nn.Linear(d_model, d_k)
-        self.W_K = nn.Linear(d_model, d_k)
-        self.W_V = nn.Linear(d_model, d_v)
-
-    def forward(self, Z):
-        """
-        Args:
-            Z: Tensor, shape [seq_len, d_model]
-        """
-        # Compute Q, K, V
-        Q = self.W_Q(Z)
-        K = self.W_K(Z)
-        V = self.W_V(Z)
-        return Q, K, V
-
-
-# Example Usage
-d_model = 512  # Dimension of the model (i.e., token embeddings)
-d_k = d_v = 64  # Dimension of the key and value
-seq_length = 32  # Length of the input sequence
-
-# Initialize Token Embeddings
-Z = torch.randn(seq_length, d_model)
-print("Input: ")
-print(f"Z Shape: {Z.shape}\n")
-
-# Initialize Self-Attention
-self_attention = SelfAttention(d_model, d_k, d_v)
-
-# Apply Self-Attention
-Q, K, V = self_attention(Z)
-print("Output: ")
-print(f"Q Shape: {Q.shape} \nK Shape: {K.shape} \nV Shape: {V.shape}")
+${self_attention}
 ```
 
 First we look at the **_scaled dot-product attention_** mechanism, and then we will look at the **_multi-head attention_** mechanism.
@@ -220,53 +129,7 @@ $$
 The following code snippet shows how to implement a simple scaled dot-product attention in PyTorch:
 
 ```execute
-import torch
-import math
-import torch.nn as nn
-
-
-class ScaledDotProductAttention(nn.Module):
-    def __init__(self):
-        super(ScaledDotProductAttention, self).__init__()
-
-    def forward(self, Q, K, V):
-        """
-        Args:
-            Q: Tensor, shape [seq_len, d_k]
-            K: Tensor, shape [seq_len, d_k]
-            V: Tensor, shape [seq_len, d_v]
-        """
-        d_k = Q.size(-1)
-
-        # Compute Attention Scores
-        scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(d_k)
-
-        # Compute Attention Weights
-        attention_weights = torch.nn.functional.softmax(scores, dim=-1)
-
-        # Compute Attention Output
-        attention_output = torch.matmul(attention_weights, V)
-        return attention_output
-
-
-# Example Usage
-d_k = d_v = 64  # Dimension of the key and value
-seq_length = 32  # Length of the input sequence
-
-# Initialize Q, K, V
-Q = torch.randn(seq_length, d_k)
-K = torch.randn(seq_length, d_k)
-V = torch.randn(seq_length, d_v)
-print("Input: ")
-print(f"Q Shape: {Q.shape} \nK Shape: {K.shape} \nV Shape: {V.shape}\n")
-
-# Initialize Scaled Dot-Product Attention
-scaled_dot_product_attention = ScaledDotProductAttention()
-
-# Apply Scaled Dot-Product Attention
-attention_output = scaled_dot_product_attention(Q, K, V)
-print("Output: ")
-print(f"Scaled Dot-Product Attention Output Shape: {attention_output.shape}")
+${scaled_dot_product_attention}
 ```
 
 ##### **Multi-Head Attention**
@@ -320,103 +183,7 @@ where $\mathbf{W}^O \in \mathbb{R}^{hd_v \times d_{\text{model}}}$ is a learned 
 Therefore, putting the Attention mechanism and the Multi-Head Attention mechanism together, we get the following code snippet:
 
 ```execute
-import torch
-import torch.nn as nn
-import math
-
-
-class SelfAttention(nn.Module):
-    def __init__(self, d_model, d_k, d_v):
-        super(SelfAttention, self).__init__()
-        self.d_k = d_k
-        self.d_v = d_v
-
-        # Initialize Query, Key, Value Weight Matrices
-        self.W_Q = nn.Linear(d_model, d_k)
-        self.W_K = nn.Linear(d_model, d_k)
-        self.W_V = nn.Linear(d_model, d_v)
-
-    def forward(self, Z):
-        """
-        Args:
-            Z: Tensor, shape [seq_len, d_model]
-        """
-        # Compute Q, K, V
-        Q = self.W_Q(Z)
-        K = self.W_K(Z)
-        V = self.W_V(Z)
-        return Q, K, V
-
-
-class ScaledDotProductAttention(nn.Module):
-    def __init__(self):
-        super(ScaledDotProductAttention, self).__init__()
-
-    def forward(self, Q, K, V):
-        """
-        Args:
-            Q: Tensor, shape [seq_len, d_k]
-            K: Tensor, shape [seq_len, d_k]
-            V: Tensor, shape [seq_len, d_v]
-        """
-        d_k = Q.size(-1)
-        # Compute Attention Scores
-        scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(d_k)
-        # Compute Attention Scores
-        attention_weights = torch.nn.functional.softmax(scores, dim=-1)
-        # Compute the Weighted Sum
-        attention_output = torch.matmul(attention_weights, V)
-        return attention_output
-
-
-class MultiHeadAttention(nn.Module):
-    def __init__(self, d_model, d_k, d_v, n_heads):
-        super(MultiHeadAttention, self).__init__()
-        self.n_heads = n_heads
-        self.d_k = d_k
-        self.d_v = d_v
-        self.d_model = d_model
-        self.W_O = nn.Linear(n_heads * d_v, d_model)
-        self.attentions = [SelfAttention(d_model, d_k, d_v) for _ in range(n_heads)]
-        self.scaled_dot_product_attentions = [
-            ScaledDotProductAttention() for _ in range(n_heads)
-        ]
-
-    def forward(self, Z):
-        """
-        Args:
-            Z: Tensor, shape [seq_len, d_model]
-        """
-        results = []
-        for i in range(self.n_heads):
-            Q, K, V = self.attentions[i](Z)
-            attention_output = self.scaled_dot_product_attentions[i](Q, K, V)
-            results.append(attention_output)
-        # Concatenate the results
-        results = torch.cat(results, dim=-1)
-        # Apply Linear Transformation
-        multi_head_output = self.W_O(results)
-        return multi_head_output
-
-
-# Usage
-d_model = 512
-seq_length = 32
-h = 8
-d_k = d_v = d_model // h
-
-# Create a random tensor as input
-Z = torch.rand(seq_length, d_model)
-print("Input: ")
-print(f"Z Shape: {Z.shape}\n")
-
-# Initialize Multi-Head Attention
-multi_head_attention = MultiHeadAttention(d_model, d_k, d_v, h)
-
-# Forward Pass
-output = multi_head_attention(Z)
-print("Output: ")
-print(f"Output Shape: {output.shape}")
+${multi_head_attention}
 ```
 
 #### **Add & Norm**
@@ -453,6 +220,12 @@ where $$\mu$$ and $$\sigma$$ are the mean and standard deviation of the input te
 $\epsilon$ is a small constant added for numerical stability,
 and $\gamma$ and $\beta$ are learnable parameters of the layer normalization that allow for rescaling and recentering the normalized values.
 
+Therefore, to perform normalization with residual connection, we can simply add the residual connection to the output of the sub-layer and apply layer normalization to the sum.
+
+$$
+\text{LayerNorm}(\text{Input} + \text{SubLayer}(\text{Input}))
+$$
+
 #### **Feed-Forward Network**
 
 The feed-forward network consists of two linear transformations with a ReLU activation function in between.
@@ -468,54 +241,31 @@ and $$d_{\text{ff}}$$ is the dimension of the feed-forward network.
 The following code snippet shows how to implement a simple feed-forward network in PyTorch:
 
 ```execute
-import torch
-import torch.nn as nn
-
-
-class FeedForwardNetwork(nn.Module):
-    def __init__(self, d_model, d_ff):
-        super(FeedForwardNetwork, self).__init__()
-        self.linear1 = nn.Linear(d_model, d_ff)
-        self.linear2 = nn.Linear(d_ff, d_model)
-        self.relu = nn.ReLU()
-
-    def forward(self, X):
-        """
-        Args:
-            X: Tensor, shape [seq_len, d_model]
-        """
-        output = self.linear2(self.relu(self.linear1(X)))
-        return output
-
-
-# Example Usage
-d_model = 512  # Dimension of the model (i.e., token embeddings)
-d_ff = 2048  # Dimension of the feed-forward network
-seq_length = 32  # Length of the input sequence
-
-# Initialize Token Embeddings
-X = torch.randn(seq_length, d_model)
-print("Input: ")
-print(f"X Shape: {X.shape}\n")
-
-# Initialize Feed-Forward Network
-feed_forward_network = FeedForwardNetwork(d_model, d_ff)
-
-# Apply Feed-Forward Network
-output = feed_forward_network(X)
-print("Output: ")
-print(f"Output Shape: {output.shape}")
+${ffn}
 ```
 
 #### **Encoder Block**
 
 We have now fully covered all components needed to build the Encoder block of the transformer.
-The decoder block consists of the following components:
 
-$$
-\begin{CD}
-    \text{A}
-    \\@AAA\\
-    \text{This is a sentence...''}
- \end{CD}
-$$
+<img src="https://branyang02.github.io/images/encoder-only.jpg" width="30%" height="auto" margin="20px auto" display="block">
+<span id="fig1"
+class="caption">Fig. 1: Encoder Block
+</span>
+
+The encoder block consists of the following components:
+
+1. **Input Embeddings**: We start with an input $\textbf{X} \in \mathbb{R}^{n \times d_{\text{model}}}$, where $n$ is the number of words (sequence length) in the input sequence and $d_{\text{model}}$ is the dimension of the input embeddings.
+2. **Positional Encoding**: We add positional encodings to the token embeddings to capture the position of each token in the sequence to get the input embeddings $\textbf{Z} = \textbf{X} + \textbf{PE}$, where $\textbf{PE} \in \mathbb{R}^{n \times d_{\text{model}}}$ is the positional encoding matrix, and $\textbf{Z} \in \mathbb{R}^{n \times d_{\text{model}}}$.
+3. **Multi-Head Attention**: We apply the multi-head attention mechanism to the input embeddings $\textbf{Z}$ to get the attention output $\textbf{A} = \text{MultiHeadAttention}(\textbf{Z})$, where $\textbf{A} \in \mathbb{R}^{n \times d_{\text{model}}}$.
+4. **Add & Norm**: We add the input embeddings $\textbf{Z}$ to the attention output $\textbf{A}$ and apply layer normalization to get the normalized output $\textbf{N} = \text{LayerNorm}(\textbf{Z} + \textbf{A})$, where $\textbf{N} \in \mathbb{R}^{n \times d_{\text{model}}}$.
+5. **Feed-Forward Network**: We apply the feed-forward network to the normalized output $\textbf{N}$ to get the feed-forward output $\textbf{O} = \text{FFN}(\textbf{N})$, where $\textbf{O} \in \mathbb{R}^{n \times d_{\text{model}}}$.
+6. **Add & Norm**: We add the normalized output $\textbf{N}$ to the feed-forward output $\textbf{O}$ and apply layer normalization to get the final output $\textbf{Z}' = \text{LayerNorm}(\textbf{N} + \textbf{O})$, where $\textbf{Z}' \in \mathbb{R}^{n \times d_{\text{model}}}$.
+
+In a encoder-only transformer, the output of the encoder block $\textbf{Z}'$ is then fed to the next encoder block, without passing through the positional encoding again.
+
+The following code snippet shows how to implement the encoder block in PyTorch:
+
+```execute
+${encoder_only_transformer}
+```

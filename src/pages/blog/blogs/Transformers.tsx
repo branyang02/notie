@@ -12,6 +12,13 @@ import remarkMath from 'remark-math';
 import remarkSlug from 'remark-slug';
 
 import CodeBlock from '../../../components/CodeBlock';
+import encoder_only_transformer from './transformer-code/encoder_only_transformer.py?raw';
+import ffn from './transformer-code/ffn.py?raw';
+import multi_head_attention from './transformer-code/multi_head_attention.py?raw';
+import positional_encoding from './transformer-code/positional_encoding.py?raw';
+import scaled_dot_product_attention from './transformer-code/scaled_dot_product_attention.py?raw';
+import self_attention from './transformer-code/self_attention.py?raw';
+import transformersMd from './Transformers.md?raw';
 
 type CodeProps = React.HTMLAttributes<HTMLElement> & { children?: React.ReactNode };
 
@@ -21,8 +28,17 @@ const components = {
   },
 };
 
-import transformersMd from './Transformers.md?raw';
-const markdownContent = transformersMd;
+function processMarkdown(markdownContent: string): string {
+  return markdownContent
+    .replace(/\$\{encoder_only_transformer\}/g, encoder_only_transformer)
+    .replace(/\$\{ffn\}/g, ffn)
+    .replace(/\$\{multi_head_attention\}/g, multi_head_attention)
+    .replace(/\$\{positional_encoding\}/g, positional_encoding)
+    .replace(/\$\{self_attention\}/g, self_attention)
+    .replace(/\$\{scaled_dot_product_attention\}/g, scaled_dot_product_attention);
+}
+
+const markdownContent = processMarkdown(transformersMd);
 
 const Transformers = () => {
   const [darkMode, setDarkMode] = useState(
