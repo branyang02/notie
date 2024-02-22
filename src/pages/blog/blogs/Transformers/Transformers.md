@@ -126,10 +126,14 @@ $$
 \text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{softmax}\left(\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}\right)\mathbf{V}
 $$
 
-Note that in [Figure 2](#fig2), we have a optional mask that can be applied to the attention weights. This is used in the decoder layers of the transformer to prevent the model from looking at future tokens in the sequence, therefore creating autoregressive generation of the output sequence. We implment this by masking out (setting to $-\infty$) all values in the input of the softmax which correspond to illegal connections.
+Note that in [Figure 2](#fig2), we have a optional mask that can be applied to the attention weights. This is used in the decoder layers of the transformer to prevent the model from looking at future tokens in the sequence, therefore creating autoregressive generation of the output sequence. We implment this by masking out (setting to $-\infty$) all values in the input of the softmax which correspond to illegal connections. [Figure 3](#fig3) shows the masked attention mechanism.
 
+![](https://branyang02.github.io/images/masked-attention.png)
+<span id="fig3"
+class="caption">Fig. 3: Masked Scaled Dot-Product Attention. (Source: Yu Meng, <a href="https://yumeng5.github.io/teaching/2024-spring-cs6501">UVA CS 6501 NLP</a>)
+</span>
 
-The following code snippet shows how to implement a simple scaled dot-product attention in PyTorch:
+The following code snippet shows how to implement a simple scaled dot-product attention in PyTorch. We will use smaller sequence length and dimension sizes for demonstration purposes. 
 
 ```execute
 ${scaled_dot_product_attention}
@@ -188,18 +192,6 @@ Therefore, putting the Attention mechanism and the Multi-Head Attention mechanis
 ```execute
 ${multi_head_attention}
 ```
-
-##### **Masked Multi-Head Attention**
-
-In the decoder block of the transformer, we use a masked multi-head attention mechanism to prevent the model from looking at future tokens in the sequence.
-This is done by applying a mask to the scaled dot-product attention mechanism, which sets the attention weights to 0 for the future tokens.
-
-We can simply add a mask to the scaled dot-product attention mechanism to get the masked multi-head attention mechanism:
-
-```execute
-${masked_multi_head_attention}
-```
-
 
 #### **Add & Norm**
 
