@@ -68,7 +68,7 @@ const Transformers = () => {
       <div className="blog-content">
         <ReactMarkdown
           // eslint-disable-next-line react/no-children-prop
-          remarkPlugins={[remarkGfm, remarkMath, remarkSlug]}
+          remarkPlugins={[remarkGfm, remarkMath]}
           rehypePlugins={[rehypeKatex, rehypeRaw, rehypeHighlight]}
           // eslint-disable-next-line react/no-children-prop
           components={components}
