@@ -7,9 +7,9 @@ import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
+import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
-import remarkSlug from 'remark-slug';
 
 import CodeBlock from '../../../components/CodeBlock';
 import encoder_only_transformer from './transformer-code/encoder_only_transformer.py?raw';
@@ -69,7 +69,7 @@ const Transformers = () => {
         <ReactMarkdown
           // eslint-disable-next-line react/no-children-prop
           remarkPlugins={[remarkGfm, remarkMath]}
-          rehypePlugins={[rehypeKatex, rehypeRaw, rehypeHighlight]}
+          rehypePlugins={[rehypeKatex, rehypeRaw, rehypeHighlight, rehypeSlug]}
           // eslint-disable-next-line react/no-children-prop
           components={components}
           // eslint-disable-next-line react/no-children-prop

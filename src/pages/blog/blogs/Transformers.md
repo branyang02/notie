@@ -4,6 +4,18 @@
 Date: 2/20/2024 | Author: Brandon Yang
 </span>
 
+<details><summary>Table of Content</summary>
+
+1. [Architecture Overview](#architecture-overview)
+2. [Input Embeddings](#input-embeddings)
+3. [Positional Encoding](#positional-encoding)
+4. [Attention](#attention)
+5. [Add & Norm](#add--norm)
+6. [Feed-Forward Network](#feed-forward-network)
+7. [Encoder Block](#encoder-block)
+
+</details>
+
 #### **Introduction**
 
 There are **_a lot_** of resources out there that explain transformers, but I wanted
