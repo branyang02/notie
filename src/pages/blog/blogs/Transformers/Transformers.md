@@ -13,6 +13,9 @@ Date: 2/20/2024 | Author: Brandon Yang
 5. [Add & Norm](#add--norm)
 6. [Feed-Forward Network](#feed-forward-network)
 7. [Encoder Block](#encoder-block)
+8. [Encoder-Only Transformer](#encoder-only-transformer)
+9. [Decoder Block](#decoder-block)
+10. [Decoder-Only Transformer](#decoder-only-transformer)
 
 </details>
 
