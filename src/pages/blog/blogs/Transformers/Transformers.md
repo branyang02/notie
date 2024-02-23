@@ -133,7 +133,7 @@ Note that in [Figure 2](#fig2), we have a optional mask that can be applied to t
 class="caption">Fig. 3: Masked Scaled Dot-Product Attention. (Source: Yu Meng, <a href="https://yumeng5.github.io/teaching/2024-spring-cs6501">UVA CS 6501 NLP</a>)
 </span>
 
-The following code snippet shows how to implement a simple scaled dot-product attention in PyTorch. We will use smaller sequence length and dimension sizes for demonstration purposes. 
+The following code snippet shows how to implement a simple scaled dot-product attention in PyTorch. We will use smaller sequence length and dimension sizes for demonstration purposes.
 
 ```execute
 ${scaled_dot_product_attention}
@@ -269,10 +269,53 @@ The encoder block consists of the following components:
 5. **Feed-Forward Network**: We apply the feed-forward network to the normalized output $\textbf{N}$ to get the feed-forward output $\textbf{O} = \text{FFN}(\textbf{N})$, where $\textbf{O} \in \mathbb{R}^{n \times d_{\text{model}}}$.
 6. **Add & Norm**: We add the normalized output $\textbf{N}$ to the feed-forward output $\textbf{O}$ and apply layer normalization to get the final output $\textbf{Z}' = \text{LayerNorm}(\textbf{N} + \textbf{O})$, where $\textbf{Z}' \in \mathbb{R}^{n \times d_{\text{model}}}$.
 
-In a encoder-only transformer, the output of the encoder block $\textbf{Z}'$ is then fed to the next encoder block, without passing through the positional encoding again.
+After we get the output $\textbf{Z}'$ from a single encoder block, we reuse it as the input to the next encoder block without passing through the positional encoding again. Suppose we have $\text{N\_enc}$ encoder blocks, we can denote the output of the $k$-th encoder block as $\textbf{Z}_k'$, where $k = 1, 2, \ldots, \text{N\_enc}$.
+
+#### **Encoder-Only Transformer**
 
 The following code snippet shows how to implement the encoder block in PyTorch by using the components we have defined earlier:
 
 ```execute
 ${encoder_only_transformer}
 ```
+
+#### **Decoder Block**
+
+The decoder block is similar to the encoder block, but with an additional multi-head attention mechanism that takes the output of the encoder block as input. The decoder is also autoregressive, meaning that it generates the output sequence one token at a time, and uses the previously generated tokens as input to generate the next token.
+
+The decoder block consists of the following components:
+
+1. **Input Embeddings**: Suppose we have already generated the first $i$ tokens of the output sequence. We start with an input $\textbf{Y} \in \mathbb{R}^{i \times d_{\text{model}}}$, where $i$ is the number of tokens generated so far, and $d_{\text{model}}$ is the dimension of the input embeddings.
+2. **Positional Encoding**: We add positional encodings to the token embeddings to capture the position of each token in the sequence to get the input embeddings $\textbf{Z} = \textbf{Y} + \textbf{PE}$, where $\textbf{PE} \in \mathbb{R}^{i \times d_{\text{model}}}$ is the positional encoding matrix, and $\textbf{Z} \in \mathbb{R}^{i \times d_{\text{model}}}$.
+3. **Masked Multi-Head Attention**: We apply the masked multi-head attention mechanism to the input embeddings $\textbf{Z}$ to get the attention output $\textbf{A} = \text{MaskedMultiHeadAttention}(\textbf{Z})$, where $\textbf{A} \in \mathbb{R}^{i \times d_{\text{model}}}$.
+4. **Add & Norm**: We add the input embeddings $\textbf{Z}$ to the attention output $\textbf{A}$ and apply layer normalization to get the normalized output $\textbf{N} = \text{LayerNorm}(\textbf{Z} + \textbf{A})$, where $\textbf{N} \in \mathbb{R}^{i \times d_{\text{model}}}$.
+5. **Multi-Head Attention**: We apply the multi-head attention mechanism to the normalized output $\textbf{N}$, where $\textbf{A}' = \text{MultiHeadAttention}(\textbf{N})$, where $\textbf{A}' \in \mathbb{R}^{i \times d_{\text{model}}}$. Optionally, we can also pass the output of the final encoder block to the multi-head attention mechanism to get the attention output $\textbf{A}' = \text{MultiHeadAttention}(\textbf{N}, \textbf{Z}'_{N\_enc})$, where $\textbf{A}' \in \mathbb{R}^{i \times d_{\text{model}}}$. This is also know as the **_encoder-decoder attention_** mechanism. In this case, the scaled dot-product attention takes the **query** from the previous layer $\textbf{N}$ and the **key** and **value** from the output of the encoder block $\textbf{Z}'_{N\_enc}$.
+6. **Add & Norm**: We add the normalized output $\textbf{N}$ to the attention output $\textbf{A}'$ and apply layer normalization to get the output $\textbf{M} = \text{LayerNorm}(\textbf{N} + \textbf{A}')$, where $\textbf{M} \in \mathbb{R}^{i \times d_{\text{model}}}$.
+7. **Feed-Forward Network**: We apply the feed-forward network to the output $\textbf{M}$ to get the feed-forward output $\textbf{O} = \text{FFN}(\textbf{M})$, where $\textbf{O} \in \mathbb{R}^{i \times d_{\text{model}}}$.
+8. **Add & Norm**: We add the output $\textbf{M}$ to the feed-forward output $\textbf{O}$ and apply layer normalization to get the final output $\textbf{Y}' = \text{LayerNorm}(\textbf{M} + \textbf{O})$, where $\textbf{Y}' \in \mathbb{R}^{i \times d_{\text{model}}}$.
+
+After we get output $\textbf{Y}'$ from a single decoder block, we reuse it as the input to the next decoder block without passing through the positional encoding again. Suppose we have $\text{N\_dec}$ decoder blocks, we can denote the output of the $k$-th decoder block as $\textbf{Y}_k'$, where $k = 1, 2, \ldots, \text{N\_dec}$.
+
+#### **Decoder-Only Transformer**
+
+To perform auto-regressive generation using a decoder-only transformer, we need to convert the last decoder block output $\textbf{Y}_{\text{N\_dec}}'$ to a probability distribution over the vocabulary. We can do this by applying a linear transformation followed by a softmax activation function to the output $\textbf{Y}_{\text{N\_dec}}'$.
+
+![](https://i.stack.imgur.com/bWnx0.png)
+<span id="fig4"
+class="caption">Fig. 4: Linear transformation followed by a softmax activation function. (Source: <a href="https://ai.stackexchange.com/questions/40179/how-does-the-decoder-only-transformer-architecture-work">Stack Exchange</a>)
+
+This can be done in the following steps:
+
+1. Given final decoder block output $\textbf{Y}_{\text{N\_dec}}' \in \mathbb{R}^{i \times d_{\text{model}}}$, where $i$ is the number of tokens generated so far, and $d_{\text{model}}$ is the dimension of the input embeddings, we apply a linear transformation to get the logits:
+   $$
+   \textbf{L} = \textbf{Y}_{\text{N\_dec}}'\textbf{W}^L + \textbf{b}^L
+   $$
+   where $\textbf{W}^L \in \mathbb{R}^{d_{\text{model}} \times V}$ and $\textbf{b}^L \in \mathbb{R}^{V}$ are the weight and bias matrices of the linear transformation, respectively, and $V$ is the size of the vocabulary.
+2. We apply a softmax activation function to the logits to get the probability distribution over the vocabulary:
+   $$
+   \textbf{P} = \text{softmax}(\textbf{L})
+   $$
+   where $\textbf{P} \in \mathbb{R}^{i \times V}$ is the probability distribution over the vocabulary.
+3. We can then sample the next token from the probability distribution $\textbf{P}$ to generate the next token in the output sequence.
+
+This process is repeated until the end-of-sequence token is generated, or until a maximum sequence length is reached.
