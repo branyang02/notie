@@ -402,3 +402,11 @@ This can be done in the following steps:
 3. We can then sample the next token from the probability distribution $\textbf{P}$ to generate the next token in the output sequence.
 
 This process is repeated until the end-of-sequence token is generated, or until a maximum sequence length is reached.
+
+The following code snippet shows how to implement the decoder block in PyTorch by using the components we have defined earlier:
+
+```execute
+${decoder_only_transformer}
+```
+
+Note that this example is purely for inference and architectural demonstration purposes only, and weights are randomized. In practice, the weights are learned during training.

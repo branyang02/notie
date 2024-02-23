@@ -13,6 +13,7 @@ import remarkMath from 'remark-math';
 
 import CodeBlock from '../../../../components/CodeBlock';
 import transformersMd from './Transformers.md?raw';
+import decoder_only_transformer from './transformers-code/decoder_only_transformer.py?raw';
 import encoder_only_transformer from './transformers-code/encoder_only_transformer.py?raw';
 import ffn from './transformers-code/ffn.py?raw';
 import multi_head_attention from './transformers-code/multi_head_attention.py?raw';
@@ -35,7 +36,8 @@ function processMarkdown(markdownContent: string): string {
     .replace(/\$\{multi_head_attention\}/g, multi_head_attention)
     .replace(/\$\{positional_encoding\}/g, positional_encoding)
     .replace(/\$\{self_attention\}/g, self_attention)
-    .replace(/\$\{scaled_dot_product_attention\}/g, scaled_dot_product_attention);
+    .replace(/\$\{scaled_dot_product_attention\}/g, scaled_dot_product_attention)
+    .replace(/\$\{decoder_only_transformer\}/g, decoder_only_transformer);
 }
 
 const markdownContent = processMarkdown(transformersMd);
