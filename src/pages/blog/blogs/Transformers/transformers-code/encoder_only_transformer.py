@@ -161,6 +161,7 @@ class EncoderBlock(nn.Module):
 
         # Apply Layer Normalization
         layer_norm_output2 = self.layer_norm2(layer_norm_output1 + feed_forward_output)
+
         return layer_norm_output2
 
 

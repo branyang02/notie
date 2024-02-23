@@ -13,15 +13,28 @@ Date: 2/20/2024 | Author: Brandon Yang
 5. [Add & Norm](#add--norm)
 6. [Feed-Forward Network](#feed-forward-network)
 7. [Encoder Block](#encoder-block)
+8. [Encoder-Only Transformer](#encoder-only-transformer)
+9. [Decoder Block](#decoder-block)
+10. [Decoder-Only Transformer](#decoder-only-transformer)
 
 </details>
 
 #### **Introduction**
 
-There are **_a lot_** of resources out there that explain transformers, but I wanted
-to write my own blog post to help me understand the transformer model better.
-In this blog post, I will explain the transformer model and its components, and I will provide
-**live**, **runnable** code snippets to show how to implement the transformer model in PyTorch.
+There are **_a lot_** of resources out there that explain transformers[^1], but I wanted to write my own blog post to explain transformers in a way that I understand.
+
+**This blog post is NOT**:
+
+- A high-level comprehensive guide to transformers. For that, I recommend reading [Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/) by Jay Alammar.
+- A tutorial on how to use Transformers in Hugging Face's [transformers](https://huggingface.co/transformers/) library. For that, I recommend reading the [official documentation](https://huggingface.co/transformers/).
+- A tutorial on how to use the _nn.Transformer_ module in PyTorch. For that, I recommend reading the [official documentation](https://pytorch.org/docs/stable/generated/torch.nn.Transformer.html). Instead, we will be implementing the transformer model from scratch using basic PyTorch operations.
+- A tutorial on how to train a transformer model. We will only cover the arthitecture, and how each component is interconnected.
+- Showcase the performance of the transformer model on a specific task.
+
+**This blog post is**:
+
+- **A mathematical explaination** of the transformer model and its components, where I will clearly define each component and explain how they are interconnected.
+- Contains **live, runnable** code snippets to show how to implement the transformer model in **PyTorch** using basic operations.
 
 #### **Architecture Overview**
 
@@ -263,11 +276,29 @@ class="caption">Fig. 1: Encoder Block
 The encoder block consists of the following components:
 
 1. **Input Embeddings**: We start with an input $\textbf{X} \in \mathbb{R}^{n \times d_{\text{model}}}$, where $n$ is the number of words (sequence length) in the input sequence and $d_{\text{model}}$ is the dimension of the input embeddings.
-2. **Positional Encoding**: We add positional encodings to the token embeddings to capture the position of each token in the sequence to get the input embeddings $\textbf{Z} = \textbf{X} + \textbf{PE}$, where $\textbf{PE} \in \mathbb{R}^{n \times d_{\text{model}}}$ is the positional encoding matrix, and $\textbf{Z} \in \mathbb{R}^{n \times d_{\text{model}}}$.
-3. **Multi-Head Attention**: We apply the multi-head attention mechanism to the input embeddings $\textbf{Z}$ to get the attention output $\textbf{A} = \text{MultiHeadAttention}(\textbf{Z})$, where $\textbf{A} \in \mathbb{R}^{n \times d_{\text{model}}}$.
-4. **Add & Norm**: We add the input embeddings $\textbf{Z}$ to the attention output $\textbf{A}$ and apply layer normalization to get the normalized output $\textbf{N} = \text{LayerNorm}(\textbf{Z} + \textbf{A})$, where $\textbf{N} \in \mathbb{R}^{n \times d_{\text{model}}}$.
-5. **Feed-Forward Network**: We apply the feed-forward network to the normalized output $\textbf{N}$ to get the feed-forward output $\textbf{O} = \text{FFN}(\textbf{N})$, where $\textbf{O} \in \mathbb{R}^{n \times d_{\text{model}}}$.
-6. **Add & Norm**: We add the normalized output $\textbf{N}$ to the feed-forward output $\textbf{O}$ and apply layer normalization to get the final output $\textbf{Z}' = \text{LayerNorm}(\textbf{N} + \textbf{O})$, where $\textbf{Z}' \in \mathbb{R}^{n \times d_{\text{model}}}$.
+   $$
+   \textbf{X} \in \mathbb{R}^{n \times d_{\text{model}}}
+   $$
+2. **Positional Encoding**: We add positional encodings to the token embeddings to capture the position of each token in the sequence to get the input embeddings $\textbf{Z}$:
+   $$
+   \textbf{Z} = \textbf{X} + \textbf{PE}, \quad \textbf{Z} \in \mathbb{R}^{n \times d_{\text{model}}}, \quad \textbf{PE} \in \mathbb{R}^{n \times d_{\text{model}}}
+   $$
+3. **Multi-Head Attention**: We apply the multi-head attention mechanism to the input embeddings $\textbf{Z}$ to get the attention output $\textbf{A}$:
+   $$
+   \textbf{A} = \text{MultiHeadAttention}(\textbf{Z}), \quad \textbf{A} \in \mathbb{R}^{n \times d_{\text{model}}}
+   $$
+4. **Add & Norm**: We add the input embeddings $\textbf{Z}$ to the attention output $\textbf{A}$ and apply layer normalization to get the normalized output $\textbf{N}$:
+   $$
+   \textbf{N} = \text{LayerNorm}(\textbf{Z} + \textbf{A}), \quad \textbf{N} \in \mathbb{R}^{n \times d_{\text{model}}}
+   $$
+5. **Feed-Forward Network**: We apply the feed-forward network to the normalized output $\textbf{N}$ to get the feed-forward output $\textbf{O}$:
+   $$
+   \textbf{O} = \text{FFN}(\textbf{N}), \quad \textbf{O} \in \mathbb{R}^{n \times d_{\text{model}}}
+   $$
+6. **Add & Norm**: We add the normalized output $\textbf{N}$ to the feed-forward output $\textbf{O}$ and apply layer normalization to get the final output $\textbf{Z}'$:
+   $$
+   \textbf{Z}' = \text{LayerNorm}(\textbf{N} + \textbf{O}), \quad \textbf{Z}' \in \mathbb{R}^{n \times d_{\text{model}}}
+   $$
 
 After we get the output $\textbf{Z}'$ from a single encoder block, we reuse it as the input to the next encoder block without passing through the positional encoding again. Suppose we have $\text{N\_enc}$ encoder blocks, we can denote the output of the $k$-th encoder block as $\textbf{Z}_k'$, where $k = 1, 2, \ldots, \text{N\_enc}$.
 
@@ -285,14 +316,79 @@ The decoder block is similar to the encoder block, but with an additional multi-
 
 The decoder block consists of the following components:
 
-1. **Input Embeddings**: Suppose we have already generated the first $i$ tokens of the output sequence. We start with an input $\textbf{Y} \in \mathbb{R}^{i \times d_{\text{model}}}$, where $i$ is the number of tokens generated so far, and $d_{\text{model}}$ is the dimension of the input embeddings.
-2. **Positional Encoding**: We add positional encodings to the token embeddings to capture the position of each token in the sequence to get the input embeddings $\textbf{Z} = \textbf{Y} + \textbf{PE}$, where $\textbf{PE} \in \mathbb{R}^{i \times d_{\text{model}}}$ is the positional encoding matrix, and $\textbf{Z} \in \mathbb{R}^{i \times d_{\text{model}}}$.
-3. **Masked Multi-Head Attention**: We apply the masked multi-head attention mechanism to the input embeddings $\textbf{Z}$ to get the attention output $\textbf{A} = \text{MaskedMultiHeadAttention}(\textbf{Z})$, where $\textbf{A} \in \mathbb{R}^{i \times d_{\text{model}}}$.
-4. **Add & Norm**: We add the input embeddings $\textbf{Z}$ to the attention output $\textbf{A}$ and apply layer normalization to get the normalized output $\textbf{N} = \text{LayerNorm}(\textbf{Z} + \textbf{A})$, where $\textbf{N} \in \mathbb{R}^{i \times d_{\text{model}}}$.
-5. **Multi-Head Attention**: We apply the multi-head attention mechanism to the normalized output $\textbf{N}$, where $\textbf{A}' = \text{MultiHeadAttention}(\textbf{N})$, where $\textbf{A}' \in \mathbb{R}^{i \times d_{\text{model}}}$. Optionally, we can also pass the output of the final encoder block to the multi-head attention mechanism to get the attention output $\textbf{A}' = \text{MultiHeadAttention}(\textbf{N}, \textbf{Z}'_{N\_enc})$, where $\textbf{A}' \in \mathbb{R}^{i \times d_{\text{model}}}$. This is also know as the **_encoder-decoder attention_** mechanism. In this case, the scaled dot-product attention takes the **query** from the previous layer $\textbf{N}$ and the **key** and **value** from the output of the encoder block $\textbf{Z}'_{N\_enc}$.
-6. **Add & Norm**: We add the normalized output $\textbf{N}$ to the attention output $\textbf{A}'$ and apply layer normalization to get the output $\textbf{M} = \text{LayerNorm}(\textbf{N} + \textbf{A}')$, where $\textbf{M} \in \mathbb{R}^{i \times d_{\text{model}}}$.
-7. **Feed-Forward Network**: We apply the feed-forward network to the output $\textbf{M}$ to get the feed-forward output $\textbf{O} = \text{FFN}(\textbf{M})$, where $\textbf{O} \in \mathbb{R}^{i \times d_{\text{model}}}$.
-8. **Add & Norm**: We add the output $\textbf{M}$ to the feed-forward output $\textbf{O}$ and apply layer normalization to get the final output $\textbf{Y}' = \text{LayerNorm}(\textbf{M} + \textbf{O})$, where $\textbf{Y}' \in \mathbb{R}^{i \times d_{\text{model}}}$.
+1.  **Input Embeddings**: Suppose we have already generated the first $i$ tokens of the output sequence. We start with an input $\textbf{Y} \in \mathbb{R}^{i \times d_{\text{model}}}$, where $i$ is the number of tokens generated so far, and $d_{\text{model}}$ is the dimension of the input embeddings.
+    $$
+    \textbf{Y} \in \mathbb{R}^{i \times d_{\text{model}}}
+    $$
+2.  **Positional Encoding**: We add positional encodings to the token embeddings to capture the position of each token in the sequence to get the input embeddings $\textbf{Z}$:
+
+    $$
+    \textbf{Z} = \textbf{Y} + \textbf{PE}, \quad \textbf{Z} \in \mathbb{R}^{i \times d_{\text{model}}}, \quad \textbf{PE} \in \mathbb{R}^{i \times d_{\text{model}}}
+    $$
+
+3.  **Masked Multi-Head Attention**: We apply the masked multi-head attention mechanism to the input embeddings $\textbf{Z}$ to get the attention output $\textbf{A}$. This means in addition to passing the $\textbf{Q}, \textbf{K}, \textbf{V}$ matrices to the scaled dot-product attention, we also pass a mask to the attention mechanism, where
+
+    $$
+    \text{mask}_{i \times i} = \begin{matrix}
+    \begin{bmatrix}
+    0 & -\infty & \cdots & -\infty \\
+    0 & 0 & \cdots & -\infty \\
+    \vdots & \vdots & \ddots & \vdots \\
+    0 & 0 & \cdots & 0
+    \end{bmatrix}
+    \end{matrix}
+    $$
+
+    Therefore, for a single head, the attention weights are computed as:
+
+    $$
+    \text{Attention}(\textbf{Q}, \textbf{K}, \textbf{V}) = \text{softmax}\left(\frac{\textbf{Q}\textbf{K}^T}{\sqrt{d_k}} + \text{mask}\right)\textbf{V}
+    $$
+
+    where $\textbf{Q}, \textbf{K} \in \mathbb{R}^{i \times d_k}$, $\textbf{V} \in \mathbb{R}^{i \times d_v}$, and $\text{mask} \in \mathbb{R}^{i \times i}$.
+
+    Finally, the output of the masked multi-head attention mechanism is computed as:
+
+    $$
+    \textbf{A} = \text{MultiHeadAttention}(\textbf{Z}, \text{mask}), \quad \textbf{A} \in \mathbb{R}^{i \times d_{\text{model}}}
+    $$
+
+4.  **Add & Norm**: We add the input embeddings $\textbf{Z}$ to the attention output $\textbf{A}$ and apply layer normalization to get the normalized output $\textbf{N}$:
+
+    $$
+    \textbf{N} = \text{LayerNorm}(\textbf{Z} + \textbf{A}), \quad \textbf{N} \in \mathbb{R}^{i \times d_{\text{model}}}
+    $$
+
+5.  **Multi-Head Attention**: We apply the multi-head attention mechanism to the normalized output $\textbf{N}$:
+
+    $$
+    \textbf{A}' = \text{MultiHeadAttention}(\textbf{N}), \quad \textbf{A}' \in \mathbb{R}^{i \times d_{\text{model}}}
+    $$
+
+    Optionally, if we are constructing a encoder-decoder architecture, we can also pass the output of the final encoder block to the multi-head attention mechanism to get the attention output $\textbf{A}'$:
+
+    $$
+    \textbf{A}' = \text{MultiHeadAttention}(\textbf{N}, \textbf{Z}'_{N\_enc}), \quad \textbf{A}' \in \mathbb{R}^{i \times d_{\text{model}}}
+    $$
+
+    where $\textbf{Z}'_{N\_enc}$ is the output of the final encoder block. In this case, the scaled dot-product attention takes the **query** from the previous layer $\textbf{N}$ and the **key** and **value** from the output of the encoder block $\textbf{Z}'_{N\_enc}$.
+
+6.  **Add & Norm**: We add the normalized output $\textbf{N}$ to the attention output $\textbf{A}'$ and apply layer normalization to get the output $\textbf{M}$:
+
+    $$
+    \textbf{M} = \text{LayerNorm}(\textbf{N} + \textbf{A}'), \quad \textbf{M} \in \mathbb{R}^{i \times d_{\text{model}}}
+    $$
+
+7.  **Feed-Forward Network**: We apply the feed-forward network to the output $\textbf{M}$ to get the feed-forward output $\textbf{O}$:
+
+    $$
+    \textbf{O} = \text{FFN}(\textbf{M}), \quad \textbf{O} \in \mathbb{R}^{i \times d_{\text{model}}}
+    $$
+
+8.  **Add & Norm**: We add the output $\textbf{M}$ to the feed-forward output $\textbf{O}$ and apply layer normalization to get the final output $\textbf{Y}'$:
+    $$
+    \textbf{Y}' = \text{LayerNorm}(\textbf{M} + \textbf{O}), \quad \textbf{Y}' \in \mathbb{R}^{i \times d_{\text{model}}}
+    $$
 
 After we get output $\textbf{Y}'$ from a single decoder block, we reuse it as the input to the next decoder block without passing through the positional encoding again. Suppose we have $\text{N\_dec}$ decoder blocks, we can denote the output of the $k$-th decoder block as $\textbf{Y}_k'$, where $k = 1, 2, \ldots, \text{N\_dec}$.
 
@@ -319,3 +415,21 @@ This can be done in the following steps:
 3. We can then sample the next token from the probability distribution $\textbf{P}$ to generate the next token in the output sequence.
 
 This process is repeated until the end-of-sequence token is generated, or until a maximum sequence length is reached.
+
+The following code snippet shows how to implement the decoder block in PyTorch by using the components we have defined earlier:
+
+```execute
+${decoder_only_transformer}
+```
+
+Note that this example is purely for inference and architectural demonstration purposes only, and weights are randomized. In practice, the weights are learned during training.
+
+#### **Conclusion**
+
+Now you are familiar with the transformer architecture and its components! We have covered the input embeddings, positional encoding, attention mechanism, multi-head attention mechanism, add & norm layer, feed-forward network, encoder block, and decoder block. We have also implemented the encoder-only transformer and decoder-only transformer in PyTorch using basic operations.
+
+I hope this blog post has helped you understand the transformer architecture better. If you have any questions or feedback, feel free to reach out to me on [LinkedIn](https://www.linkedin.com/in/byang02/), or my email at [jqm9ba@virginia.edu](mailto: jqm9ba@virginia.edu).
+
+#### **References**
+
+[^1]: Vaswani, A., et al. "Attention is all you need," in Advances in neural information processing systems, vol. 30, 2017.
