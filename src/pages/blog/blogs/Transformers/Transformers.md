@@ -160,8 +160,8 @@ Each head has its own query, key, and value weight matrices, which are learned d
 The output of each head is concatenated and linearly transformed to produce the final output.
 
 <img src="https://branyang02.github.io/images/MHA.png" width="30%" height="auto" margin="20px auto" display="block">
-<span id="fig3"
-class="caption">Fig. 3: Multi-Head Attention
+<span id="fig4"
+class="caption">Fig. 4: Multi-Head Attention
 </span>
 
 Therefore, we need to redefine the query, key, and value weight matrices for each head:
@@ -269,8 +269,8 @@ ${ffn}
 We have now fully covered all components needed to build the Encoder block of the transformer.
 
 <img src="https://branyang02.github.io/images/encoder-only.jpg" width="30%" height="auto" margin="20px auto" display="block">
-<span id="fig1"
-class="caption">Fig. 1: Encoder Block
+<span id="fig5"
+class="caption">Fig. 5: Encoder Block
 </span>
 
 The encoder block consists of the following components:
@@ -397,8 +397,8 @@ After we get output $\textbf{Y}'$ from a single decoder block, we reuse it as th
 To perform auto-regressive generation using a decoder-only transformer, we need to convert the last decoder block output $\textbf{Y}_{\text{N\_dec}}'$ to a probability distribution over the vocabulary. We can do this by applying a linear transformation followed by a softmax activation function to the output $\textbf{Y}_{\text{N\_dec}}'$.
 
 ![](https://i.stack.imgur.com/bWnx0.png)
-<span id="fig4"
-class="caption">Fig. 4: Linear transformation followed by a softmax activation function. (Source: <a href="https://ai.stackexchange.com/questions/40179/how-does-the-decoder-only-transformer-architecture-work">Stack Exchange</a>)
+<span id="fig6"
+class="caption">Fig. 6: Linear transformation followed by a softmax activation function. (Source: <a href="https://ai.stackexchange.com/questions/40179/how-does-the-decoder-only-transformer-architecture-work">Stack Exchange</a>)
 
 This can be done in the following steps:
 
