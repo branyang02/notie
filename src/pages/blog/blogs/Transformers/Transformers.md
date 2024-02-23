@@ -21,10 +21,20 @@ Date: 2/20/2024 | Author: Brandon Yang
 
 #### **Introduction**
 
-There are **_a lot_** of resources out there that explain transformers, but I wanted
-to write my own blog post to help me understand the transformer model better.
-In this blog post, I will explain the transformer model and its components, and I will provide
-**live**, **runnable** code snippets to show how to implement the transformer model in PyTorch.
+There are **_a lot_** of resources out there that explain transformers, but I wanted to write my own blog post to explain transformers in a way that I understand.
+
+**This blog post is NOT**:
+
+- A high-level comprehensive guide to transformers. For that, I recommend reading [Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/) by Jay Alammar.
+- A tutorial on how to use Transformers in Hugging Face's [transformers](https://huggingface.co/transformers/) library. For that, I recommend reading the [official documentation](https://huggingface.co/transformers/).
+- A tutorial on how to use the _nn.Transformer_ module in PyTorch. For that, I recommend reading the [official documentation](https://pytorch.org/docs/stable/generated/torch.nn.Transformer.html). Instead, we will be implementing the transformer model from scratch using basic PyTorch operations.
+- A tutorial on how to train a transformer model. We will only cover the arthitecture, and how each component is interconnected.
+- Showcase the performance of the transformer model on a specific task.
+
+**This blog post is**:
+
+- **A mathematical explaination** of the transformer model and its components, where I will clearly define each component and explain how they are interconnected.
+- Contains **live, runnable** code snippets to show how to implement the transformer model in **PyTorch** using basic operations.
 
 #### **Architecture Overview**
 
@@ -413,3 +423,9 @@ ${decoder_only_transformer}
 ```
 
 Note that this example is purely for inference and architectural demonstration purposes only, and weights are randomized. In practice, the weights are learned during training.
+
+#### **Conclusion**
+
+Now you are familiar with the transformer architecture and its components! We have covered the input embeddings, positional encoding, attention mechanism, multi-head attention mechanism, add & norm layer, feed-forward network, encoder block, and decoder block. We have also implemented the encoder-only transformer and decoder-only transformer in PyTorch using basic operations.
+
+I hope this blog post has helped you understand the transformer architecture better. If you have any questions or feedback, feel free to reach out to me on [LinkedIn](https://www.linkedin.com/in/byang02/), or my email at [jqm9ba@virginia.edu](mailto: jqm9ba@virginia.edu).
