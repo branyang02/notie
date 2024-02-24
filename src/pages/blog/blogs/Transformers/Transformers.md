@@ -28,12 +28,12 @@ There are **_a lot_** of resources out there that explain transformers[^1], but 
 - A high-level comprehensive guide to transformers. For that, I recommend reading [Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/) by Jay Alammar.
 - A tutorial on how to use Transformers in Hugging Face's [transformers](https://huggingface.co/transformers/) library. For that, I recommend reading the [official documentation](https://huggingface.co/transformers/).
 - A tutorial on how to use the _nn.Transformer_ module in PyTorch. For that, I recommend reading the [official documentation](https://pytorch.org/docs/stable/generated/torch.nn.Transformer.html). Instead, we will be implementing the transformer model from scratch using basic PyTorch operations.
-- A tutorial on how to train a transformer model. We will only cover the arthitecture, and how each component is interconnected.
-- Showcase the performance of the transformer model on a specific task.
+- A tutorial on how to train a transformer model. We will only cover the architecture, and how components are interconnected.
+- To showcase the performance of the transformer model. For that, I recommend reading the [original paper](https://arxiv.org/abs/1706.03762) by Vaswani et al.
 
 **This blog post is**:
 
-- **A mathematical explaination** of the transformer model and its components, where I will clearly define each component and explain how they are interconnected.
+- **A mathematical explanation** of the transformer model and its components, where I will clearly define each component and explain how they are interconnected.
 - Contains **live, runnable** code snippets to show how to implement the transformer model in **PyTorch** using basic operations.
 
 #### **Architecture Overview**
@@ -394,7 +394,7 @@ After we get output $\textbf{Y}'$ from a single decoder block, we reuse it as th
 
 #### **Decoder-Only Transformer**
 
-To perform auto-regressive generation using a decoder-only transformer, we need to convert the last decoder block output $\textbf{Y}_{\text{N\_dec}}'$ to a probability distribution over the vocabulary. We can do this by applying a linear transformation followed by a softmax activation function to the output $\textbf{Y}_{\text{N\_dec}}'$.
+To perform autoregressive generation using a decoder-only transformer, we need to convert the last decoder block output $\textbf{Y}_{\text{N\_dec}}'$ to a probability distribution over the vocabulary. We can do this by applying a linear transformation followed by a softmax activation function to the output $\textbf{Y}_{\text{N\_dec}}'$.
 
 ![](https://i.stack.imgur.com/bWnx0.png)
 <span id="fig6"
@@ -426,7 +426,7 @@ Note that this example is purely for inference and architectural demonstration p
 
 #### **Conclusion**
 
-Now you are familiar with the transformer architecture and its components! We have covered the input embeddings, positional encoding, attention mechanism, multi-head attention mechanism, add & norm layer, feed-forward network, encoder block, and decoder block. We have also implemented the encoder-only transformer and decoder-only transformer in PyTorch using basic operations.
+Now, you should be familiar with the transformer architecture and its components! We have covered the input embeddings, positional encoding, attention mechanism, multi-head attention mechanism, add & norm layer, feed-forward network, encoder block, and decoder block. We have also implemented the encoder-only transformer and decoder-only transformer in PyTorch using basic operations.
 
 I hope this blog post has helped you understand the transformer architecture better. If you have any questions or feedback, feel free to reach out to me on [LinkedIn](https://www.linkedin.com/in/byang02/), or my email at [jqm9ba@virginia.edu](mailto: jqm9ba@virginia.edu).
 
