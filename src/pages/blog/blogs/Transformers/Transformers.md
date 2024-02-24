@@ -23,6 +23,8 @@ Date: 2/20/2024 | Author: Brandon Yang
 
 There are **_a lot_** of resources out there that explain transformers[^1], but I wanted to write my own blog post to explain transformers in a way that I understand.
 
+All provided codes in this blog post are available in the [GitHub repository](https://github.com/branyang02/personal_website/tree/main/src/pages/blog/blogs/Transformers/transformers-code).
+
 **This blog post is NOT**:
 
 - A high-level comprehensive guide to transformers. For that, I recommend reading [Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/) by Jay Alammar.
