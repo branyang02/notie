@@ -20,16 +20,21 @@ import Projects from './pages/Projects';
 import SpellingBee from './pages/spelling_bee/SpellingBee';
 
 function App() {
-  const [darkMode, setDarkMode] = useState(
-    new Date().getHours() >= 18 || new Date().getHours() < 6,
-  );
+  const [darkMode, setDarkMode] = useState(() => {
+    const savedMode = localStorage.getItem('darkMode');
+    return savedMode === 'true'
+      ? true
+      : new Date().getHours() >= 18 || new Date().getHours() < 6;
+  });
 
   useEffect(() => {
     const footnotesTitle = document.querySelector('.footnotes h2');
     if (footnotesTitle) {
       footnotesTitle.innerHTML = '<strong>References</strong>';
     }
+
     document.body.classList.toggle('dark-mode', darkMode);
+    localStorage.setItem('darkMode', darkMode.toString());
   }, [darkMode]);
 
   return (
@@ -45,11 +50,11 @@ function App() {
             left: '20px',
           }}
         />
-        <div>
+        <div className="nav-bar">
           <NavBar />
         </div>
       </div>
-      <Container as="main" className="py-4 px-3 mx-auto">
+      <Container as="main" className="py-4 px-3 mx-auto custom-padding">
         <Routes>
           <Route
             path="/"

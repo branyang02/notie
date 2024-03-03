@@ -5,7 +5,7 @@ import OrgChartTree from '../components/CourseTree';
 
 const Courses = () => {
   return (
-    <div>
+    <div className="full-padding">
       <OrgChartTree />
     </div>
   );

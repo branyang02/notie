@@ -5,6 +5,13 @@
   --link: #2a0b0b;
 }
 
+
+.custom-padding {
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
+}
+
 .App {
   text-align: center;
 }
