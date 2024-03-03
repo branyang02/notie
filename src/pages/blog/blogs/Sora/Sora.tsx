@@ -11,6 +11,7 @@ import remarkMath from 'remark-math';
 
 import CodeBlock from '../../../../components/CodeBlock';
 import soraMD from './Sora.md?raw';
+import forward_diffusion from './sora-code/forward_diffusion.py?raw';
 
 type CodeProps = React.HTMLAttributes<HTMLElement> & { children?: React.ReactNode };
 
@@ -21,8 +22,7 @@ const components = {
 };
 
 function processMarkdown(markdownContent: string): string {
-  return markdownContent;
-  // .replace(/\$\{encoder_only_transformer\}/g, encoder_only_transformer)
+  return markdownContent.replace(/\$\{forward_diffusion\}/g, forward_diffusion);
 }
 
 const markdownContent = processMarkdown(soraMD);
