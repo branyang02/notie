@@ -14,6 +14,8 @@ import {
 } from 'evergreen-ui';
 import { useCallback, useState } from 'react';
 
+import { runCode } from '../service/api';
+
 const CodeBlock = ({ initialCode }: { initialCode: string }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [output, setOutput] = useState('');
@@ -25,22 +27,10 @@ const CodeBlock = ({ initialCode }: { initialCode: string }) => {
     setCode(value);
   }, []);
 
-  const runCode = async () => {
+  const runCodeAsync = async () => {
     setIsLoading(true);
     try {
-      console.log(code);
-      const result = await fetch(
-        'https://yang-website-backend-c3338735a47f.herokuapp.com/api/run-code',
-        // 'http://127.0.0.1:1234/api/run-code',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ code }),
-        },
-      );
-      const data = await result.json();
+      const data = await runCode(code);
       if (
         data.output.trim().startsWith('Traceback') ||
         data.output.trim().startsWith('File') ||
@@ -95,7 +85,7 @@ const CodeBlock = ({ initialCode }: { initialCode: string }) => {
             appearance="primary"
             intent="success"
             isLoading={isLoading}
-            onClick={runCode}
+            onClick={runCodeAsync}
           >
             Run Code
           </Button>

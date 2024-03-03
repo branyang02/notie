@@ -146,3 +146,11 @@
   body.dark-mode .caption {
     color: #fff;
   }
+
+  body.dark-mode .blogPostHeading {
+    color: #E4E7EB;
+  }
+
+  body.dark-mode .BlogCard {
+    background-color: gray
+  }
