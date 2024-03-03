@@ -48,6 +48,7 @@ function App() {
             position: 'fixed',
             bottom: '20px',
             left: '20px',
+            zIndex: 1000,
           }}
         />
         <div className="nav-bar">
