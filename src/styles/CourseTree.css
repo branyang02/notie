@@ -10,3 +10,24 @@
 .node_leaf > circle {
   fill: #35a58c;
 }
+
+body.dark-mode .rd3t-label__title {
+  fill: #fff;
+}
+
+
+body.dark-mode .rd3t-link {
+  stroke: #fff;
+}
+
+body.dark-mode .node_root > circle {
+  fill: #bbb;
+}
+
+body.dark-mode .node_branch > circle {
+  fill: #bbb;
+}
+
+body.dark-mode .node_leaf > circle {
+  fill: #bbb;
+}

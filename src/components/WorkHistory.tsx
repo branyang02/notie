@@ -1,7 +1,5 @@
 import '../styles/WorkHistory.css';
 
-import React from 'react';
-
 const WorkHistory = () => {
   return (
     <div className="container mt-5 mb-5">

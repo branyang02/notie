@@ -73,3 +73,12 @@ button {
 button {
   font-size: calc(10px + 2vmin);
 }
+
+body.dark-mode a {
+  color: #fff;
+}
+
+body.dark-mode a:hover,
+body.dark-mode a:focus {
+  color: #bbb;
+}
