@@ -13,7 +13,7 @@ import News from './components/News';
 import WorkHistory from './components/WorkHistory';
 import About from './pages/About';
 import Blog from './pages/blog/Blog';
-import Sora from './pages/blog/blogs/Sora';
+import Sora from './pages/blog/blogs/Sora/Sora';
 import Transformers from './pages/blog/blogs/Transformers/Transformers';
 import Courses from './pages/Courses';
 import Projects from './pages/Projects';
