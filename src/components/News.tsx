@@ -2,6 +2,10 @@ import React from 'react';
 
 const newsData = [
   {
+    date: '03/2024',
+    news: "Accepted to UVA's Master of Science in Computer Science program!",
+  },
+  {
     date: '01/2024',
     news: 'Started working as a TA for CS 3120: Theory of Computation at UVA!',
   },
