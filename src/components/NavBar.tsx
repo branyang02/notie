@@ -39,6 +39,9 @@ function NavBar() {
       <Nav.Link as={Link} to="/blog" className="navbar-brand-custom">
         Blog
       </Nav.Link>
+      <Nav.Link as={Link} to="/notes" className="navbar-brand-custom">
+        Notes
+      </Nav.Link>
       <Nav.Link as={Link} to="/projects" className="navbar-brand-custom">
         Projects
       </Nav.Link>
@@ -79,6 +82,14 @@ function NavBar() {
               }}
             >
               Blog
+            </Menu.Item>
+            <Menu.Item
+              onSelect={() => {
+                handleSelect('/notes');
+                close();
+              }}
+            >
+              Notes
             </Menu.Item>
             <Menu.Item
               onSelect={() => {

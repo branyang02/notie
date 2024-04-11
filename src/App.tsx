@@ -16,6 +16,8 @@ import Blog from './pages/blog/Blog';
 import Sora from './pages/blog/blogs/Sora/Sora';
 import Transformers from './pages/blog/blogs/Transformers/Transformers';
 import Courses from './pages/Courses';
+import CSO2 from './pages/notes/CSO2/cso2';
+import Notes from './pages/notes/Notes';
 import Projects from './pages/Projects';
 import SpellingBee from './pages/spelling_bee/SpellingBee';
 
@@ -75,6 +77,8 @@ function App() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/sora" element={<Sora />} />
           <Route path="/blog/transformers" element={<Transformers />} />
+          <Route path="/notes" element={<Notes />} />
+          <Route path="/notes/cso2" element={<CSO2 />} />
         </Routes>
         <ClustrMapsWidget />
       </Container>
