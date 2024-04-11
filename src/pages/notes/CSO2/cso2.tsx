@@ -1,4 +1,4 @@
-import 'katex/dist/katex.min.css'; // Ensure KaTeX CSS is imported to style the equations
+import 'katex/dist/katex.min.css';
 import '../../../styles/blogPost.css';
 
 import ReactMarkdown from 'react-markdown';
