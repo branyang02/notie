@@ -23,7 +23,18 @@ int main() {
 }
 ```
 
-```shell
+```bash
 gcc -o build main.c
 ./build # Sum of a and b is 15
 ```
+
+$ a = 5, b = 10, c = 15 $
+
+$$
+\begin{align*}
+\text{Memory} & \text{Address} & \text{Value} \\
+\text{0x100} & \text{0x100} & 5 \\
+\text{0x104} & \text{0x104} & 10 \\
+\text{0x108} & \text{0x108} & 15 \\
+\end{align*}
+$$

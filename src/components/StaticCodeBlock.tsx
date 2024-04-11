@@ -1,8 +1,8 @@
-import { CodeBlock, nord } from 'react-code-blocks';
+import { CopyBlock, nord } from 'react-code-blocks';
 
 const StaticCodeBlock = ({ code, language }: { code: string; language: string }) => {
   return (
-    <CodeBlock text={code} language={language} showLineNumbers={false} theme={nord} />
+    <CopyBlock text={code} language={language} showLineNumbers={false} theme={nord} />
   );
 };
 

@@ -41,9 +41,14 @@ const components = {
 };
 
 function processMarkdown(markdownContent: string): string {
-  const pattern = /```c/g;
-  return markdownContent.replace(pattern, '```language-c');
-  return markdownContent;
+  let processedContent = markdownContent;
+  const cPattern = /```c/g;
+  processedContent = processedContent.replace(cPattern, '```language-c');
+
+  const bashPattern = /```bash/g;
+  processedContent = processedContent.replace(bashPattern, '```language-bash');
+
+  return processedContent;
 }
 
 const markdownContent = processMarkdown(markdown);
