@@ -9,18 +9,40 @@ import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 
-import CodeBlock from '../../../components/CodeBlock';
+import StaticCodeBlock from '../../../components/StaticCodeBlock';
 import markdown from './cso2.md?raw';
 
-type CodeProps = React.HTMLAttributes<HTMLElement> & { children?: React.ReactNode };
+type CodeProps = React.HTMLAttributes<HTMLElement> & {
+  node?: unknown;
+  inline?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+};
 
 const components = {
-  code({ children }: CodeProps) {
-    return <CodeBlock initialCode={String(children)} />;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  code({ node, inline, className, children, ...props }: CodeProps) {
+    const match = /\w+/.exec(className || '');
+
+    if (!inline && match) {
+      const language = className?.split('language-').pop() || '';
+      const content = Array.isArray(children) ? children.join('') : children;
+      return (
+        <StaticCodeBlock code={String(content).replace(/\n$/, '')} language={language} />
+      );
+    } else {
+      return (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      );
+    }
   },
 };
 
 function processMarkdown(markdownContent: string): string {
+  const pattern = /```c/g;
+  return markdownContent.replace(pattern, '```language-c');
   return markdownContent;
 }
 
