@@ -1,3 +1,4 @@
+import { cpp } from '@codemirror/lang-cpp';
 import { python } from '@codemirror/lang-python';
 import { indentUnit } from '@codemirror/language';
 import { tokyoNightStorm } from '@uiw/codemirror-theme-tokyo-night-storm';
@@ -14,14 +15,29 @@ import {
 } from 'evergreen-ui';
 import { useCallback, useState } from 'react';
 
-import { runCode } from '../service/api';
+import { runCCode, runPythonCode } from '../service/api';
 
-const CodeBlock = ({ initialCode }: { initialCode: string }) => {
+interface CodeBlockProps {
+  initialCode: string;
+  language?: string;
+}
+
+const CodeBlock: React.FC<CodeBlockProps> = ({ initialCode, language = 'python' }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [output, setOutput] = useState('');
   const [error, setError] = useState(false);
   const [code, setCode] = useState(initialCode);
   const [image, setImage] = useState('');
+
+  let runCode;
+  let languageCode;
+  if (language === 'c') {
+    runCode = runCCode;
+    languageCode = cpp();
+  } else {
+    runCode = runPythonCode;
+    languageCode = python();
+  }
 
   const onChange = useCallback((value: string) => {
     setCode(value);
@@ -34,7 +50,8 @@ const CodeBlock = ({ initialCode }: { initialCode: string }) => {
       if (
         data.output.trim().startsWith('Traceback') ||
         data.output.trim().startsWith('File') ||
-        data.output.trim().startsWith('Exception')
+        data.output.trim().startsWith('Exception') ||
+        data.output.toLowerCase().includes('error')
       ) {
         setError(true);
       } else {
@@ -65,7 +82,7 @@ const CodeBlock = ({ initialCode }: { initialCode: string }) => {
       <Pane position="relative" borderRadius={8} overflow="hidden" marginBottom={16}>
         <CodeMirror
           value={code}
-          extensions={[python(), indentUnit.of('    ')]}
+          extensions={[languageCode, indentUnit.of('    ')]}
           height="500px"
           theme={tokyoNightStorm}
           onChange={onChange}
