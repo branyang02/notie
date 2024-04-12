@@ -155,7 +155,7 @@
     background-color: gray
   }
 
-  .blog-content code:not([class]):not(.sc-guDLey.gakjvH code) {
+  .blog-content code:not([class]):not(.sc-guDLey code) {
     padding: .2em .4em;
     margin: 0;
     font-size: 85%;
@@ -165,7 +165,7 @@
     color: black;
   }
 
-  body.dark-mode .blog-content code:not([class]):not(.sc-guDLey.gakjvH code) {
+  body.dark-mode .blog-content code:not([class]):not(.sc-guDLey code) {
     padding: .2em .4em;
     margin: 0;
     font-size: 85%;
