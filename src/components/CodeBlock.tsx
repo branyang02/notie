@@ -15,7 +15,7 @@ import {
 } from 'evergreen-ui';
 import { useCallback, useState } from 'react';
 
-import { runCCode, runPythonCode } from '../service/api';
+import { runCCode, RunCodeResponse, runPythonCode } from '../service/api';
 
 interface CodeBlockProps {
   initialCode: string;
@@ -29,15 +29,8 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ initialCode, language = 'python' 
   const [code, setCode] = useState(initialCode);
   const [image, setImage] = useState('');
 
-  let runCode;
-  let languageCode;
-  if (language === 'c') {
-    runCode = runCCode;
-    languageCode = cpp();
-  } else {
-    runCode = runPythonCode;
-    languageCode = python();
-  }
+  const runCode = language === 'c' ? runCCode : runPythonCode;
+  const languageCode = language === 'c' ? cpp() : python();
 
   const onChange = useCallback((value: string) => {
     setCode(value);
@@ -46,7 +39,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ initialCode, language = 'python' 
   const runCodeAsync = async () => {
     setIsLoading(true);
     try {
-      const data = await runCode(code);
+      const data: RunCodeResponse = await runCode(code);
       if (
         data.output.trim().startsWith('Traceback') ||
         data.output.trim().startsWith('File') ||

@@ -1,4 +1,4 @@
-interface RunCodeResponse {
+export interface RunCodeResponse {
   output: string;
   image: string;
 }
