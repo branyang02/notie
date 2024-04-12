@@ -18,15 +18,37 @@ Date: 5/1/2024 | Author: Brandon Yang
 
 #### **Introduction**
 
-This is a note for the course Computer Systems and Organization: Part 2 (CSO2) at the University of Virginia.
+This is a note for the course Computer Systems and Organization: Part 2 (CSO2) at the University of Virginia. This note contains live code examples and explanations for various topics in the course.
 
-Example C code:
+Example _**live**_, _**runnable**_ C code:
 
-```c
+```execute-c
 #include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 int main() {
-    printf("Hello, World!\n");
+    pid_t pid;
+
+    // Create a new process
+    pid = fork();
+
+    if (pid == -1) {
+        // If fork() returns -1, an error occurred
+        perror("Failed to fork");
+        return 1;
+    } else if (pid > 0) {
+        // Parent process
+        printf("I am the parent process. PID: %d, Child PID: %d\n", getpid(), pid);
+        // Optionally, wait for the child to exit
+        wait(NULL);
+    } else {
+        // Child process
+        printf("I am the child process. PID: %d, Parent PID: %d\n", getpid(), getppid());
+        // Execute some code as the child
+    }
+
     return 0;
 }
 ```

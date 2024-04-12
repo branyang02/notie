@@ -13,6 +13,7 @@
     "type-check": "tsc"
   },
   "dependencies": {
+    "@codemirror/lang-cpp": "^6.0.2",
     "@codemirror/lang-python": "^6.1.4",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",

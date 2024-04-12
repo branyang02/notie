@@ -9,6 +9,7 @@ import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 
+import CodeBlock from '../../../components/CodeBlock';
 import StaticCodeBlock from '../../../components/StaticCodeBlock';
 import markdown from './cso2.md?raw';
 
@@ -27,6 +28,11 @@ const components = {
     if (!inline && match) {
       const language = className?.split('language-').pop() || '';
       const content = Array.isArray(children) ? children.join('') : children;
+      if (language === 'execute-c') {
+        return (
+          <CodeBlock initialCode={String(content).replace(/\n$/, '')} language="c" />
+        );
+      }
       return (
         <StaticCodeBlock code={String(content).replace(/\n$/, '')} language={language} />
       );
