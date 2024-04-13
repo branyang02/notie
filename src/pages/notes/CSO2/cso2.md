@@ -99,7 +99,6 @@ target: dependencies
 - make runs `command` if `target` is older than any of the `dependencies`.
 
 ```makefile
-# Makefile
 CC = clang
 CFLAGS = -Wall -Wextra -Werror
 LDFLAGS = -L/path/to/lib -lfoo
@@ -131,7 +130,6 @@ clean:
 <details><summary>Practice</summary>
 
 ```makefile
-# Makefile
 W: X, Y
     buildW
 X: Q
@@ -156,7 +154,6 @@ In summary, Makefile follows the dependency graph to ensure all dependencies are
 ###### **Rules**:
 
 ```makefile
-# Makefile
 CC = gcc
 CFLAGS = -Wall
 LDFLAGS = -Wall
@@ -310,18 +307,11 @@ extra.o: extra.c extra.h
 
 ##### **Exceptions**
 
-- **Interrupts**:
-  - occurs independently from the code being executed when it occurs.
-  - ex. mouse click while a unrelated program is running
-  - handled by the kernel, invisible to the user program
-- **Faults**:
-  - An instruction failing to suceed in its execution.
-  - ex. divide by zero
-  - Responses
-    - Kernel fixes the problem and restarts the instruction
-    - Kernel cannot fix the problem, kill the process
-- **Traps**:
-  - An exception caused by a special instruction whose purpose is to cause a trap.
+| Exceptions     | Classify by Cause                                                 | Classify by Result                                         |
+| -------------- | ----------------------------------------------------------------- | ---------------------------------------------------------- |
+| **Interrupts** | occurs independently from the code being executed when it occurs. | runs each instruction once (has no triggering instruction) |
+| **Faults**     | An instruction failing to suceed in its execution.                | re-runs triggering instruction                             |
+| **Traps**      | caused by a special instruction whose purpose is to cause a trap  | runs instruction after triggering instruction              |
 
 ##### **Handling Exceptions**
 
@@ -340,6 +330,33 @@ The basic mechanism for any exception to be handled is
 <span
     class="caption"> The exception table is a table of pointers to exception handlers. The exception number is used as an index into the table to find the appropriate handler.
 </span>
+
+##### **System Calls**
+
+- **System Call**: a way of communication from user mode to kernel mode.
+  - Implemented as a `trap` with exception number `128`. The "action number" is passed into register `%rax`.
+
+<details><summary>Example Socket System Call</summary>
+
+Below is an example of C library function `socket` that makes a system call to create a socket.
+
+```assembly
+socket:
+    endbr64
+    mov    $0x29,%eax
+    syscall
+```
+
+- `endbr64`: control-flow enforcement. Not relevant to the system call.
+- `mov $0x29,%eax`: move `41` (`0x29`) into `%rax`. `41` is the system call number for `socket`.
+- `syscall`: A `trap` instruction, generating _**exception number**_ `128`. Then the following happens:
+  1. Processor saves the current state of the program.
+  2. Enters kernel mode.
+  3. Jump to `exception_handler[128]`.
+     1. `system_call_handler[41]` is called with `%rax` set to `41`.
+  4. When the handler finishes, enter user mode and restore processor state.
+
+</details>
 
 ### **References**
 

@@ -72,85 +72,105 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ initialCode, language = 'python' 
 
   return (
     <Pane>
-      <Pane position="relative" borderRadius={8} overflow="hidden" marginBottom={16}>
-        <CodeMirror
-          value={code}
-          extensions={[languageCode, indentUnit.of('    ')]}
-          height="500px"
-          theme={tokyoNightStorm}
-          onChange={onChange}
-        />
-        <Pane position="absolute" top={0} right={0} padding={8}>
-          <IconButton
-            size="small"
-            appearance="minimal"
-            icon={ResetIcon}
-            intent="danger"
-            onClick={() => setCode(initialCode)}
-          />
-        </Pane>
-        <Pane position="absolute" bottom={0} right={0} padding={8}>
-          <Button
-            iconAfter={PlayIcon}
-            appearance="primary"
-            intent="success"
-            isLoading={isLoading}
-            onClick={runCodeAsync}
-          >
-            Run Code
-          </Button>
-        </Pane>
+      <Pane
+        className="language-box"
+        paddingY={1}
+        paddingX={8}
+        style={{
+          fontSize: '0.8rem',
+          borderRadius: '10px 10px 0 0',
+          backgroundColor: '#afb8c133',
+        }}
+      >
+        {''}
+        {language}
       </Pane>
-      {/* Output box */}
-      {(isLoading || output || image) && (
-        <Pane position="relative" borderRadius={8} overflow="hidden" marginBottom={16}>
-          <Card
-            background="tint1"
-            padding={16}
-            elevation={1}
-            borderRadius={8}
-            style={{
-              maxHeight: '500px',
-              overflowY: 'auto',
-            }}
-          >
-            <Pane>
-              <Button
-                appearance="minimal"
-                intent="danger"
-                onClick={clearOutput}
-                style={{ float: 'right' }}
-              >
-                Clear Output
-              </Button>
-            </Pane>
-            {isLoading ? (
-              <Spinner />
-            ) : (
-              <>
-                <Code
-                  appearance="minimal"
-                  color={error ? 'red' : 'black'}
-                  style={{
-                    wordBreak: 'break-word',
-                    overflowWrap: 'break-word',
-                    whiteSpace: 'pre-wrap',
-                  }}
-                >
-                  {output}
-                </Code>
-                {image && (
-                  <img
-                    src={`data:image/png;base64,${image}`}
-                    alt="Output"
-                    style={{ maxWidth: '100%', marginBottom: '10px' }}
-                  />
-                )}
-              </>
-            )}
-          </Card>
+      <Pane>
+        <Pane
+          position="relative"
+          overflow="hidden"
+          marginBottom={16}
+          style={{ borderRadius: '0 0 10px 10px' }}
+        >
+          <CodeMirror
+            value={code}
+            extensions={[languageCode, indentUnit.of('    ')]}
+            height="500px"
+            theme={tokyoNightStorm}
+            onChange={onChange}
+          />
+          <Pane position="absolute" top={0} right={0} padding={8}>
+            <IconButton
+              size="small"
+              appearance="minimal"
+              icon={ResetIcon}
+              intent="danger"
+              onClick={() => setCode(initialCode)}
+            />
+          </Pane>
+          <Pane position="absolute" bottom={0} right={0} padding={8}>
+            <Button
+              iconAfter={PlayIcon}
+              appearance="primary"
+              intent="success"
+              isLoading={isLoading}
+              onClick={runCodeAsync}
+            >
+              Run Code
+            </Button>
+          </Pane>
         </Pane>
-      )}
+        {/* Output box */}
+        {(isLoading || output || image) && (
+          <Pane position="relative" borderRadius={8} overflow="hidden" marginBottom={16}>
+            <Card
+              background="tint1"
+              padding={16}
+              elevation={1}
+              borderRadius={8}
+              style={{
+                maxHeight: '500px',
+                overflowY: 'auto',
+              }}
+            >
+              <Pane>
+                <Button
+                  appearance="minimal"
+                  intent="danger"
+                  onClick={clearOutput}
+                  style={{ float: 'right' }}
+                >
+                  Clear Output
+                </Button>
+              </Pane>
+              {isLoading ? (
+                <Spinner />
+              ) : (
+                <>
+                  <Code
+                    appearance="minimal"
+                    color={error ? 'red' : 'black'}
+                    style={{
+                      wordBreak: 'break-word',
+                      overflowWrap: 'break-word',
+                      whiteSpace: 'pre-wrap',
+                    }}
+                  >
+                    {output}
+                  </Code>
+                  {image && (
+                    <img
+                      src={`data:image/png;base64,${image}`}
+                      alt="Output"
+                      style={{ maxWidth: '100%', marginBottom: '10px' }}
+                    />
+                  )}
+                </>
+              )}
+            </Card>
+          </Pane>
+        )}
+      </Pane>
     </Pane>
   );
 };
