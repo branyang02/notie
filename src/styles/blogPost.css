@@ -15,6 +15,7 @@
     border-collapse: collapse;
     width: 100%;
     margin-top: 20px;
+    margin-bottom: 20px;
   }
   
   .blog-content th, .blog-content td {
@@ -35,16 +36,7 @@
     margin: 20px auto;
   }
   
-  /* Task List Styles
-  .blog-content ul {
-    list-style-type: disc;
-    margin-top: 10px;
-  }
-  
-  .blog-content li {
-    margin-bottom: 10px;
-  } */
-  
+
   .blog-content input[type="checkbox"] {
     margin-right: 10px;
   }
@@ -154,6 +146,10 @@
 
   body.dark-mode .BlogCard {
     background-color: gray
+  }
+
+  body.dark-mode .blog-content th {
+    background-color: hsla(0,0%,93%,.2);
   }
 
   .blog-content code:not([class]):not(.sc-guDLey code) {
