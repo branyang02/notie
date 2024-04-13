@@ -35,14 +35,15 @@
     margin: 20px auto;
   }
   
-  /* Task List Styles */
+  /* Task List Styles
   .blog-content ul {
     list-style-type: disc;
+    margin-top: 10px;
   }
   
   .blog-content li {
     margin-bottom: 10px;
-  }
+  } */
   
   .blog-content input[type="checkbox"] {
     margin-right: 10px;
