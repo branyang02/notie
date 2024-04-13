@@ -28,11 +28,15 @@ const components = {
     if (!inline && match) {
       const language = className?.split('language-').pop() || '';
       const content = Array.isArray(children) ? children.join('') : children;
-      if (language === 'execute-c') {
+      if (language.includes('execute-')) {
         return (
-          <CodeBlock initialCode={String(content).replace(/\n$/, '')} language="c" />
+          <CodeBlock
+            initialCode={String(content).replace(/\n$/, '')}
+            language={language.split('-').pop()}
+          />
         );
       }
+
       return (
         <StaticCodeBlock code={String(content).replace(/\n$/, '')} language={language} />
       );
