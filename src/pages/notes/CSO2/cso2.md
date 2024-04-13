@@ -23,12 +23,15 @@ Date: 5/1/2024 | Author: Brandon Yang
   - [Implementation](#implementation)
   - [Exceptions](#exceptions)
   - [Handling Exceptions](#handling-exceptions)
+- [Multitasking](#multitasking)
+  - [Processes](#processes)
+  
 - [References](#references)
 </details>
 
 #### **Introduction**
 
-This is a note for the course Computer Systems and Organization: Part 2 (CSO2) at the University of Virginia. This note contains live code examples and explanations for various topics in the course.
+These are my notes for Computer Systems and Organization 2 (CSO2) at the University of Virginia in the Spring 2024 semester taught by Charles Reiss. This note contains live code examples and explanations for various topics in the course.
 
 Example _**live**_, _**runnable**_ C code:
 
@@ -357,6 +360,64 @@ socket:
   4. When the handler finishes, enter user mode and restore processor state.
 
 </details>
+
+#### **Multitasking**
+
+- **Multitasking**: a generic term for having multiple processes running on a single machine.
+- **Preemptive Multitasking**: the operating system can interrupt a process and switch to another process.
+- **Cooperative Multitasking**: the process must voluntarily give up control.
+
+##### **Processes**
+
+- **Process**: an instance of a program in execution, acts like a _virtual machine_.
+
+  - A process has its own program registers, condition codes, **virtual address space**, etc.
+
+- **Virtual Address Space**: the memory that a process can access. (illusion of a program having its own memory)
+
+  ![](https://branyang02.github.io/images/address_space.png)
+  <span
+      class="caption"> The virtual address space is the memory that a process can access. It is an illusion of a program having its own memory.
+  </span>
+
+- **Context Switch**: the process of saving the state of a process and loading the state of another process.
+  1. OS starts running a process.
+  2. Exception occurs.
+  3. OS saves the state of the current process (old registers, program counter, mapping of addresses(**page tables**), etc).
+  4. OS loads the state of another process.
+  5. OS starts running the new process.
+
+| Program A Running (Before)                                    | Program B Running (After)                                     |
+| ------------------------------------------------------------- | ------------------------------------------------------------- |
+| ![](https://branyang02.github.io/images/context_switch_A.png) | ![](https://branyang02.github.io/images/context_switch_B.png) |
+
+<details><summary>Time Multiplexing</summary>
+
+Linux uses time multiplexing to switch between processes, which refers to "sharing the processor over time". The kernel uses a **timer** to interrupt the current process and switch to another process using a **context switch**.
+
+Suppose we have two processes, `A` and `B`, and a timer interrupt every `10ms`. Here is a timeline of the processes:
+
+1. `A` starts running.
+2. After `10ms`, timer expires, triggering an `interrupt` exception.
+3. Enter kernel mode.
+4. Save the state of `A`.
+5. Load the state of `B`.
+6. Return to user mode and start running `B`.
+
+</details>
+
+- **Process** vs. **Thread**:
+  - **Process**: an instance of a program in execution.
+  - **Thread**: a process can have multiple threads of execution. Threads share the same **virtual address space**, but have their own **program registers**, **program counter**, condition codes, etc.
+
+<div style="display: flex; justify-content: center; align-items: center;">
+    <div style="background-color: white;">
+        <img src="https://static.javatpoint.com/difference/images/process-vs-thread3.png" style="display: block; max-height: 100%; max-width: 100%;">
+    </div>
+</div>
+<span
+    class="caption"> Threads within the same process share the same virtual address space but have their own program registers, program counter, condition codes, etc. (Source: javapoint, <a href="https://www.javatpoint.com/process-vs-thread">Process Vs. Thread</a>)
+</span>
 
 ### **References**
 
