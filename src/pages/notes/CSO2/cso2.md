@@ -25,7 +25,6 @@ Date: 5/1/2024 | Author: Brandon Yang
   - [Handling Exceptions](#handling-exceptions)
 - [Multitasking](#multitasking)
   - [Processes](#processes)
-  
 - [References](#references)
 </details>
 
@@ -370,15 +369,13 @@ socket:
 ##### **Processes**
 
 - **Process**: an instance of a program in execution, acts like a _virtual machine_.
-
   - A process has its own program registers, condition codes, **virtual address space**, etc.
-
 - **Virtual Address Space**: the memory that a process can access. (illusion of a program having its own memory)
 
-  ![](https://branyang02.github.io/images/address_space.png)
-  <span
-      class="caption"> The virtual address space is the memory that a process can access. It is an illusion of a program having its own memory.
-  </span>
+![](https://branyang02.github.io/images/address_space.png)
+<span
+    class="caption"> The virtual address space is the memory that a process can access. It is an illusion of a program having its own memory.
+</span>
 
 - **Context Switch**: the process of saving the state of a process and loading the state of another process.
   1. OS starts running a process.
@@ -391,7 +388,7 @@ socket:
 | ------------------------------------------------------------- | ------------------------------------------------------------- |
 | ![](https://branyang02.github.io/images/context_switch_A.png) | ![](https://branyang02.github.io/images/context_switch_B.png) |
 
-<details><summary>Time Multiplexing</summary>
+  <details><summary>Time Multiplexing</summary>
 
 Linux uses time multiplexing to switch between processes, which refers to "sharing the processor over time". The kernel uses a **timer** to interrupt the current process and switch to another process using a **context switch**.
 
@@ -404,21 +401,147 @@ Suppose we have two processes, `A` and `B`, and a timer interrupt every `10ms`. 
 5. Load the state of `B`.
 6. Return to user mode and start running `B`.
 
-</details>
+  </details>
 
 - **Process** vs. **Thread**:
+
   - **Process**: an instance of a program in execution.
   - **Thread**: a process can have multiple threads of execution. Threads share the same **virtual address space**, but have their own **program registers**, **program counter**, condition codes, etc.
 
-<div style="display: flex; justify-content: center; align-items: center;">
-    <div style="background-color: white;">
-        <img src="https://static.javatpoint.com/difference/images/process-vs-thread3.png" style="display: block; max-height: 100%; max-width: 100%;">
-    </div>
-</div>
+  <div style="display: flex; justify-content: center; align-items: center;">
+      <div style="background-color: white;">
+          <img src="https://static.javatpoint.com/difference/images/process-vs-thread3.png" style="display: block; max-height: 100%; max-width: 100%;">
+      </div>
+  </div>
+  <span
+      class="caption"> Threads within the same process share the same virtual address space but have their own program registers, program counter, condition codes, etc. (Source: javapoint, <a href="https://www.javatpoint.com/process-vs-thread">Process Vs. Thread</a>)
+  </span>
+
+#### **Signals**
+
+- **Signal**: a way to notify a process that an event has occurred.
+- **Signal Handler**: a function that is called when a signal is received.
+  - Ex. `SIGINT` (interrupt from keyboard), `SIGSEGV` (segmentation fault), `SIGKILL` (kill the process).
+
+|                 | User code     | Kernel code   | Hardware               |
+| --------------- | ------------- | ------------- | ---------------------- |
+| **User code**   | ordinary code | Trap          | via kernel             |
+| **Kernel code** | **Signal**    | ordinary code | protected instructions |
+| **Hardware**    | via kernel    | Interrupt     | —                      |
+
 <span
-    class="caption"> Threads within the same process share the same virtual address space but have their own program registers, program counter, condition codes, etc. (Source: javapoint, <a href="https://www.javatpoint.com/process-vs-thread">Process Vs. Thread</a>)
+      class="caption"> Signals are roughly the kernel-to-user equivalent of an interrupt. At any time, while executing any line of code, a signal may appear.
 </span>
+
+|                        | (hardware) exceptions              | signals                         |
+| ---------------------- | ---------------------------------- | ------------------------------- |
+| **Handler Mode**       | handler runs in **kernel mode**    | handler runs in **user mode**   |
+| **Decision Maker**     | hardware decides when              | OS decides when                 |
+| **State Saving**       | hardware needs to save PC          | OS needs to save PC + registers |
+| **Instruction Change** | processor next instruction changes | thread next instruction changes |
+
+<span
+      class="caption"> Signals vs. Exceptions
+</span>
+
+- **Signals Setup**
+
+```c
+static void handler(int signum) {
+    // Handle SIGINT signal
+}
+
+int main() {
+    struct sigaction sa;
+    sa.sa_handler = &handler;  // Set the handler function
+    sigemptyset(&sa.sa_mask); // Initialize the signal set to empty
+    sa.sa_flags = SA_RESTART;
+    sigaction(SIGINT, &sa, NULL); // Register the signal handler for SIGINT
+
+    // Run normal code here
+
+    return 0;
+}
+```
+
+<details><summary>Signal Handler Example</summary>
+
+Below is an example of a signal handler that simulates `SIGINT` (interrupt from keyboard).
+
+```execute-c
+#define _POSIX_C_SOURCE 200809L
+
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+static void handler(int signum) {
+    write(1, "SIGINT received. Provide end-of-file to end program.\n",
+          strlen("SIGINT received. Provide end-of-file to end program.\n"));
+    write(1, "Signal handler reached. Exiting now.\n",
+          strlen("Signal handler reached. Exiting now.\n"));
+    exit(0);
+}
+
+int main() {
+    struct sigaction sa;
+    sa.sa_handler = &handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART;
+
+    if (sigaction(SIGINT, &sa, NULL) == -1) {
+        fprintf(stderr, "unable to override SIGINT signal\n");
+        return 1;
+    }
+
+    // Raise SIGINT signal to trigger the handler
+    raise(SIGINT);
+
+    fprintf(stderr, "This should not be printed.\n");
+
+    return 0;
+}
+```
+
+- `write` instead of `printf` in `handler`
+  - `printf` is not async-signal-safe. (not safe to call in a signal handler)
+- `void handler(int signum)`
+  - Signal handler function. `signum` is the signal number.
+- `struct sigaction sa`
+  - Ttructure to specify the action to be taken on a signal.
+- `sa.sa_handler = &handler`
+  - The function pointer to invoke.
+- `sigemptyset(&sa.sa_mask)`
+  - Initializes the signal set to empty. Do not "block" additional signals while signal handler is running.
+- `sa.sa_flags = SA_RESTART`
+  - Restart system calls if interrupted by a signal.
+- `sigaction(SIGINT, &sa, NULL)`
+  - Register the signal handler for `SIGINT`.
+- `raise(SIGINT)`
+  - Raise the `SIGINT` signal to trigger the handler. (simulate `Ctrl+C`)
+
+</details>
+
+- **Forwarding exceptions to signals**
+  ![](https://branyang02.github.io/images/signals.png)
+  <span
+      class="caption"> When `SIGINT` is received, the program enters kernel mode and starts running the exception handler for handing keyboard interrupts. The exception handler then forwards the signal to the user mode signal handler. The signal handler then runs in user mode. After the signal handler finishes, the program enters the kernel mode again to clean up and return to user mode.
+  </span>
+
+- **Handling multiple signals**
+
+```c
+static void handle_signal(int signum) {
+    if (signum == SIGINT) {
+        write(STDOUT_FILENO, "Caught SIGINT!\n", 15);
+    } else if (signum == SIGTERM) {
+        write(STDOUT_FILENO, "Caught SIGTERM!\n", 16);
+    }
+}
+```
 
 ### **References**
 
-This note is based on “[CS 3130 Spring 2024](https://www.cs.virginia.edu/~cr4bd/3130/S2024/)” by Charles Reiss, used under CC BY-NC-SA 4.0.
+This note is based on [CS 3130 Spring 2024](https://www.cs.virginia.edu/~cr4bd/3130/S2024/) by Charles Reiss, used under CC BY-NC-SA 4.0.
