@@ -25,6 +25,14 @@ Date: 5/1/2024 | Author: Brandon Yang
   - [Handling Exceptions](#handling-exceptions)
 - [Multitasking](#multitasking)
   - [Processes](#processes)
+    - [Context Switch](#context-switch)
+    - [Process vs. Thread](#process-vs-thread)
+- [Signals](#signals)
+  - [Signal vs. Exception](#signal-vs-exception)
+  - [Signals Setup](#signals-setup)
+  - [Forwarding exceptions to signals](#forwarding-exceptions-to-signals)
+  - [Handling multiple signals](#handling-multiple-signals)
+  - [Common Signals](#common-signals)
 - [References](#references)
 </details>
 
@@ -377,6 +385,8 @@ socket:
     class="caption"> The virtual address space is the memory that a process can access. It is an illusion of a program having its own memory.
 </span>
 
+###### **Context Switch**
+
 - **Context Switch**: the process of saving the state of a process and loading the state of another process.
   1. OS starts running a process.
   2. Exception occurs.
@@ -388,7 +398,7 @@ socket:
 | ------------------------------------------------------------- | ------------------------------------------------------------- |
 | ![](https://branyang02.github.io/images/context_switch_A.png) | ![](https://branyang02.github.io/images/context_switch_B.png) |
 
-  <details><summary>Time Multiplexing</summary>
+<details><summary>Time Multiplexing</summary>
 
 Linux uses time multiplexing to switch between processes, which refers to "sharing the processor over time". The kernel uses a **timer** to interrupt the current process and switch to another process using a **context switch**.
 
@@ -401,27 +411,29 @@ Suppose we have two processes, `A` and `B`, and a timer interrupt every `10ms`. 
 5. Load the state of `B`.
 6. Return to user mode and start running `B`.
 
-  </details>
+</details>
 
-- **Process** vs. **Thread**:
+###### **Process** vs. **Thread**:
 
-  - **Process**: an instance of a program in execution.
-  - **Thread**: a process can have multiple threads of execution. Threads share the same **virtual address space**, but have their own **program registers**, **program counter**, condition codes, etc.
+- **Process**: an instance of a program in execution.
+- **Thread**: a process can have multiple threads of execution. Threads share the same **virtual address space**, but have their own **program registers**, **program counter**, condition codes, etc.
 
-  <div style="display: flex; justify-content: center; align-items: center;">
-      <div style="background-color: white;">
-          <img src="https://static.javatpoint.com/difference/images/process-vs-thread3.png" style="display: block; max-height: 100%; max-width: 100%;">
-      </div>
-  </div>
-  <span
-      class="caption"> Threads within the same process share the same virtual address space but have their own program registers, program counter, condition codes, etc. (Source: javapoint, <a href="https://www.javatpoint.com/process-vs-thread">Process Vs. Thread</a>)
-  </span>
+<div style="display: flex; justify-content: center; align-items: center;">
+    <div style="background-color: white;">
+        <img src="https://static.javatpoint.com/difference/images/process-vs-thread3.png" style="display: block; max-height: 100%; max-width: 100%;">
+    </div>
+</div>
+<span
+    class="caption"> Threads within the same process share the same virtual address space but have their own program registers, program counter, condition codes, etc. (Source: javapoint, <a href="https://www.javatpoint.com/process-vs-thread">Process Vs. Thread</a>)
+</span>
 
 #### **Signals**
 
 - **Signal**: a way to notify a process that an event has occurred.
 - **Signal Handler**: a function that is called when a signal is received.
   - Ex. `SIGINT` (interrupt from keyboard), `SIGSEGV` (segmentation fault), `SIGKILL` (kill the process).
+
+##### **Signal vs. Exception**
 
 |                 | User code     | Kernel code   | Hardware               |
 | --------------- | ------------- | ------------- | ---------------------- |
@@ -430,7 +442,7 @@ Suppose we have two processes, `A` and `B`, and a timer interrupt every `10ms`. 
 | **Hardware**    | via kernel    | Interrupt     | —                      |
 
 <span
-      class="caption"> Signals are roughly the kernel-to-user equivalent of an interrupt. At any time, while executing any line of code, a signal may appear.
+    class="caption"> Signals are roughly the kernel-to-user equivalent of an interrupt. At any time, while executing any line of code, a signal may appear.
 </span>
 
 |                        | (hardware) exceptions              | signals                         |
@@ -441,14 +453,30 @@ Suppose we have two processes, `A` and `B`, and a timer interrupt every `10ms`. 
 | **Instruction Change** | processor next instruction changes | thread next instruction changes |
 
 <span
-      class="caption"> Signals vs. Exceptions
+    class="caption"> Signals vs. Exceptions
 </span>
 
-- **Signals Setup**
+##### **Signals Setup**
+
+- **Signal API**
+  - `sigaction()`: set up a signal handler.
+  - `raise(sig)`: send a signal to the _current_ process.
+  - `kill(pid, sig)`: send a signal to a process with a specific PID.
+    - Bash: `kill 1234` sends `SIGTERM` to process with PID `1234`.
+    - C: `kill(1234, SIGTERM)` sends `SIGTERM` to process with PID `1234`.
+    - Bash: `kill -USR1 1234` sends `SIGUSR1` to process with PID `1234`.
+    - C: `kill(1234, SIGUSR1)` sends `SIGUSR1` to process with PID `1234`.
+  - `SA_RESTART`
+    - when included: after signal handler runs, attempt to restart the interrupted operation. (e.g., reading from keyboard)
+    - when not included: after signal handler runs, return `-1` with `errno` set to `EINTR`.
+- `kill()` not always immediate.
+  - Ex. In a multi-core system, the OS records the signal and sends it to the process when it is ready.
 
 ```c
+#include signal.h
+
 static void handler(int signum) {
-    // Handle SIGINT signal
+    // Handle what to do when signal is received
 }
 
 int main() {
@@ -458,7 +486,7 @@ int main() {
     sa.sa_flags = SA_RESTART;
     sigaction(SIGINT, &sa, NULL); // Register the signal handler for SIGINT
 
-    // Run normal code here
+    // Run normal program code
 
     return 0;
 }
@@ -524,13 +552,16 @@ int main() {
 
 </details>
 
-- **Forwarding exceptions to signals**
-  ![](https://branyang02.github.io/images/signals.png)
-  <span
-      class="caption"> When `SIGINT` is received, the program enters kernel mode and starts running the exception handler for handing keyboard interrupts. The exception handler then forwards the signal to the user mode signal handler. The signal handler then runs in user mode. After the signal handler finishes, the program enters the kernel mode again to clean up and return to user mode.
-  </span>
+##### **Forwarding exceptions to signals**
 
-- **Handling multiple signals**
+![](https://branyang02.github.io/images/signals.png)
+<span
+      class="caption"> When `SIGINT` is received, the program enters kernel mode and starts running the exception handler for handing keyboard interrupts. The exception handler then forwards the signal to the user mode signal handler. The signal handler then runs in user mode. After the signal handler finishes, the program enters the kernel mode again to clean up and return to user mode.
+</span>
+
+##### **Handling multiple signals**
+
+We can use function parameter `signum` to determine which signal was received.
 
 ```c
 static void handle_signal(int signum) {
@@ -540,7 +571,35 @@ static void handle_signal(int signum) {
         write(STDOUT_FILENO, "Caught SIGTERM!\n", 16);
     }
 }
+
+int main() {
+    struct sigaction sa;
+    sa.sa_handler = handle_signal;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    // Set up handlers for both SIGINT and SIGTERM
+    if (sigaction(SIGINT, &sa, NULL) == -1) {
+        perror("Error: cannot handle SIGINT");
+    }
+    if (sigaction(SIGTERM, &sa, NULL) == -1) {
+        perror("Error: cannot handle SIGTERM");
+    }
+}
 ```
+
+##### **Common Signals**
+
+| Constant             | Likely Use                                                   |
+| -------------------- | ------------------------------------------------------------ |
+| `SIGBUS`             | "bus error"; certain types of invalid memory accesses        |
+| `SIGSEGV`            | "segmentation fault"; other types of invalid memory accesses |
+| `SIGINT`             | what control-C usually does                                  |
+| `SIGFPE`             | "floating point exception"; includes integer divide-by-zero  |
+| `SIGHUP`, `SIGPIPE`  | reading from/writing to disconnected terminal/socket         |
+| `SIGUSR1`, `SIGUSR2` | use for whatever you (app developer) wants                   |
+| `SIGKILL`            | terminates process (**cannot be handled by process!**)       |
+| `SIGSTOP`            | suspends process (**cannot be handled by process!**)         |
 
 ### **References**
 
