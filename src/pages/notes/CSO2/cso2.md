@@ -29,10 +29,11 @@ Date: 5/1/2024 | Author: Brandon Yang
     - [Process vs. Thread](#process-vs-thread)
 - [Signals](#signals)
   - [Signal vs. Exception](#signal-vs-exception)
-  - [Signals Setup](#signals-setup)
   - [Forwarding exceptions to signals](#forwarding-exceptions-to-signals)
-  - [Handling multiple signals](#handling-multiple-signals)
   - [Common Signals](#common-signals)
+  - [Signals Setup](#signals-setup)
+  - [Handling multiple signals](#handling-multiple-signals)
+  - [Blocking Signals](#blocking-signals)
 - [References](#references)
 </details>
 
