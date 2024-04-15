@@ -456,6 +456,26 @@ Suppose we have two processes, `A` and `B`, and a timer interrupt every `10ms`. 
     class="caption"> Signals vs. Exceptions
 </span>
 
+##### **Forwarding exceptions to signals**
+
+![](https://branyang02.github.io/images/signals.png)
+<span
+      class="caption"> When `SIGINT` is received, the program enters kernel mode and starts running the exception handler for handing keyboard interrupts. The exception handler then forwards the signal to the user mode signal handler. The signal handler then runs in user mode. After the signal handler finishes, the program enters the kernel mode again to clean up and return to user mode.
+</span>
+
+##### **Common Signals**
+
+| Constant             | Likely Use                                                   |
+| -------------------- | ------------------------------------------------------------ |
+| `SIGBUS`             | "bus error"; certain types of invalid memory accesses        |
+| `SIGSEGV`            | "segmentation fault"; other types of invalid memory accesses |
+| `SIGINT`             | what control-C usually does                                  |
+| `SIGFPE`             | "floating point exception"; includes integer divide-by-zero  |
+| `SIGHUP`, `SIGPIPE`  | reading from/writing to disconnected terminal/socket         |
+| `SIGUSR1`, `SIGUSR2` | use for whatever you (app developer) wants                   |
+| `SIGKILL`            | terminates process (**cannot be handled by process!**)       |
+| `SIGSTOP`            | suspends process (**cannot be handled by process!**)         |
+
 ##### **Signals Setup**
 
 - **Signal API**
@@ -552,13 +572,6 @@ int main() {
 
 </details>
 
-##### **Forwarding exceptions to signals**
-
-![](https://branyang02.github.io/images/signals.png)
-<span
-      class="caption"> When `SIGINT` is received, the program enters kernel mode and starts running the exception handler for handing keyboard interrupts. The exception handler then forwards the signal to the user mode signal handler. The signal handler then runs in user mode. After the signal handler finishes, the program enters the kernel mode again to clean up and return to user mode.
-</span>
-
 ##### **Handling multiple signals**
 
 We can use function parameter `signum` to determine which signal was received.
@@ -588,18 +601,22 @@ int main() {
 }
 ```
 
-##### **Common Signals**
+##### **Blocking Signals**
 
-| Constant             | Likely Use                                                   |
-| -------------------- | ------------------------------------------------------------ |
-| `SIGBUS`             | "bus error"; certain types of invalid memory accesses        |
-| `SIGSEGV`            | "segmentation fault"; other types of invalid memory accesses |
-| `SIGINT`             | what control-C usually does                                  |
-| `SIGFPE`             | "floating point exception"; includes integer divide-by-zero  |
-| `SIGHUP`, `SIGPIPE`  | reading from/writing to disconnected terminal/socket         |
-| `SIGUSR1`, `SIGUSR2` | use for whatever you (app developer) wants                   |
-| `SIGKILL`            | terminates process (**cannot be handled by process!**)       |
-| `SIGSTOP`            | suspends process (**cannot be handled by process!**)         |
+- Use `sigprocmask()` to block signals.
+
+```c
+sigset_t sigint_as_set;
+sigemptyset(&sigint_as_set);
+sigaddset(&sigint_as_set, SIGINT);
+sigprocmask(SIG_BLOCK, &sigint_as_set, NULL);
+... /* do stuff without signal handler running yet */
+sigprocmask(SIG_UNBLOCK, &sigint_as_set, NULL);
+```
+
+- `sigprocmask()` temporarily disables the signal handler from running. If a signal is sent to a process while it is blocked, then the OS will track that is pending. When the pending signal is unblocked, its signal handler will be run.
+- `sigsuspend()` temporarily unblocks a blocked signal just long enough to run its signal handler.
+- `sigwait()` blocks until a signal is received.
 
 ### **References**
 
