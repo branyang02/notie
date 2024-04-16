@@ -381,7 +381,7 @@ socket:
   - A process has its own program registers, condition codes, **virtual address space**, etc.
 - **Virtual Address Space**: the memory that a process can access. (illusion of a program having its own memory)
 
-![](https://branyang02.github.io/images/address_space.png)
+<img src="https://branyang02.github.io/images/address_space.png" alt="Virtual Address Space" style="display: block; max-height: 70%; max-width: 70%;">
 <span
     class="caption"> The virtual address space is the memory that a process can access. It is an illusion of a program having its own memory.
 </span>
@@ -419,14 +419,12 @@ Suppose we have two processes, `A` and `B`, and a timer interrupt every `10ms`. 
 - **Process**: an instance of a program in execution.
 - **Thread**: a process can have multiple threads of execution. Threads share the same **virtual address space**, but have their own **program registers**, **program counter**, condition codes, etc.
 
-<div style="display: flex; justify-content: center; align-items: center;">
-    <div style="background-color: white;">
-        <img src="https://static.javatpoint.com/difference/images/process-vs-thread3.png" style="display: block; max-height: 100%; max-width: 100%;">
-    </div>
-</div>
-<span
-    class="caption"> Threads within the same process share the same virtual address space but have their own program registers, program counter, condition codes, etc. (Source: javapoint, <a href="https://www.javatpoint.com/process-vs-thread">Process Vs. Thread</a>)
-</span>
+  <div style="background-color: white;">
+      <img src="https://static.javatpoint.com/difference/images/process-vs-thread3.png" style="max-height: 70%; max-width: 70%;">
+  </div>
+  <span
+      class="caption"> Threads within the same process share the same virtual address space but have their own program registers, program counter, condition codes, etc. (Source: javapoint, <a href="https://www.javatpoint.com/process-vs-thread">Process Vs. Thread</a>)
+  </span>
 
 #### **Signals**
 
@@ -459,7 +457,7 @@ Suppose we have two processes, `A` and `B`, and a timer interrupt every `10ms`. 
 
 ##### **Forwarding exceptions to signals**
 
-![](https://branyang02.github.io/images/signals.png)
+<img src="https://branyang02.github.io/images/signals.png" alt="Signals" style="display: block; max-height: 70%; max-width: 70%;">
 <span
       class="caption"> When `SIGINT` is received, the program enters kernel mode and starts running the exception handler for handing keyboard interrupts. The exception handler then forwards the signal to the user mode signal handler. The signal handler then runs in user mode. After the signal handler finishes, the program enters the kernel mode again to clean up and return to user mode.
 </span>
@@ -619,6 +617,300 @@ sigprocmask(SIG_UNBLOCK, &sigint_as_set, NULL);
 - `sigsuspend()` temporarily unblocks a blocked signal just long enough to run its signal handler.
 - `sigwait()` blocks until a signal is received.
 
+#### **Processes**
+
+coming soon...
+
+#### **Virtual Memory**
+
+coming soon...
+
+#### **Cache**
+
+coming soon...
+
+#### **Synchonization**
+
+coming soon...
+
+#### **Networking**
+
+coming soon...
+
+#### **Secure Channels**
+
+Secure communication over an insecure channel involves safeguarding the data against unauthorized access and manipulation. The two primary concerns are confidentiality and authenticity, ensuring the data remains private and verifiable respectively.
+
+##### **Example Attack Scenarios**
+
+- **Passive Attacks:**
+  - **Eavesdropping:** An unauthorized party listens to the communications between Machine A and Machine B.
+- **Active Attacks:**
+  - **Machine-in-the-middle Attack:** An attacker intercepts, alters, or injects messages between Machine A and Machine B.
+
+<img src="https://images.shiksha.com/mediadata/ugcDocuments/images/wordpressImages/2023_02_MicrosoftTeams-image-304.jpg" alt="Secure Channels" style="display: block; max-height: 70%; max-width: 70%;">
+<span
+    class="caption"> Source: <a href="https://www.shiksha.com/online-courses/articles/difference-between-active-and-passive-attacks/">Difference Between Active and Passive Attacks</a>
+
+</span>
+
+##### **Confidentiality**
+
+- Confidentiality ensures that the message is only readable by the intended recipient.
+
+**Example Scenario:**
+
+- Machine A sends a message to Machine B.
+- Machine M, acting as a machine-in-the-middle, intercepts and may alter the message pretending to be Machine B.
+
+###### **Symmetric Encryption Functions**
+
+Symmetric encryption uses a shared secret key for both encrypting and decrypting messages.
+
+- **Encrypt Function:**
+  - $E(key, message) =$ `ciphertext`
+- **Decrypt Function:**
+  - $D(key, ciphertext) =$ `message`
+
+**Using Symmetric Encryption**
+
+If Machine A and Machine B have a shared secret, the communication process involves:
+
+1. A computes the ciphertext using the shared key: $E(key, message)$.
+2. A sends the ciphertext to B.
+3. B decrypts the received ciphertext: $D(key, ciphertext)$.
+
+Here is an example of symmetric encryption in C:
+
+```execute-c
+#include <stdio.h>
+#include <string.h>
+
+void encrypt(char *message, char *key) {
+    for (int i = 0; i < strlen(message); i++) {
+        message[i] += key[i % strlen(key)];
+    }
+}
+
+void decrypt(char *message, char *key) {
+    for (int i = 0; i < strlen(message); i++) {
+        message[i] -= key[i % strlen(key)];
+    }
+}
+
+int main() {
+    char message[] = "Hello, World!";
+    char key[] = "secret";
+
+    printf("Original message: %s\n", message);
+
+    encrypt(message, key);
+    printf("ciphertext: %s\n", message);
+
+    decrypt(message, key);
+    printf("Decrypted message: %s\n", message);
+
+    return 0;
+}
+```
+
+###### **Asymmetric Encryption Functions**
+
+Asymmetric encryption uses a pair of keys: a public key for encryption and a private key for decryption. The public key is shared, while the private key is kept secret.
+
+- **Encrypt Function:**
+  - $PE_{\text{public}}(key_{\text{public}}, message) =$ `ciphertext`
+- **Decrypt Function:**
+  - $PD_{\text{private}}(key_{\text{private}}, ciphertext) =$ `message`
+
+**Using Asymmetric Encryption**
+
+1. B generates a pair of keys: $key_{\text{public}}, key_{\text{private}}$.
+2. B sends the public key $key_{\text{public}}$ to A.
+3. A computes the ciphertext using the public key: $PE_{\text{public}}(key_{\text{public}}, message)$.
+4. A sends the ciphertext to B.
+5. B decrypts the received ciphertext using the private key: $PD_{\text{private}}(key_{\text{private}}, ciphertext)$.
+
+<details><summary>Example Asymmetric Encryption in C</summary>
+
+The following code implements asymmetric encryption in C, however, it is a simplified version of asymmetric encryption and it is not secure.
+
+```execute-c
+#include <stdio.h>
+#include <string.h>
+
+int e(int msg, int key) {
+    return msg * key;
+}
+int d(int msg, int key) {
+    return msg * key;
+}
+
+int main() {
+    int message = 0xdeadbeef;
+    int k1 = 2501, k2 = 3221654797;
+
+    printf("-> message: %x; ciphertext: %x; decrypted: %x\n",
+        message, e(message, k1), d(e(message, k1), k2));
+    printf("<- message: %x; ciphertext: %x; decrypted: %x\n",
+        message, e(message, k2), d(e(message, k2), k1));
+
+    return 0;
+}
+
+```
+
+In this example, we assumed that `k1` and `k2` are already given. In a real-world scenario, `k1` and `k2` would be generated using a secure algorithm.
+
+</details>
+
+##### **Authenticity**
+
+- Authenticity ensures the message is actually sent by the claimed sender.
+
+###### **Message Authentication Code (MAC)**
+
+MAC is used to verify the integrity and the authenticity of a message. It also ensures that the message has not been tampered with during transmission.
+
+Supoose we have a funtion `MAC` that is given by the _expert_:
+
+- **MAC Function:**
+  - $MAC(key, message) = tag$
+- **MAC Verification Function:**
+  - $MAC_{\text{verify}}(key, message, tag)$ = `true` or `false`
+
+**Using MAC**
+
+If Machine A and Machine B have a shared secret, the communication process involves:
+
+1. A computes the MAC tag using the shared key: $MAC(key, message)$.
+2. A sends the message and the MAC tag to B.
+3. B verifies the MAC tag: $MAC_{\text{verify}}(key, message, tag)$.
+4. If the MAC tag is verified, B accepts the message.
+
+**Using MAC with Encryption**
+
+1. A computes the ciphertext using the shared key: $E(key, message)$.
+2. A computes the MAC tag using the shared key: $MAC(key, ciphertext)$.
+3. A sends the ciphertext and the MAC tag to B.
+4. B verifies the MAC tag: $MAC_{\text{verify}}(key, ciphertext, tag)$.
+5. If the MAC tag is verified, B decrypts the ciphertext: $D(key, ciphertext)$.
+
+<details><summary>Example MAC + Symmetric Encryption in C</summary>
+
+The following code implements a simple MAC in C:
+
+```execute-c
+#include <stdio.h>
+#include <string.h>
+
+void encrypt(char *message, char *key) {
+    for (int i = 0; i < strlen(message); i++) {
+        message[i] += key[i % strlen(key)];
+    }
+}
+
+void decrypt(char *message, char *key) {
+    for (int i = 0; i < strlen(message); i++) {
+        message[i] -= key[i % strlen(key)];
+    }
+}
+
+void mac(char *message, char *key, char *tag) {
+    for (int i = 0; i < strlen(message); i++) {
+        tag[i] = message[i] ^ key[i % strlen(key)];
+    }
+}
+
+int mac_verify(char *message, char *key, char *tag) {
+    char computed_tag[strlen(message)];
+    mac(message, key, computed_tag);
+    return memcmp(tag, computed_tag, strlen(message)) == 0;
+}
+
+int main() {
+    char message[] = "Hello, World!";
+    char key[] = "secret";
+    char tag[strlen(message)];
+
+    printf("Original message: %s\n", message);
+
+    encrypt(message, key);
+    printf("ciphertext: %s\n", message);
+
+    mac(message, key, tag);
+    printf("MAC tag: %s\n", tag);
+
+    if (mac_verify(message, key, tag)) {
+        printf("MAC tag verified.\n");
+        decrypt(message, key);
+        printf("Decrypted message: %s\n", message);
+    } else {
+        printf("MAC tag not verified.\n");
+    }
+
+    return 0;
+}
+```
+
+</details>
+
+
+###### **Digital Signatures**
+
+Digital signatures are used to verify the authenticity of a message and ensure that the message has not been tampered with.
+
+- **Sign Function:**
+  - $S(key_{\text{private}}, message) = signature$
+- **Verify Function:**
+  - $V(key_{\text{public}}, message, signature)$ = `true` or `false`
+
+**Using Digital Signatures**
+
+1. A generates a pair of keys: $key_{\text{public}}, key_{\text{private}}$.
+2. A computes the signature using the private key: $S(key_{\text{private}}, message)$.
+3. A sends the message and the signature to B.
+4. B verifies the signature using the public key: $V(key_{\text{public}}, message, signature)$.
+
+##### **Handling Replay Attacks**
+
+Replay attacks involve an attacker intercepting a message and replaying it at a later time.
+
+- **Replay Attack Scenario:**
+  - Machine A sends a message to Machine B.
+  - Machine M intercepts the message and sends it to B again.
+
+**Nonces** are used to prevent replay attacks.
+
+A nonce is a number used only once in a cryptographic communication. It is used to prevent replay attacks.
+
+- **Example Scenario:**
+  - Machine A sends a message to Machine B.
+  - Machine M intercepts the message and sends it to B again.
+
+**Using Nonces**
+
+1. A generates a nonce: $N_A$.
+2. A sends the message and the nonce to B.
+3. B verifies the nonce and accepts the message. B generates a nonce: $N_B$.
+
+
+##### **Certificate**
+
+Certificates are used to verify the authenticity of a public key.
+
+- **Certificate Authority (CA):**
+  - A trusted entity that issues certificates.
+- **Certificate:**
+  - Contains the public key and information about the owner.
+
+**Certificate Verification Process:**
+
+1. 
+
+
 ### **References**
 
 This note is based on [CS 3130 Spring 2024](https://www.cs.virginia.edu/~cr4bd/3130/S2024/) by Charles Reiss, used under CC BY-NC-SA 4.0.
+
+
