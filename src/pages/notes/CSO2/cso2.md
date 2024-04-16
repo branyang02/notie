@@ -855,7 +855,6 @@ int main() {
 
 </details>
 
-
 ###### **Digital Signatures**
 
 Digital signatures are used to verify the authenticity of a message and ensure that the message has not been tampered with.
@@ -894,23 +893,47 @@ A nonce is a number used only once in a cryptographic communication. It is used 
 2. A sends the message and the nonce to B.
 3. B verifies the nonce and accepts the message. B generates a nonce: $N_B$.
 
-
 ##### **Certificate**
 
 Certificates are used to verify the authenticity of a public key.
 
 - **Certificate Authority (CA):**
-  - A trusted entity that issues certificates.
+  - A trusted third party that issues certificates.
 - **Certificate:**
   - Contains the public key and information about the owner.
+- **Certificate Verification:**
+  - Ensures the certificate is valid and issued by a trusted CA.
 
-**Certificate Verification Process:**
+**Structure of a Certificate**
 
-1. 
+- **subject:** the entity the certificate is about.
+- **issuer:** the entity that issued the certificate.
+- **public key:** the public key of the subject.
+- **signature:** the signature of the issuer.
 
+**Example Scenario:**
+
+- **Problem**:
+
+  - Machine A wans to send a message to Machine B.
+  - Machine A does not have Machine B's public key, however, Machine A trusts the CA (A has the CA's public key).
+
+- **Setup**:
+
+  1. CA can issue a certificate for Machine B:
+     - **subject:** Machine B
+     - **issuer:** CA
+     - **public key:** Machine B's public key
+     - **signature:** CA's signature
+  2. CA sends the certificate to Machine B.
+
+- **Process**:
+
+  1. Machine A receives Machine B's certificate.
+  2. Machine A verifies the certificate using the CA's public key.
+  3. Machine A extracts Machine B's public key from the certificate.
+  4. Machine A sends the message to Machine B using Machine B's public key.
 
 ### **References**
 
 This note is based on [CS 3130 Spring 2024](https://www.cs.virginia.edu/~cr4bd/3130/S2024/) by Charles Reiss, used under CC BY-NC-SA 4.0.
-
-
