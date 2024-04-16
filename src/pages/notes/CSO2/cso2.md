@@ -911,7 +911,16 @@ Certificates are used to verify the authenticity of a public key.
 - **public key:** the public key of the subject.
 - **signature:** the signature of the issuer.
 
-**Example Scenario:**
+**Public Key Infrastructure (PKI)**
+
+- **Certificate Authority (CA):**
+  - Issues certificates.
+- **Registration Authority (RA):**
+  - Verifies the identity of the certificate holder.
+- **Certificate Repository:**
+  - Stores certificates.
+
+<details><summary>Example Certificate Scenario</summary>
 
 - **Problem**:
 
@@ -933,6 +942,8 @@ Certificates are used to verify the authenticity of a public key.
   2. Machine A verifies the certificate using the CA's public key.
   3. Machine A extracts Machine B's public key from the certificate.
   4. Machine A sends the message to Machine B using Machine B's public key.
+
+</details>
 
 ### **References**
 
