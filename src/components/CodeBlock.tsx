@@ -45,7 +45,8 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ initialCode, language = 'python' 
         data.output.trim().startsWith('Traceback') ||
         data.output.trim().startsWith('File') ||
         data.output.trim().startsWith('Exception') ||
-        data.output.toLowerCase().includes('error')
+        data.output.toLowerCase().includes('error') ||
+        data.output.toLowerCase().includes('core dumped')
       ) {
         setError(true);
       } else {
