@@ -11,6 +11,7 @@ import remarkMath from 'remark-math';
 
 import CodeBlock from '../../../components/CodeBlock';
 import StaticCodeBlock from '../../../components/StaticCodeBlock';
+import TikZ from '../../../components/TikZ';
 import markdown from './cso2.md?raw';
 
 type CodeProps = React.HTMLAttributes<HTMLElement> & {
@@ -28,18 +29,14 @@ const components = {
     if (!inline && match) {
       const language = className?.split('language-').pop() || '';
       const content = Array.isArray(children) ? children.join('') : children;
+      const code = String(content).replace(/\n$/, '');
       if (language.includes('execute-')) {
-        return (
-          <CodeBlock
-            initialCode={String(content).replace(/\n$/, '')}
-            language={language.split('-').pop()}
-          />
-        );
+        return <CodeBlock initialCode={code} language={language.split('-').pop()} />;
       }
-
-      return (
-        <StaticCodeBlock code={String(content).replace(/\n$/, '')} language={language} />
-      );
+      if (language === 'tikz') {
+        return <TikZ tikzScript={code} />;
+      }
+      return <StaticCodeBlock code={code} language={language} />;
     } else {
       return (
         <code className={className} {...props}>
