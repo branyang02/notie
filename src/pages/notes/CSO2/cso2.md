@@ -964,6 +964,49 @@ Certificates are used to verify the authenticity of a public key.
 
 </details>
 
+#### **Pipeline**
+
+A pipeline is a technique used to overlap the execution of multiple instructions. It divides the instruction execution into multiple stages, allowing multiple instructions to be executed simultaneously.
+
+##### **Pipeline Stages**
+
+- **Fetch**: fetch the instruction from memory.
+- **Decode**: decode the instruction.
+- **Execute**: execute the instruction.
+- **Memory**: access memory.
+- **Writeback**: write the result back to the register file.
+
+In order to hold the data between stages, we use _pipeline registers_ called **stages**.
+
+<img src="https://branyang02.github.io/images/pipeline.png" alt="Pipeline" style="display: block; max-height: 70%; max-width: 70%;">
+
+<span class="caption"> 
+The pipeline consists of five stages: Fetch, Decode, Execute, Memory, and Writeback. Each stage has a pipeline register to hold the data between stages.
+</span>
+
+We evaluate the performance of a pipeline using the following metrics:
+
+- **Latency**: the time taken to complete a single instruction.
+- **Throughput**: the number of instructions completed per unit of time.
+
+<details><summary>Example Pipeline Latency and Throughput</summary>
+
+<img src="https://branyang02.github.io/images/latency.png" alt="Pipeline" style="display: block; max-height: 70%; max-width: 70%;">
+
+In the example above, suppose _cycle time_ is 500 ps, the **latency** is calculated as follows:
+
+$$
+\text{Latency} = \text{Cycle Time} \times \text{Number of Stages} = 500 \times 5 = 2500 \text{ ps}.
+$$
+
+We also compute the **throughput** as the time taken between the start of two instructions per cycle time:
+
+$$
+\text{Throughput} = \frac{1 \text{ instruction}}{1 \text{ cycle}} = \frac{1 \text{ instruction}}{500 \text{ ps}}
+$$
+
+</details>
+
 ### **References**
 
 This note is based on [CS 3130 Spring 2024](https://www.cs.virginia.edu/~cr4bd/3130/S2024/) by Charles Reiss, used under CC BY-NC-SA 4.0.
