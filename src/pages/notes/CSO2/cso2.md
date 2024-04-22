@@ -976,7 +976,7 @@ A pipeline is a technique used to overlap the execution of multiple instructions
 - **Memory**: access memory.
 - **Writeback**: write the result back to the register file.
 
-In order to hold the data between stages, we use _pipeline registers_ called **stages**.
+In order to hold the data between stages, we use **pipeline registers**.
 
 <img src="https://branyang02.github.io/images/pipeline.png" alt="Pipeline" style="display: block; max-height: 70%; max-width: 70%;">
 
@@ -999,11 +999,117 @@ $$
 \text{Latency} = \text{Cycle Time} \times \text{Number of Stages} = 500 \times 5 = 2500 \text{ ps}.
 $$
 
-We also compute the **throughput** as the time taken between the start of two instructions per cycle time:
+We also compute the **throughput** as the time taken between the start of two instructions per cycle time. Suppose we denote two instructions as `instr1` and `instr2`:
 
 $$
-\text{Throughput} = \frac{1 \text{ instruction}}{1 \text{ cycle}} = \frac{1 \text{ instruction}}{500 \text{ ps}}
+\text{Throughput} = \frac{\text{instr2}_{\text{start}} - \text{instr1}_{\text{start}}}{\text{cycle time}} = \frac{1 \text{ instruction}}{500 \text{ ps}}.
 $$
+
+Likewise, we can also compute throughput by comparing the time taken between the end of two instructions.
+
+Therefore the throughput is $2$ instructions per nanosecond.
+
+</details>
+
+We can increase pipeline performance by increasing the number of states. However, we will only see a **diminishing return** as the number of stages increases. This is because that **pipeline registers** often take time to load and store the data.
+
+<img src="https://branyang02.github.io/images/diminishing_return.png" alt="Diminishing Return" style="display: block; max-height: 70%; max-width: 70%;">
+<span
+    class="caption"> Diminishing Returns: register delays
+</span>
+
+Dividing the instruction execution into multiple stages can lead to **pipeline hazards**.
+
+##### **Pipeline Hazards**
+
+- **Data Hazard**: a data dependency between instructions.
+
+<details><summary>Data Hazard Example</summary>
+
+Suppose we have the following instructions:
+
+1. `addq %r8, %r9`
+2. `addq %r9, %r8`
+
+Suppose we run these instructions in the pipeline configuration:
+
+<img src="https://branyang02.github.io/images/data_hazard.png" alt="Data Hazard" style="display: block; max-height: 70%; max-width: 70%;">
+
+We can see that the second instruction depends on the result of the first instruction. This data dependency causes a **data hazard**.
+
+</details>
+
+###### **Data Hazard Solutions**
+
+- **Stalling**: the _hardware_ inserts a `nop` (no operation) instruction to wait for the data to be available.
+
+We can also use a _compiler_ to manually insert `nop` instructions to resolve data hazards, but this is less efficient than using hardware to do so.
+
+<details><summary>Stalling Example</summary>
+
+Suppose we have the following instructions:
+
+1. `addq %r8, %r9`
+2. `addq %r9, %r8`
+
+To resolve the data hazard, we can insert `nop` instructions:
+
+1. `addq %r8, %r9`
+2. _hardware inserts_ `nop`
+3. _hardware inserts_ `nop`
+4. `addq %r9, %r8`
+
+This way, the second instruction will run _three_ cycles after the first instruction, allowing the data to be available.
+
+</details>
+
+- **Forwarding**: the process of passing the result from an earlier instruction's source stage to the destination stage of a later instruction in the _same cycle_.
+
+<details><summary>Forwarding Example</summary>
+
+Suppose we have the following instructions:
+
+<img src="https://branyang02.github.io/images/forwarding.png" alt="Forwarding" style="display: block; max-height: 70%; max-width: 70%;">
+
+We follow each instruction through the pipeline stages:
+
+1. `addq %r8, %r9`: first instruction.
+2. `subq %r8, %r10`: nothing is forwarded since no value is needed.
+3. `xorq %r8, %r9`: `%r9` is forwarded to `decode` from `memory` of instruction 1.
+4. `addq %r9, %r8`: `%r9` is forwarded to `decode` from `execute` of instruction 3.
+
+At every cycle, the pipeline checks if the data is available in the later stages and forwards it to the earlier stages if needed. This way, the data is available when needed, and the instructions can be executed without stalling.
+
+Note that at every cycle, the value of a register is only updated **once** from an earlier stage. In the example above at instruction 4, the value of `%r9` is first modified in instruction 1, then forwarded to instruction 3, and finally forwarded to instruction 4. Therefore, instruction 4 only needs to use the value of `%r9` from instruction 3.
+
+</details>
+
+- **Stall + Forwarding**: a combination of stalling and forwarding to resolve data hazards.
+
+<details><summary>Stall + Forwarding Example</summary>
+
+Suppose we have the following instructions:
+
+1. `movq 0(%rax), %rbx`
+2. `subq %rbx, %rcx`
+
+and the following pipeline stages:
+
+| 0     | 1     | 2     | 3     | 4     | 5     | 6   | 7   | 8   | 9   |
+| ----- | ----- | ----- | ----- | ----- | ----- | --- | --- | --- | --- |
+| **F** | **D** | **E** | **M** | **W** |       |     |     |     |     |
+|       | **F** | **D** | **E** | **M** | **W** |     |     |     |     |
+
+We are performing a load from memory in instruction 1. In this case, the value of `%rbx` is not available until the `memory` stage of instruction 1. Therefore, we need to stall instruction 2 until the value of `%rbx` is available.
+
+However, we can see that the `memory` stage of instruction 1 is in the cycle _after_ the `execute` stage of instruction 2. Therefore, we cannot possibly forward the value from a future cycle. In this case, we need to stall instruction 2 and wait for the value of `%rbx` to be available.
+
+| 0     | 1     | 2     | 3                                    | 4     | 5     | 6     | 7   | 8   | 9   |
+| ----- | ----- | ----- | ------------------------------------ | ----- | ----- | ----- | --- | --- | --- |
+| **F** | **D** | **E** | <span style="color:red">**M**</span> | **W** |       |       |     |     |     |
+|       | **F** | **D** | <span style="color:red">**D**</span> | **E** | **M** | **W** |     |     |
+
+In this case, we will stall instruction 2's `decode` stage until the value of `%rbx` is available. Once the value is available, we can proceed with the execution of instruction 2 at cycle 3.
 
 </details>
 
