@@ -989,7 +989,7 @@ We evaluate the performance of a pipeline using the following metrics:
 - **Latency**: the time taken to complete a single instruction.
 - **Throughput**: the number of instructions completed per unit of time.
 
-<details><summary>Example Pipeline Latency and Throughput</summary>
+<details open><summary>Example Pipeline Latency and Throughput</summary>
 
 <img src="https://branyang02.github.io/images/latency.png" alt="Pipeline" style="display: block; max-height: 70%; max-width: 70%;">
 
@@ -1023,8 +1023,9 @@ Dividing the instruction execution into multiple stages can lead to **pipeline h
 ##### **Pipeline Hazards**
 
 - **Data Hazard**: a data dependency between instructions.
+- **Control Hazard**: a control dependency between instructions.
 
-<details><summary>Data Hazard Example</summary>
+<details open><summary>Data Hazard Example</summary>
 
 Suppose we have the following instructions:
 
@@ -1045,7 +1046,7 @@ We can see that the second instruction depends on the result of the first instru
 
 We can also use a _compiler_ to manually insert `nop` instructions to resolve data hazards, but this is less efficient than using hardware to do so.
 
-<details><summary>Stalling Example</summary>
+<details open><summary>Stalling Example</summary>
 
 Suppose we have the following instructions:
 
@@ -1064,6 +1065,17 @@ This way, the second instruction will run _three_ cycles after the first instruc
 </details>
 
 - **Forwarding**: the process of passing the result from an earlier instruction's source stage to the destination stage of a later instruction in the _same cycle_.
+
+Different instructions will have different latencies in the pipeline. For example, a `load` instruction will have a longer latency due to memory access compared to an `add` instruction. Here is a table of instructions and their corresponding data ready stages:
+
+| Instruction type | Example instruction  | Data Ready Stage |
+| ---------------- | -------------------- | ---------------- |
+| Arithmetic       | `addq %r8, %r9`      | **Execute**      |
+| Load             | `movq 0(%rax), %rbx` | **Memory**       |
+| Store            | `movq %rbx, 0(%rax)` | **Execute**      |
+| Branch           | `jne label`          | **Execute**      |
+
+Note that the instruction after a branch instruction (`jne label`) will need to wait until the branch is resolved at the `execute` stage. This means that we _cannot_ `fetch` the next instruction until the `execute` stage of the branch instruction.
 
 <details><summary>Forwarding Example</summary>
 
@@ -1112,6 +1124,126 @@ However, we can see that the `memory` stage of instruction 1 is in the cycle _af
 In this case, we will stall instruction 2's `decode` stage until the value of `%rbx` is available. Once the value is available, we can proceed with the execution of instruction 2 at cycle 3.
 
 </details>
+
+##### **Control Hazard**
+
+Control hazards occur when the next instruction to execute depends on the result of a previous instruction.
+
+We can resolve control hazards by **stalling** or **branch prediction**.
+
+- **Stalling**: the process of waiting for the target of a branch instruction to be known before proceeding with the next instruction.
+
+<details open><summary>Control Hazard Stalling Example</summary>
+
+Suppose we have the following instructions:
+
+1. `cmpq %r8, %r9`
+2. `jne label`
+3. `xorq %r10, %r11`
+4. `movq %r11, 0(%r12)`
+
+We can perform our standard **FDEMW** pipeline stages:
+
+$$
+\begin{array}{ccccccccc}
+ & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} \\
+\text{cmpq \%r8, \%r9} & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         &         &         \\
+\text{jne label} &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         &         \\
+\text{xorq \%r10, \%r11} &         &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         \\
+\text{movq \%r11, 0(\%r12)} &         &         &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         \\
+\end{array}
+$$
+
+In the first instruction `cmpq %r8, %r9`, the flag is set at `execute` stage. The second instruction `jne label` depends on the flag set by the first instruction. Therefore, the value of the flag is _forwarded_ to the `decode` stage of the second instruction.
+
+However, the `jne label` instruction is a **control hazard** since we do not know the target of the jump until the `execute` stage of the jump instruction. Therefore, we need to stall the pipeline until the target of the jump is known:
+
+$$
+\begin{array}{cccccccccc}
+& \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} & \text{9} \\
+\text{cmpq \%r8, \%r9} & \text{F} & \text{D} & \color{red} \text{E} & \text{M} & \text{W} &         &         &         &         \\
+\text{jne label} &         & \text{F} & \color{red} \text{D} & \text{E} & \text{M} & \text{W} &         &         &         \\
+\color{#808080}\text{nop} & & & \color{#808080} \text{F} & \color{#808080} \color{#808080}\text{D} & \color{#808080}\text{E} & \color{#808080}\text{M} & \color{#808080}\text{W} & & \\
+\color{#808080}\text{nop} & & & & \color{#808080}\text{F} &\color{#808080}\text{D} & \color{#808080}\text{E} &\color{#808080} \text{M} & \color{#808080}\text{W} & \\
+\text{xorq \%r10, \%r11} &         &         &         &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} \\
+\text{movq \%r11, 0(\%r12)} &         &         &         &         &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} \\
+\end{array}
+$$
+
+We must always make sure that the `execute` stage of the jump instruction is completed before we can proceed with the next `fetch` instruction.
+
+</details>
+
+- **Branch Prediction**: the process of predicting the target of a branch instruction before it is known.
+
+<details open><summary>Branch Prediction Example</summary>
+
+Suppose we have the following instructions:
+
+```assembly
+        cmpq %r8, %r9
+        jne label
+        xorq %r10, %r11
+        movq %r11, 0(%r12)
+
+label:  addq %r8, %r9
+        imul %r13, %r14
+```
+
+If we follow the **stalling** solution, we essentially _waste_ 2 cycles waiting for the target of the jump instruction to be known. This can be inefficient, especially if the target of the jump instruction is known most of the time.
+
+Instead, we can use **branch prediction** to predict the target of the jump instruction. If the prediction is correct, we can proceed with the execution of the next instruction without stalling.
+
+In the example above, we **_speculate_** that the jump will **NOT** be taken, and we proceed with the execution of the next two instructions in place of the `nop` instructions.
+
+If our speculation is correct, our pipeline will look like this:
+
+$$
+\begin{array}{ccccccccc}
+ & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} \\
+\text{cmpq \%r8, \%r9} & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         &         &         \\
+\text{jne label} &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         &         \\
+\text{xorq \%r10, \%r11} &         &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         \\
+\text{movq \%r11, 0(\%r12)} &         &         &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         \\
+\vdots & & & & & & & & & \\
+\end{array}
+$$
+
+However, if we speculate _incorrectly_, we can **_squash_** the instructions that were executed and proceed with the correct target of the jump instruction:
+
+$$
+\begin{array}{cccccccccc}
+ & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} & \text{9} \\
+\text{cmpq \%r8, \%r9} & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         &         &         \\
+\text{jne label} &         & \text{F} & \text{D} & \color{green} \text{E} & \text{M} & \text{W} &         &         &         \\
+\text{xorq \%r10, \%r11} &         &         & \text{F} & \color{red} \text{D} & \\
+\color{#808080}\text{nop} & & & & & \color{#808080} \text{E} & \color{#808080} \text{M} & \color{#808080} \text{W} &  & \\
+\text{movq \%r11, 0(\%r12)} &         &         &         & \color {red} \text{F}         \\
+\color{#808080}\text{nop} & & & & & \color{#808080} \text{D} & \color{#808080} \text{E} & \color{#808080} \text{M} & \color{#808080} \text{W} & \\
+\text{addq \%r8, \%r9} &         &         &         &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} \\
+\text{imul \%r13, \%r14} &         &         &         &         &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} \\
+\end{array}
+$$
+
+In the example above, we know we have speculated incorrectly when we reach the `execute` stage (labeled in green) of the jump instruction. We then **_squash_** the instructions that were executed (labeled in red), and replace them with `nop` instructions.
+
+</details>
+
+We want to correctly predict the target of the jump instruction as much as possible to avoid stalling the pipeline. We can use different **branch prediction algorithms** to predict the target of the jump instruction.
+
+- **Static Prediction**: always predict the same target.
+  - **forward not taken, backward taken**: jumps that go to a future instruction are not taken, and jumps that go to a previous instruction are taken.
+- **Dynamic Prediction**: predict the target based on the history of the branch.
+  - **Branch History Table (BHT)**: a table that stores the history of branches.
+
+<img src="https://branyang02.github.io/images/branch_prediction.png" alt="Branch History Table" style="display: block; max-height: 70%; max-width: 70%;">
+<span
+    class="caption"> Branch History Table (BHT) stores the history of branches. The table is indexed by the program counter (PC) and stores the history of the branch (taken or not taken).
+</span>
+
+Jump instructions are often used in loops, and they may take some time to resolve. To speed up this process, we can use a **branch target buffer (BTB)** to store the target of the jump instruction.
+
+- **Branch Target Buffer (BTB)**: a cache that stores the target of the jump instruction.
 
 ### **References**
 
