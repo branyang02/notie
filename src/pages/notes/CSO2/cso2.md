@@ -1107,19 +1107,25 @@ Suppose we have the following instructions:
 
 and the following pipeline stages:
 
-| 0     | 1     | 2     | 3     | 4     | 5     | 6   | 7   | 8   | 9   |
-| ----- | ----- | ----- | ----- | ----- | ----- | --- | --- | --- | --- |
-| **F** | **D** | **E** | **M** | **W** |       |     |     |     |     |
-|       | **F** | **D** | **E** | **M** | **W** |     |     |     |     |
+$$
+\begin{array}{ccccccccc}
+ & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} \\
+\text{movq 0(\%rax), \%rbx} & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         &         &         \\
+\text{subq \%rbx, \%rcx} &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         &         \\
+\end{array}
+$$
 
 We are performing a load from memory in instruction 1. In this case, the value of `%rbx` is not available until the `memory` stage of instruction 1. Therefore, we need to stall instruction 2 until the value of `%rbx` is available.
 
 However, we can see that the `memory` stage of instruction 1 is in the cycle _after_ the `execute` stage of instruction 2. Therefore, we cannot possibly forward the value from a future cycle. In this case, we need to stall instruction 2 and wait for the value of `%rbx` to be available.
 
-| 0     | 1     | 2     | 3                                    | 4     | 5     | 6     | 7   | 8   | 9   |
-| ----- | ----- | ----- | ------------------------------------ | ----- | ----- | ----- | --- | --- | --- |
-| **F** | **D** | **E** | <span style="color:red">**M**</span> | **W** |       |       |     |     |     |
-|       | **F** | **D** | <span style="color:red">**D**</span> | **E** | **M** | **W** |     |     |
+$$
+\begin{array}{cccccccccc}
+ & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} & \text{9} \\
+\text{movq 0(\%rax), \%rbx} & \text{F} & \text{D} & \text{E} & \color{red} \text{M} & \text{W} &         &         &         &         &         \\
+\text{subq \%rbx, \%rcx} &         & \text{F} & \text{D} & \color{red} \text{D} & \text{E} & \text{M} & \text{W} &         &         &         \\
+\end{array}
+$$
 
 In this case, we will stall instruction 2's `decode` stage until the value of `%rbx` is available. Once the value is available, we can proceed with the execution of instruction 2 at cycle 3.
 
@@ -1244,6 +1250,32 @@ We want to correctly predict the target of the jump instruction as much as possi
 Jump instructions are often used in loops, and they may take some time to resolve. To speed up this process, we can use a **branch target buffer (BTB)** to store the target of the jump instruction.
 
 - **Branch Target Buffer (BTB)**: a cache that stores the target of the jump instruction.
+
+##### **Beyond Pipelining**
+
+- **Multiple Issue**: executing multiple instructions in parallel.
+
+$$
+\begin{array}{ccccccccc}
+  & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} \\
+\text{addq \%r8, \%r9} & \text{F} & \text{D} & \color{red}\text{E} & \text{M} & \text{W} &         &         &         &         \\
+\text{subq \%r10, \%r11}          & \text{F} & \text{D} & \color{red}\text{E} & \text{M} & \text{W} &         &         &         \\
+\text{xorq \%r9, \%r11}       &         & \text{F} &\color{red} \text{D} & \text{E} & \text{M} & \text{W} &         &         \\
+\text{subq \%r10, \%rbx}                   &         & \text{F} &\color{red} \text{D} & \text{E} & \text{M} & \text{W} &         \\
+\end{array}
+$$
+
+In the example above, we can see that the first two instructions can be executed in parallel since they do not have any data dependencies. This is an example of **multiple issue**. However, **hazard handling** becomes more complex when we have multiple instructions executing in parallel. In this example, we need to forward the result from `execute` of the first AND second instruction to the `decode` of the third instruction. We also need to forward the result from `execute` of the third instruction to the `decode` of the fourth instruction.
+
+- **Out-of-Order Execution**: executing instructions out of order to increase performance.
+
+We introduce OOO in the next section.
+
+#### **Out-of-Order (OOO)**
+
+To increase the performance of the pipeline, we can execute instructions _out of order_. This allows us to execute independent instructions simultaneously, providing an _illusion_ that work is still done in order, even if they are not in the correct order.
+
+##### **OOO hazards**
 
 ### **References**
 
