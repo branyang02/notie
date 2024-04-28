@@ -646,7 +646,37 @@ coming soon...
 
 #### **Cache**
 
-coming soon...
+<blockquote class="equation">
+
+$$
+\begin{equation*}
+f(x) =
+\begin{cases}
+\int_{-\infty}^{x} e^{-t^2}dt & \text{for } x \geq 0 \\
+1 + \sum_{n=1}^{|\lfloor x \rfloor|} \frac{1}{n!} & \text{for } x < 0
+\end{cases}
+\end{equation*}
+$$
+
+And let's consider a matrix $A$ defined as:
+
+$$
+\begin{equation*}
+A = \begin{pmatrix}
+a_{11} & a_{12} & \cdots & a_{1n} \\
+a_{21} & a_{22} & \cdots & a_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{m1} & a_{m2} & \cdots & a_{mn}
+\end{pmatrix}
+\end{equation*}
+
+\text{ where } a_{ij} = \begin{cases}
+0 & \text{if } i = j \\
+\frac{i+j}{ij} & \text{otherwise}
+\end{cases}
+$$
+
+</blockquote>
 
 #### **Synchonization**
 
@@ -1274,6 +1304,12 @@ We introduce OOO in the next section.
 #### **Out-of-Order (OOO)**
 
 To increase the performance of the pipeline, we can execute instructions _out of order_. This allows us to execute independent instructions simultaneously, providing an _illusion_ that work is still done in order, even if they are not in the correct order.
+
+<blockquote class="definition">
+
+**Out-of-order**: A technique used to execute instructions in a different order than they appear in the program.
+
+</blockquote>
 
 ##### **OOO hazards**
 
