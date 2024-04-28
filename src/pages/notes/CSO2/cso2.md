@@ -646,7 +646,37 @@ coming soon...
 
 #### **Cache**
 
-coming soon...
+<blockquote class="equation">
+
+$$
+\begin{equation*}
+f(x) =
+\begin{cases}
+\int_{-\infty}^{x} e^{-t^2}dt & \text{for } x \geq 0 \\
+1 + \sum_{n=1}^{|\lfloor x \rfloor|} \frac{1}{n!} & \text{for } x < 0
+\end{cases}
+\end{equation*}
+$$
+
+And let's consider a matrix $A$ defined as:
+
+$$
+\begin{equation*}
+A = \begin{pmatrix}
+a_{11} & a_{12} & \cdots & a_{1n} \\
+a_{21} & a_{22} & \cdots & a_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{m1} & a_{m2} & \cdots & a_{mn}
+\end{pmatrix}
+\end{equation*}
+
+\text{ where } a_{ij} = \begin{cases}
+0 & \text{if } i = j \\
+\frac{i+j}{ij} & \text{otherwise}
+\end{cases}
+$$
+
+</blockquote>
 
 #### **Synchonization**
 
@@ -1275,7 +1305,54 @@ We introduce OOO in the next section.
 
 To increase the performance of the pipeline, we can execute instructions _out of order_. This allows us to execute independent instructions simultaneously, providing an _illusion_ that work is still done in order, even if they are not in the correct order.
 
+<blockquote class="definition">
+
+**Out-of-order**: A technique used to execute instructions in a different order than they appear in the program.
+
+</blockquote>
+
 ##### **OOO hazards**
+
+<blockquote class="definition">
+
+**Read After Write (RAW) Hazard**: a data hazard where an instruction reads a register before a previous instruction writes to it.
+
+</blockquote>
+
+Suppose we have the following instructions:
+
+1. `addq %r10, %r8`
+2. `movq %r8, (%rax)`
+3. `movq $100, %r8`
+4. `addq %r13, %r8`
+
+The pipeline stages are as follows:
+
+$$
+\begin{array}{ccccccccc}
+ & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} & \text{9} \\
+\text{addq \%r10, \%r8} & \text{F} & & & & & \text{D} & \color{red}\text{E} & \text{M} & \text{W}  \\
+\color{#808080}\text{movq \%r8, (\%rax)} &         & \text{F} & & & & & \color{#808080}\text{D} & \color{#808080}\text{E} & \color{#808080}\text{M} & \color{#808080}\text{W}  \\
+\text{movq \$100, \%r8} &         &         & \text{F} & \text{D} & \color{green}\text{E} & \text{M} & \text{W} &         &         \\
+\text{addq \%r13, \%r8} &         &         &         & \text{F} & & & \color{red}\text{D} & \text{E} & \text{M} & \text{W} &         \\
+\end{array}
+$$
+
+In the example above `movq $100, %r8` is executed out-of-order. However, when we execute the next instruction `addq %r13, %r8`, we have a **RAW hazard** since its `decode` stage will attempt to fetch from the forward value of `%r8` from the `execute` stage of the `addq %r10, %r8` instruction.
+
+##### **Track Register Version Numbers**
+
+A simple solution to the RAW hazard is to add _version numbers_ to the registers. This way, we can track which version of the register is being used by the instruction. In the example above, we can perform the following steps to resolve the RAW hazard:
+
+$$
+\begin{array}{ccccccccc}
+ & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} & \text{9} \\
+\text{addq \%r10}, \color{red}\text{\%r8}_{v1} \to \text{\%r8}_{v2} & \text{F} & & & & & \text{D} & \text{E} & \text{M} & \text{W}  \\
+\color{#808080}\text{movq \%r8, (\%rax)} &         & \text{F} & & & & & \color{#808080}\text{D} & \color{#808080}\text{E} & \color{#808080}\text{M} & \color{#808080}\text{W}  \\
+\text{movq \$100}, \color{red}\text{\%r8}_{v2} \to \text{\%r8}_{v3} &         &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         \\
+\text{addq \%r13}, \color{red}\text{\%r8}_{v3} \to \text{\%r8}_{v4} &         &         &         & \text{F} & & & \text{D} & \text{E} & \text{M} & \text{W} &         \\
+\end{array}
+$$
 
 ### **References**
 
