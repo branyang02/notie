@@ -1313,6 +1313,47 @@ To increase the performance of the pipeline, we can execute instructions _out of
 
 ##### **OOO hazards**
 
+<blockquote class="definition">
+
+**Read After Write (RAW) Hazard**: a data hazard where an instruction reads a register before a previous instruction writes to it.
+
+</blockquote>
+
+Suppose we have the following instructions:
+
+1. `addq %r10, %r8`
+2. `movq %r8, (%rax)`
+3. `movq $100, %r8`
+4. `addq %r13, %r8`
+
+The pipeline stages are as follows:
+
+$$
+\begin{array}{ccccccccc}
+ & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} & \text{9} \\
+\text{addq \%r10, \%r8} & \text{F} & & & & & \text{D} & \color{red}\text{E} & \text{M} & \text{W}  \\
+\color{#808080}\text{movq \%r8, (\%rax)} &         & \text{F} & & & & & \color{#808080}\text{D} & \color{#808080}\text{E} & \color{#808080}\text{M} & \color{#808080}\text{W}  \\
+\text{movq \$100, \%r8} &         &         & \text{F} & \text{D} & \color{green}\text{E} & \text{M} & \text{W} &         &         \\
+\text{addq \%r13, \%r8} &         &         &         & \text{F} & & & \color{red}\text{D} & \text{E} & \text{M} & \text{W} &         \\
+\end{array}
+$$
+
+In the example above `movq $100, %r8` is executed out-of-order. However, when we execute the next instruction `addq %r13, %r8`, we have a **RAW hazard** since its `decode` stage will attempt to fetch from the forward value of `%r8` from the `execute` stage of the `addq %r10, %r8` instruction.
+
+##### **Track Register Version Numbers**
+
+A simple solution to the RAW hazard is to add _version numbers_ to the registers. This way, we can track which version of the register is being used by the instruction. In the example above, we can perform the following steps to resolve the RAW hazard:
+
+$$
+\begin{array}{ccccccccc}
+ & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} & \text{9} \\
+\text{addq \%r10}, \color{red}\text{\%r8}_{v1} \to \text{\%r8}_{v2} & \text{F} & & & & & \text{D} & \text{E} & \text{M} & \text{W}  \\
+\color{#808080}\text{movq \%r8, (\%rax)} &         & \text{F} & & & & & \color{#808080}\text{D} & \color{#808080}\text{E} & \color{#808080}\text{M} & \color{#808080}\text{W}  \\
+\text{movq \$100}, \color{red}\text{\%r8}_{v2} \to \text{\%r8}_{v3} &         &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         \\
+\text{addq \%r13}, \color{red}\text{\%r8}_{v3} \to \text{\%r8}_{v4} &         &         &         & \text{F} & & & \text{D} & \text{E} & \text{M} & \text{W} &         \\
+\end{array}
+$$
+
 ### **References**
 
 This note is based on [CS 3130 Spring 2024](https://www.cs.virginia.edu/~cr4bd/3130/S2024/) by Charles Reiss, used under CC BY-NC-SA 4.0.
