@@ -1019,6 +1019,38 @@ We evaluate the performance of a pipeline using the following metrics:
 - **Latency**: the time taken to complete a single instruction.
 - **Throughput**: the number of instructions completed per unit of time.
 
+<blockquote class="equation">
+
+$$
+\begin{equation*}
+\text{Latency} = \text{Cycle Time} \times \text{Number of Stages}
+\end{equation*}
+$$
+
+</blockquote>
+
+<blockquote class="equation">
+
+$$
+\begin{equation*}
+\text{Throughput} = \frac{\text{Number of instructions}}{\text{Total time to execute all instructions}}
+\end{equation*}
+$$
+
+</blockquote>
+
+<blockquote class="important">
+
+Note that the total time to execute all instructions is the time taken between the **end** of the first instruction and the **end** of the last instruction. Therefore:
+
+$$
+\text{Total time to execute all instructions} = \left(\text{instr}^n_{end} - \text{instr}^1_{end} + 1 \right) \times \text{Cycle Time},
+$$
+
+where $\text{instr}^n_{end}$ is the cycle number when the last instruction ends, and $\text{instr}^1_{end}$ is the cycle number when the first instruction ends.
+
+</blockquote>
+
 <details open><summary>Example Pipeline Latency and Throughput</summary>
 
 <img src="https://branyang02.github.io/images/latency.png" alt="Pipeline" style="display: block; max-height: 70%; max-width: 70%;">
@@ -1026,18 +1058,24 @@ We evaluate the performance of a pipeline using the following metrics:
 In the example above, suppose _cycle time_ is 500 ps, the **latency** is calculated as follows:
 
 $$
-\text{Latency} = \text{Cycle Time} \times \text{Number of Stages} = 500 \times 5 = 2500 \text{ ps}.
+\text{Latency} = \text{Cycle Time} \times \text{Number of Stages} = 500 \cdot 5 \text{ ps} = 2500 \text{ ps}
 $$
 
-We also compute the **throughput** as the time taken between the start of two instructions per cycle time. Suppose we denote two instructions as `instr1` and `instr2`:
+We also compute the **throughput** based on the equation above:
 
 $$
-\text{Throughput} = \frac{\text{instr2}_{\text{start}} - \text{instr1}_{\text{start}}}{\text{cycle time}} = \frac{1 \text{ instruction}}{500 \text{ ps}}.
+\begin{align*}
+\text{Throughput} &= \frac{\text{Number of instructions}}{\left(\text{instr}^2_{end} - \text{instr}^1_{end} + 1 \right) \times \text{Cycle Time}} \\
+&= \frac{2 \text{ instructions}}{(5-4 + 1) \times 500 \text{ ps}} \\
+&= \frac{1 \text{ instruction}}{500 \text{ ps}}
+\end{align*}
 $$
 
-Likewise, we can also compute throughput by comparing the time taken between the end of two instructions.
+To express the throughput in terms of _ps per instruction_, we take the reciprocal of the throughput:
 
-Therefore the throughput is $2$ instructions per nanosecond.
+$$
+\text{Throughput} = 1 / \frac{1}{500 \text{ ps}} = 500 \frac{\text{ps}}{\text{instruction}}
+$$
 
 </details>
 
@@ -1052,8 +1090,11 @@ Dividing the instruction execution into multiple stages can lead to **pipeline h
 
 ##### **Pipeline Hazards**
 
-- **Data Hazard**: a data dependency between instructions.
-- **Control Hazard**: a control dependency between instructions.
+<blockquote class="definition">
+
+**Data Hazard**: a data dependency between instructions.
+
+</blockquote>
 
 <details open><summary>Data Hazard Example</summary>
 
@@ -1072,7 +1113,11 @@ We can see that the second instruction depends on the result of the first instru
 
 ###### **Data Hazard Solutions**
 
-- **Stalling**: the _hardware_ inserts a `nop` (no operation) instruction to wait for the data to be available.
+<blockquote class="definition">
+
+**Stalling**: the _hardware_ inserts a `nop` (no operation) instruction to wait for the data to be available.
+
+</blockquote>
 
 We can also use a _compiler_ to manually insert `nop` instructions to resolve data hazards, but this is less efficient than using hardware to do so.
 
@@ -1094,7 +1139,11 @@ This way, the second instruction will run _three_ cycles after the first instruc
 
 </details>
 
-- **Forwarding**: the process of passing the result from an earlier instruction's source stage to the destination stage of a later instruction in the _same cycle_.
+<blockquote class="definition">
+
+**Forwarding**: the process of passing the result from an earlier instruction's source stage to the destination stage of a later instruction in the _same cycle_.
+
+</blockquote>
 
 Different instructions will have different latencies in the pipeline. For example, a `load` instruction will have a longer latency due to memory access compared to an `add` instruction. Here is a table of instructions and their corresponding data ready stages:
 
@@ -1138,11 +1187,14 @@ Suppose we have the following instructions:
 and the following pipeline stages:
 
 $$
+
 \begin{array}{ccccccccc}
- & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} \\
-\text{movq 0(\%rax), \%rbx} & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         &         &         \\
-\text{subq \%rbx, \%rcx} &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         &         \\
+& \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} \\
+\text{movq 0(\%rax), \%rbx} & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} & & & & \\
+\text{subq \%rbx, \%rcx} & & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} & & & \\
 \end{array}
+
+
 $$
 
 We are performing a load from memory in instruction 1. In this case, the value of `%rbx` is not available until the `memory` stage of instruction 1. Therefore, we need to stall instruction 2 until the value of `%rbx` is available.
@@ -1150,11 +1202,14 @@ We are performing a load from memory in instruction 1. In this case, the value o
 However, we can see that the `memory` stage of instruction 1 is in the cycle _after_ the `execute` stage of instruction 2. Therefore, we cannot possibly forward the value from a future cycle. In this case, we need to stall instruction 2 and wait for the value of `%rbx` to be available.
 
 $$
+
 \begin{array}{cccccccccc}
- & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} & \text{9} \\
-\text{movq 0(\%rax), \%rbx} & \text{F} & \text{D} & \text{E} & \color{red} \text{M} & \text{W} &         &         &         &         &         \\
-\text{subq \%rbx, \%rcx} &         & \text{F} & \text{D} & \color{red} \text{D} & \text{E} & \text{M} & \text{W} &         &         &         \\
+& \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} & \text{9} \\
+\text{movq 0(\%rax), \%rbx} & \text{F} & \text{D} & \text{E} & \color{red} \text{M} & \text{W} & & & & & \\
+\text{subq \%rbx, \%rcx} & & \text{F} & \text{D} & \color{red} \text{D} & \text{E} & \text{M} & \text{W} & & & \\
 \end{array}
+
+
 $$
 
 In this case, we will stall instruction 2's `decode` stage until the value of `%rbx` is available. Once the value is available, we can proceed with the execution of instruction 2 at cycle 3.
@@ -1162,6 +1217,12 @@ In this case, we will stall instruction 2's `decode` stage until the value of `%
 </details>
 
 ##### **Control Hazard**
+
+<blockquote class="definition">
+
+**Control Hazard**: a control dependency between instructions.
+
+</blockquote>
 
 Control hazards occur when the next instruction to execute depends on the result of a previous instruction.
 
@@ -1181,13 +1242,16 @@ Suppose we have the following instructions:
 We can perform our standard **FDEMW** pipeline stages:
 
 $$
+
 \begin{array}{ccccccccc}
- & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} \\
-\text{cmpq \%r8, \%r9} & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         &         &         \\
-\text{jne label} &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         &         \\
-\text{xorq \%r10, \%r11} &         &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         \\
-\text{movq \%r11, 0(\%r12)} &         &         &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         \\
+& \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} \\
+\text{cmpq \%r8, \%r9} & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} & & & & \\
+\text{jne label} & & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} & & & \\
+\text{xorq \%r10, \%r11} & & & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} & & \\
+\text{movq \%r11, 0(\%r12)} & & & & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} & \\
 \end{array}
+
+
 $$
 
 In the first instruction `cmpq %r8, %r9`, the flag is set at `execute` stage. The second instruction `jne label` depends on the flag set by the first instruction. Therefore, the value of the flag is _forwarded_ to the `decode` stage of the second instruction.
@@ -1195,22 +1259,29 @@ In the first instruction `cmpq %r8, %r9`, the flag is set at `execute` stage. Th
 However, the `jne label` instruction is a **control hazard** since we do not know the target of the jump until the `execute` stage of the jump instruction. Therefore, we need to stall the pipeline until the target of the jump is known:
 
 $$
+
 \begin{array}{cccccccccc}
 & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} & \text{9} \\
-\text{cmpq \%r8, \%r9} & \text{F} & \text{D} & \color{red} \text{E} & \text{M} & \text{W} &         &         &         &         \\
-\text{jne label} &         & \text{F} & \color{red} \text{D} & \text{E} & \text{M} & \text{W} &         &         &         \\
+\text{cmpq \%r8, \%r9} & \text{F} & \text{D} & \color{red} \text{E} & \text{M} & \text{W} & & & & \\
+\text{jne label} & & \text{F} & \color{red} \text{D} & \text{E} & \text{M} & \text{W} & & & \\
 \color{#808080}\text{nop} & & & \color{#808080} \text{F} & \color{#808080} \color{#808080}\text{D} & \color{#808080}\text{E} & \color{#808080}\text{M} & \color{#808080}\text{W} & & \\
 \color{#808080}\text{nop} & & & & \color{#808080}\text{F} &\color{#808080}\text{D} & \color{#808080}\text{E} &\color{#808080} \text{M} & \color{#808080}\text{W} & \\
-\text{xorq \%r10, \%r11} &         &         &         &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} \\
-\text{movq \%r11, 0(\%r12)} &         &         &         &         &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} \\
+\text{xorq \%r10, \%r11} & & & & & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} \\
+\text{movq \%r11, 0(\%r12)} & & & & & & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} \\
 \end{array}
+
+
 $$
 
 We must always make sure that the `execute` stage of the jump instruction is completed before we can proceed with the next `fetch` instruction.
 
 </details>
 
-- **Branch Prediction**: the process of predicting the target of a branch instruction before it is known.
+<blockquote class="definition">
+
+**Branch Prediction**: the process of predicting the target of a branch instruction before it is known.
+
+</blockquote>
 
 <details open><summary>Branch Prediction Example</summary>
 
@@ -1235,30 +1306,36 @@ In the example above, we **_speculate_** that the jump will **NOT** be taken, an
 If our speculation is correct, our pipeline will look like this:
 
 $$
+
 \begin{array}{ccccccccc}
- & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} \\
-\text{cmpq \%r8, \%r9} & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         &         &         \\
-\text{jne label} &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         &         \\
-\text{xorq \%r10, \%r11} &         &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         \\
-\text{movq \%r11, 0(\%r12)} &         &         &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         \\
+& \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} \\
+\text{cmpq \%r8, \%r9} & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} & & & & \\
+\text{jne label} & & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} & & & \\
+\text{xorq \%r10, \%r11} & & & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} & & \\
+\text{movq \%r11, 0(\%r12)} & & & & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} & \\
 \vdots & & & & & & & & & \\
 \end{array}
+
+
 $$
 
 However, if we speculate _incorrectly_, we can **_squash_** the instructions that were executed and proceed with the correct target of the jump instruction:
 
 $$
+
 \begin{array}{cccccccccc}
- & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} & \text{9} \\
-\text{cmpq \%r8, \%r9} & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         &         &         \\
-\text{jne label} &         & \text{F} & \text{D} & \color{green} \text{E} & \text{M} & \text{W} &         &         &         \\
-\text{xorq \%r10, \%r11} &         &         & \text{F} & \color{red} \text{D} & \\
-\color{#808080}\text{nop} & & & & & \color{#808080} \text{E} & \color{#808080} \text{M} & \color{#808080} \text{W} &  & \\
-\text{movq \%r11, 0(\%r12)} &         &         &         & \color {red} \text{F}         \\
+& \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} & \text{9} \\
+\text{cmpq \%r8, \%r9} & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} & & & & \\
+\text{jne label} & & \text{F} & \text{D} & \color{green} \text{E} & \text{M} & \text{W} & & & \\
+\text{xorq \%r10, \%r11} & & & \text{F} & \color{red} \text{D} & \\
+\color{#808080}\text{nop} & & & & & \color{#808080} \text{E} & \color{#808080} \text{M} & \color{#808080} \text{W} & & \\
+\text{movq \%r11, 0(\%r12)} & & & & \color {red} \text{F} \\
 \color{#808080}\text{nop} & & & & & \color{#808080} \text{D} & \color{#808080} \text{E} & \color{#808080} \text{M} & \color{#808080} \text{W} & \\
-\text{addq \%r8, \%r9} &         &         &         &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} \\
-\text{imul \%r13, \%r14} &         &         &         &         &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} \\
+\text{addq \%r8, \%r9} & & & & & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} \\
+\text{imul \%r13, \%r14} & & & & & & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} \\
 \end{array}
+
+
 $$
 
 In the example above, we know we have speculated incorrectly when we reach the `execute` stage (labeled in green) of the jump instruction. We then **_squash_** the instructions that were executed (labeled in red), and replace them with `nop` instructions.
@@ -1286,13 +1363,16 @@ Jump instructions are often used in loops, and they may take some time to resolv
 - **Multiple Issue**: executing multiple instructions in parallel.
 
 $$
+
 \begin{array}{ccccccccc}
-  & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} \\
-\text{addq \%r8, \%r9} & \text{F} & \text{D} & \color{red}\text{E} & \text{M} & \text{W} &         &         &         &         \\
-\text{subq \%r10, \%r11}          & \text{F} & \text{D} & \color{red}\text{E} & \text{M} & \text{W} &         &         &         \\
-\text{xorq \%r9, \%r11}       &         & \text{F} &\color{red} \text{D} & \text{E} & \text{M} & \text{W} &         &         \\
-\text{subq \%r10, \%rbx}                   &         & \text{F} &\color{red} \text{D} & \text{E} & \text{M} & \text{W} &         \\
+& \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} \\
+\text{addq \%r8, \%r9} & \text{F} & \text{D} & \color{red}\text{E} & \text{M} & \text{W} & & & & \\
+\text{subq \%r10, \%r11} & \text{F} & \text{D} & \color{red}\text{E} & \text{M} & \text{W} & & & \\
+\text{xorq \%r9, \%r11} & & \text{F} &\color{red} \text{D} & \text{E} & \text{M} & \text{W} & & \\
+\text{subq \%r10, \%rbx} & & \text{F} &\color{red} \text{D} & \text{E} & \text{M} & \text{W} & \\
 \end{array}
+
+
 $$
 
 In the example above, we can see that the first two instructions can be executed in parallel since they do not have any data dependencies. This is an example of **multiple issue**. However, **hazard handling** becomes more complex when we have multiple instructions executing in parallel. In this example, we need to forward the result from `execute` of the first AND second instruction to the `decode` of the third instruction. We also need to forward the result from `execute` of the third instruction to the `decode` of the fourth instruction.
@@ -1315,7 +1395,7 @@ To increase the performance of the pipeline, we can execute instructions _out of
 
 <blockquote class="definition">
 
-**Read After Write (RAW) Hazard**: a data hazard where an instruction reads a register before a previous instruction writes to it.
+A **Read-After-Write (RAW)** data hazard occurs when the pipeline creates the potential for an instruction to read an operand before a prior instruction writes to it.
 
 </blockquote>
 
@@ -1329,31 +1409,270 @@ Suppose we have the following instructions:
 The pipeline stages are as follows:
 
 $$
+
 \begin{array}{ccccccccc}
- & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} & \text{9} \\
-\text{addq \%r10, \%r8} & \text{F} & & & & & \text{D} & \color{red}\text{E} & \text{M} & \text{W}  \\
-\color{#808080}\text{movq \%r8, (\%rax)} &         & \text{F} & & & & & \color{#808080}\text{D} & \color{#808080}\text{E} & \color{#808080}\text{M} & \color{#808080}\text{W}  \\
-\text{movq \$100, \%r8} &         &         & \text{F} & \text{D} & \color{green}\text{E} & \text{M} & \text{W} &         &         \\
-\text{addq \%r13, \%r8} &         &         &         & \text{F} & & & \color{red}\text{D} & \text{E} & \text{M} & \text{W} &         \\
+& \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} & \text{9} \\
+\text{addq \%r10, \%r8} & \text{F} & & & & & \text{D} & \color{red}\text{E} & \text{M} & \text{W} \\
+\color{#808080}\text{movq \%r8, (\%rax)} & & \text{F} & & & & & \color{#808080}\text{D} & \color{#808080}\text{E} & \color{#808080}\text{M} & \color{#808080}\text{W} \\
+\text{movq \$100, \%r8} & & & \text{F} & \text{D} & \color{green}\text{E} & \text{M} & \text{W} & & \\
+\text{addq \%r13, \%r8} & & & & \text{F} & & & \color{red}\text{D} & \text{E} & \text{M} & \text{W} & \\
 \end{array}
+
+
 $$
 
 In the example above `movq $100, %r8` is executed out-of-order. However, when we execute the next instruction `addq %r13, %r8`, we have a **RAW hazard** since its `decode` stage will attempt to fetch from the forward value of `%r8` from the `execute` stage of the `addq %r10, %r8` instruction.
 
-##### **Track Register Version Numbers**
+##### **Register Version Tracking**
 
 A simple solution to the RAW hazard is to add _version numbers_ to the registers. This way, we can track which version of the register is being used by the instruction. In the example above, we can perform the following steps to resolve the RAW hazard:
 
 $$
+
 \begin{array}{ccccccccc}
- & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} & \text{9} \\
-\text{addq \%r10}, \color{red}\text{\%r8}_{v1} \to \text{\%r8}_{v2} & \text{F} & & & & & \text{D} & \text{E} & \text{M} & \text{W}  \\
-\color{#808080}\text{movq \%r8, (\%rax)} &         & \text{F} & & & & & \color{#808080}\text{D} & \color{#808080}\text{E} & \color{#808080}\text{M} & \color{#808080}\text{W}  \\
-\text{movq \$100}, \color{red}\text{\%r8}_{v2} \to \text{\%r8}_{v3} &         &         & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} &         &         \\
-\text{addq \%r13}, \color{red}\text{\%r8}_{v3} \to \text{\%r8}_{v4} &         &         &         & \text{F} & & & \text{D} & \text{E} & \text{M} & \text{W} &         \\
+& \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} & \text{9} \\
+\text{addq \%r10}, \color{red}\text{\%r8}_{v1} \to \text{\%r8}_{v2} & \text{F} & & & & & \text{D} & \text{E} & \text{M} & \text{W} \\
+\color{#808080}\text{movq \%r8, (\%rax)} & & \text{F} & & & & & \color{#808080}\text{D} & \color{#808080}\text{E} & \color{#808080}\text{M} & \color{#808080}\text{W} \\
+\text{movq \$100}, \color{red}\text{\%r8}_{v2} \to \text{\%r8}_{v3} & & & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} & & \\
+\text{addq \%r13}, \color{red}\text{\%r8}_{v3} \to \text{\%r8}_{v4} & & & & \text{F} & & & \text{D} & \text{E} & \text{M} & \text{W} & \\
 \end{array}
+
+
 $$
+
+We can also run into issues where we need to keep copies of multiple versions of the register. For example, if we have the following instructions:
+
+1. `addq %r10, %r8`
+2. `movq %r8, (%rax)`
+3. `movq %r11, %r8`
+4. `movq %r8, 8(%rax)`
+5. `movq $100, %r8`
+6. `addq %r13, %r8`
+
+We want to ensure that instruction `2` uses the value of `%r8` from instruction `1`, and instruction `4` uses the value of `%r8` from instruction `3`, and instruction `6` uses the value of `%r8` from instruction `5`. This is a **write-after-write (WAW) hazard**. We can resolve this by having multiple versions of the register `%r8`.
+
+<blockquote class="definition">
+
+A **Write-After-Write (WAW)** data hazard occurs when the pipeline creates the potential for an instruction to write to a register before a prior instruction writes to it.
+
+</blockquote>
+
+We can resolve WAW hazards by using **register renaming**.
+
+##### **Register Renaming**
+
+Register renaming is a technique that involves renaming the registers in the instruction to avoid data hazards.
+
+<blockquote class="definition">
+
+**Register Renaming**: rename _**architectural**_ registers (reg. in assembly) to _**physical**_ registers (reg. in physical processor) to avoid data hazards. Each _version_ of _architectural_ register is mapped to a unique _physical_ register.
+
+</blockquote>
+
+To make register renaming work, we have a table that maps the _architectural_ registers to the current version of the _physical_ registers. For example:
+
+<div class="small-table">
+
+| Architectural Register | Physical Register |
+| ---------------------- | ----------------- |
+| `%rax`                 | `%x04`            |
+| `%rcx`                 | `%x09`            |
+| ...                    | ...               |
+| `%r8`                  | `%x13`            |
+| `%r9`                  | `%x17`            |
+| `%r10`                 | `%x19`            |
+| `%r11`                 | `%x07`            |
+| `%r12`                 | `%x05`            |
+
+</div>
+
+In the example above, we denote the _architectural_ registers prefix `r` and the _physical_ registers prefix `x`.
+
+We also have a list of phiysical registers that are _**free**_ to use. For example:
+
+<div class="xsmall-table">
+
+| Free Physical Registers |
+| :---------------------: |
+|         `%x18`          |
+|         `%x20`          |
+|         `%x21`          |
+|         `%x23`          |
+|         `%x24`          |
+|           ...           |
+
+</div>
+
+We extract a free physical register from the list of free physical registers and map the _architectural_ register to its **new** version of _physical_ register. We also update the list of free physical registers in the `commit` stage of every instruction.
+
+<details open><summary>Register Renaming Example</summary>
+
+Suppose we have the following instructions that follows the mapping above:
+
+1. `add %r10, %r8`
+2. `add %r11, %r8`
+3. `add %r12, %r8`
+
+We fetch the renamed registers from the register renaming table:
+
+1. `add %r10, %r8` $\implies$ `add %x19, %x13` $\to$ `%x18`
+
+We **always** write to a new physical register from the free register list. We then **update** the register renaming table to map `%r8` to `%x18`.
+
+In the next instruction, the following happens:
+
+2. `add %r11, %r8` $\implies$ `add %x07, %x18` $\to$ `%x20`
+
+We can see that `%r8` uses the new physical register `%x20` in this instruction.
+
+</details>
+
+##### **OOO Pipeline Stages**
+
+<img src="https://branyang02.github.io/images/ooo.png" alt="OOO Pipeline" style="display: block; max-height: 70%; max-width: 70%;">
+
+In the OOO pipeline, we have the following stages:
+
+- **Fetch**: fetch the instruction from memory.
+- **Decode**: decode the instruction.
+- **Rename**: rename the registers, and dispatch the instruction to the _instruction queue_.
+- **Issue**: choosing the instructions to execute based on the availability of the execution units, and either read registers from the register file or forward the values from the previous instructions.
+- **Execute**: execute the instruction.
+- **Writeback**: write the result back to the register file.
+- **Commit**: commit the result to the register file, and update the free list of physical registers.
+
+The most important stage in the OOO pipeline is `issue`. This is where we decide which instruction(s) to execute based on the **instruction queue**. The `issue` stage also reads the registers from the register file or finds the forwarded values from the previous instructions.
+
+<blockquote class="important">
+
+`fetch`, `decode`, and `rename` stages are run **in-order**.
+
+`issue`, `execute`, and `writeback` stages are run **out-of-order**.
+
+The final `commit` stage is **in order**.
+
+</blockquote>
+
+<details open><summary>Example OOO Pipeline Stages</summary>
+
+<img src="https://branyang02.github.io/images/ooo_pipeline.png" alt="OOO Pipeline" style="display: block; max-height: 70%; max-width: 70%;">
+
+In the example above, we assume we can execute 2 instructions at once. Therefore, we **must** make sure that we are **not** performing more than _2 stages of the same type_ at the same cycle.
+
+We can see that we `fetch` all the instructions **in order**, followed by `decode` and `rename` stages. However, we can `issue` the instructions **out-of-order**.
+
+For example, `addq %r01, %r05` has `issue` at cycle 3, while the next instruction `addq %r02, %r05` has `issue` at cycle 4. This is because we need to forward the result of the first instruction in its `execute` stage to the `issue` stage of the second instruction.
+
+We can also see that `addq %r02, %r05` and `addq %r03, %r04` have `issue` at the same cycle. This is because they do not have any data dependencies and can be executed in parallel.
+
+Finally, we have the `commit` stage **in order** where we write the result back to the register file.
+
+</details>
+
+##### **Instruction Queue and Dispatch Process**
+
+In the `rename` and `issue` stages, we follow the following steps:
+
+1. **Rename**: rename the registers in the instruction to avoid data hazards.
+2. **Dispatch**: dispatch the instruction to the **instruction queue**.
+3. **Issue**: choose instructions from the instruction queue to execute based on the availability of the execution units.
+
+<img src="https://branyang02.github.io/images/rename_issue.png" alt="Instruction Queue" style="display: block; max-height: 25%; max-width: 25%;">
+
+At the `issue` stage, we need to make sure that we are not issuing more instructions than the number of execution units available. The number of instructions that can be run per cycle is limited by the number of ALU execution units. We can use an **instruction queue** to store the instructions that are ready to be executed.
+
+<details open><summary>Instruction Queue Example</summary>
+Continuing from the previous example, suppose we have already converted the instructions to their physical registers:
+
+<div class="small-table">
+
+| #   | Instruction                       |
+| --- | --------------------------------- |
+| 1   | `addq %x01, %x05` $\to$ `%x06`    |
+| 2   | `addq %x02, %x06` $\to$ `%x07`    |
+| 3   | `addq %x03, %x07` $\to$ `%x08`    |
+| 4   | `cmpq %x04, %x08` $\to$ `%x09.cc` |
+| 5   | `jne %x09.cc, ...`                |
+| 6   | `addq %x01, %x08` $\to$ `%x10`    |
+| 7   | `addq %x02, %x10` $\to$ `%x11`    |
+| 8   | `addq %x03, %x11` $\to$ `%x12`    |
+| 9   | `cmpq %x04, %x12` $\to$ `%x13.cc` |
+
+</div>
+<span class="caption">Example Instruction Queue</span>
+
+We also have a **scoreboard** that keeps track of the status (ready or pending) of the physical registers.
+
+<div class="xsmall-table">
+
+| reg    | status  |
+| ------ | ------- |
+| `%x01` | ready   |
+| `%x02` | ready   |
+| `%x03` | ready   |
+| `%x04` | ready   |
+| `%x05` | ready   |
+| `%x06` | pending |
+| `%x07` | pending |
+| `%x08` | pending |
+| `%x09` | pending |
+| `%x10` | pending |
+| `%x11` | pending |
+| `%x12` | pending |
+| `%x13` | pending |
+
+</div>
+<span class="caption">Example Scoreboard</span>
+
+Suppose we have 2 ALU execution units, meaning we could execute **at most** 2 instructions per cycle. We can use the following steps to dispatch the instructions:
+
+$$
+
+\begin{array}{ccccccccc}
+\text{Cycle\#:} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} \\
+\text{ALU 1} & \color{red}1 & \color{red}2 & \color{red}3 & \color{red}4 & \color{red}5 & \color{red}8 & \color{red}9 & & \\
+\text{ALU 2} & - & - & - & \color{red}6& \color{red}7 &- & - & & \\
+\end{array}
+
+
+$$
+
+At cycle 1, we can only `issue` instruction `1` to ALU 1 since it is the only instruction that is ready to be executed based on the scoreboard table. After executing instruction `1` at cycle 1, we update the scoreboard table to mark `%x06` as `ready`, and leave `%x05` as ready.
+
+We continue issuing 1 instruction per cycle until we reach cycle 4. At cycle 4, we can `issue` instruction `4` to ALU 1 and instruction `6` to ALU 2 since they are both of the instructions use registers that are ready to be executed based on the scorebaord table.
+
+Refer to the example above to see when `issue` stages occur for each instruction.
+
+</details>
+
+##### **Execution Units (Functional Units)**
+
+This is where the `execute` stage of the pipeline occurs. We can have multiple execution units to execute different types of instructions. For example, we can have:
+
+- **ALU**: for arithmetic and logical operations.
+- **Pipelined ALU**: for multiple arithmetic and logical operations.
+- **Load/Store Unit**: for loading and storing data from memory.
+
+<img src="https://branyang02.github.io/images/execute.png" alt="Execution Units" style="display: block; max-height: 25%; max-width: 25%;">
+
+In the example above, we have `ALU 1` and `ALU 2` that can execute arithmetic and logical operations in 1 cycle. We also have a _pipelined ALU_ that is separated into two parts: `ALU 3 pt1` and `ALU 3 pt2`. This means that a full `ALU 3` operation will take 2 cycles to complete.
+
+<blockquote class="important">
+
+We **only** update the scoreboard table after the entire **ALL** `execute` stages are complete (i.e., if we have 2 ALU unites that take 2 cycles to complete, we only update the scoreboard table after the 2nd cycle).
+
+</blockquote>
+
+The `execute` stage typically _**forwards**_ the result to the `issue` stage of the next instruction.
 
 ### **References**
 
 This note is based on [CS 3130 Spring 2024](https://www.cs.virginia.edu/~cr4bd/3130/S2024/) by Charles Reiss, used under CC BY-NC-SA 4.0.
+
+$$
+
+
+$$
+
+$$
+$$
