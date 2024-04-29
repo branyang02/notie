@@ -15,3 +15,7 @@
     color: #777777;
     text-decoration: underline;
 }
+
+.blog-menu::-webkit-scrollbar {
+    display: none;
+}
