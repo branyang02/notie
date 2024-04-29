@@ -227,6 +227,10 @@
     color: #E4E7EB;
   }
 
+  .BlogCard {
+    background-color: #f6f8fa;
+  }
+
   body.dark-mode .BlogCard {
     background-color: gray
   }
