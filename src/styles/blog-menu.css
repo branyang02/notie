@@ -1,0 +1,17 @@
+.blog-menu {
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    max-height: 100vh;
+}
+
+.blog-menu a {
+    color: #172b41;
+    text-decoration: none;
+}
+
+.blog-menu a:hover,
+.blog-menu a:focus {
+    color: #777777;
+    text-decoration: underline;
+}

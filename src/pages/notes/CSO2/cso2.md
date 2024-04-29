@@ -4,39 +4,6 @@
 Date: 5/1/2024 | Author: Brandon Yang
 </span>
 
-<details><summary>Table of Content</summary>
-
-- [Introduction](#introduction)
-- [Building](#building)
-  - [Compilation](#compilation)
-  - [Static Libraries](#static-libraries)
-  - [Dynamic Libraries](#dynamic-libraries)
-  - [Makefile](#makefile)
-- [Permissions](#permissions)
-  - [User IDs](#user-ids)
-  - [Group IDs](#group-ids)
-  - [File Permissions](#file-permissions)
-  - [Changing Permissions](#changing-permissions)
-  - [Superuser](#superuser)
-- [Kernel + System Calls](#kernel--system-calls)
-  - [Kernel Mode vs. User Mode](#kernel-mode-vs-user-mode)
-  - [Implementation](#implementation)
-  - [Exceptions](#exceptions)
-  - [Handling Exceptions](#handling-exceptions)
-- [Multitasking](#multitasking)
-  - [Processes](#processes)
-    - [Context Switch](#context-switch)
-    - [Process vs. Thread](#process-vs-thread)
-- [Signals](#signals)
-  - [Signal vs. Exception](#signal-vs-exception)
-  - [Forwarding exceptions to signals](#forwarding-exceptions-to-signals)
-  - [Common Signals](#common-signals)
-  - [Signals Setup](#signals-setup)
-  - [Handling multiple signals](#handling-multiple-signals)
-  - [Blocking Signals](#blocking-signals)
-- [References](#references)
-</details>
-
 #### **Introduction**
 
 These are my notes for Computer Systems and Organization 2 (CSO2) at the University of Virginia in the Spring 2024 semester taught by Charles Reiss. This note contains live code examples and explanations for various topics in the course.
@@ -181,7 +148,7 @@ In summary, Makefile follows the dependency graph to ensure all dependencies are
 
 </details>
 
-###### **Rules**:
+###### **Rules**
 
 ```makefile
 CC = gcc
@@ -211,7 +178,7 @@ $(CC) $(CFLAGS) -o $@ -c $<
 
 - `%`: wildcard
 
-###### **Built-in rules**:
+###### **Built-in rules**
 
 `make` has the "make `.o` from `.c`" rule built-in already, so:
 
@@ -433,7 +400,7 @@ Suppose we have two processes, `A` and `B`, and a timer interrupt every `10ms`. 
 
 </details>
 
-###### **Process** vs. **Thread**:
+###### **Process** vs. **Thread**
 
 - **Process**: an instance of a program in execution.
 - **Thread**: a process can have multiple threads of execution. Threads share the same **virtual address space**, but have their own **program registers**, **program counter**, condition codes, etc.

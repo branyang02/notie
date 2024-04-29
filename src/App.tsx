@@ -44,8 +44,9 @@ const App = () => {
         </div>
       </div>
       <div className="main-content">
-        {' '}
-        {/* This is the main content area */}
+        <Routes>
+          <Route path="/notes/cso2" element={<CSO2 />} />
+        </Routes>
         <Container as="main" className="py-4 px-3 mx-auto custom-padding">
           <Routes>
             <Route
@@ -67,7 +68,6 @@ const App = () => {
             <Route path="/blog/sora" element={<Sora />} />
             <Route path="/blog/transformers" element={<Transformers />} />
             <Route path="/notes" element={<Notes />} />
-            <Route path="/notes/cso2" element={<CSO2 />} />
           </Routes>
           <ClustrMapsWidget />
         </Container>
