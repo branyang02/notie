@@ -1,7 +1,6 @@
 import './styles/App.css';
 
 import { IconButton, LightbulbIcon, MoonIcon } from 'evergreen-ui';
-import { useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
@@ -12,6 +11,7 @@ import Footer from './components/Footer';
 import NavBar from './components/NavBar';
 import News from './components/News';
 import WorkHistory from './components/WorkHistory';
+import { useDarkMode } from './context/DarkModeContext';
 import About from './pages/About';
 import Blog from './pages/blog/Blog';
 import Sora from './pages/blog/blogs/Sora/Sora';
@@ -22,23 +22,8 @@ import Notes from './pages/notes/Notes';
 import Projects from './pages/Projects';
 import SpellingBee from './pages/spelling_bee/SpellingBee';
 
-function App() {
-  const [darkMode, setDarkMode] = useState(() => {
-    const savedMode = localStorage.getItem('darkMode');
-    return savedMode === 'true'
-      ? true
-      : new Date().getHours() >= 18 || new Date().getHours() < 6;
-  });
-
-  useEffect(() => {
-    const footnotesTitle = document.querySelector('.footnotes h2');
-    if (footnotesTitle) {
-      footnotesTitle.innerHTML = '<strong>References</strong>';
-    }
-
-    document.body.classList.toggle('dark-mode', darkMode);
-    localStorage.setItem('darkMode', darkMode.toString());
-  }, [darkMode]);
+const App = () => {
+  const { darkMode, toggleDarkMode } = useDarkMode();
 
   return (
     <Router>
@@ -46,7 +31,7 @@ function App() {
         <IconButton
           height={56}
           icon={darkMode ? LightbulbIcon : MoonIcon}
-          onClick={() => setDarkMode(!darkMode)}
+          onClick={() => toggleDarkMode()}
           style={{
             position: 'fixed',
             bottom: '20px',
@@ -90,6 +75,6 @@ function App() {
       <Footer />
     </Router>
   );
-}
+};
 
 export default App;

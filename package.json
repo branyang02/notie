@@ -23,6 +23,7 @@
     "@icons-pack/react-simple-icons": "^9.2.0",
     "@mui/icons-material": "^5.15.0",
     "@mui/material": "^5.15.0",
+    "@uiw/codemirror-theme-duotone": "^4.22.0",
     "@uiw/codemirror-theme-nord": "^4.21.22",
     "@uiw/codemirror-theme-tokyo-night-storm": "^4.21.22",
     "@uiw/react-codemirror": "^4.21.22",

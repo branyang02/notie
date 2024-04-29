@@ -22,8 +22,7 @@ type CodeProps = React.HTMLAttributes<HTMLElement> & {
 };
 
 const components = {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  code({ node, inline, className, children, ...props }: CodeProps) {
+  code({ inline, className, children, ...props }: CodeProps) {
     const match = /\w+/.exec(className || '');
 
     if (!inline && match) {
