@@ -1,6 +1,7 @@
 import { cpp } from '@codemirror/lang-cpp';
 import { python } from '@codemirror/lang-python';
 import { indentUnit } from '@codemirror/language';
+import { duotoneLight } from '@uiw/codemirror-theme-duotone';
 import { tokyoNightStorm } from '@uiw/codemirror-theme-tokyo-night-storm';
 import CodeMirror, { ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import {
@@ -15,6 +16,7 @@ import {
 } from 'evergreen-ui';
 import { useCallback, useRef, useState } from 'react';
 
+import { useDarkMode } from '../context/DarkModeContext';
 import { runCCode, RunCodeResponse, runPythonCode } from '../service/api';
 
 interface CodeBlockProps {
@@ -29,6 +31,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ initialCode, language = 'python' 
   const [code, setCode] = useState(initialCode);
   const [image, setImage] = useState('');
   const editorRef = useRef<ReactCodeMirrorRef>(null);
+  const { darkMode } = useDarkMode();
 
   const runCode = language === 'c' ? runCCode : runPythonCode;
   const languageCode = language === 'c' ? cpp() : python();
@@ -110,7 +113,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ initialCode, language = 'python' 
             value={initialCode}
             extensions={[languageCode, indentUnit.of('    ')]}
             height="500px"
-            theme={tokyoNightStorm}
+            theme={darkMode ? tokyoNightStorm : duotoneLight}
             onChange={onChange}
           />
           <Pane position="absolute" top={0} right={0} padding={8}>
