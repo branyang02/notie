@@ -1,6 +1,8 @@
 import 'katex/dist/katex.min.css';
 import '../../../styles/blogPost.css';
 
+import Grid from '@mui/material/Grid';
+import { Pane } from 'evergreen-ui';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
@@ -9,6 +11,7 @@ import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 
+import BlogMenu from '../../../components/BlogMenu';
 import CodeBlock from '../../../components/CodeBlock';
 import StaticCodeBlock from '../../../components/StaticCodeBlock';
 import TikZ from '../../../components/TikZ';
@@ -57,16 +60,36 @@ const markdownContent = processMarkdown(markdown);
 
 const CSO2 = () => {
   return (
-    <div className="blog-content">
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkMath]}
-        rehypePlugins={[rehypeKatex, rehypeRaw, rehypeHighlight, rehypeSlug]}
-        components={components}
-        // eslint-disable-next-line react/no-children-prop
-        children={markdownContent}
-      />
+    <div className="overall-container">
+      <Grid container spacing={3} style={{ width: '80%' }}>
+        <Grid item xs display="flex" justifyContent="center">
+          {/* Assuming BlogMenu is defined elsewhere */}
+          <BlogMenu markdownContent={markdownContent} />
+        </Grid>
+        <Grid item xs={9} display="flex" justifyContent="center">
+          <Pane className="blog-content">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm, remarkMath]}
+              rehypePlugins={[rehypeKatex, rehypeRaw, rehypeHighlight, rehypeSlug]}
+              components={components}
+              // eslint-disable-next-line react/no-children-prop
+              children={markdownContent}
+            />
+          </Pane>
+        </Grid>
+      </Grid>
     </div>
   );
 };
+
+// <div className="blog-content">
+//   <ReactMarkdown
+//     remarkPlugins={[remarkGfm, remarkMath]}
+//     rehypePlugins={[rehypeKatex, rehypeRaw, rehypeHighlight, rehypeSlug]}
+//     components={components}
+//     // eslint-disable-next-line react/no-children-prop
+//     children={markdownContent}
+//   />
+// </div>
 
 export default CSO2;
