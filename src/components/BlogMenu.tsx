@@ -28,11 +28,10 @@ const BlogMenu = ({ markdownContent }: { markdownContent: string }) => {
   const toc = generateTableOfContents(markdownContent);
 
   return (
-    <Pane padding="20px">
+    <Pane padding="20px" className="blog-menu">
       <ReactMarkdown
         // eslint-disable-next-line react/no-children-prop
         children={toc}
-        className="blog-menu"
       />
     </Pane>
   );
