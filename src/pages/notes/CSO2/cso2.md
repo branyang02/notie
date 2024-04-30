@@ -1155,7 +1155,7 @@ and the following pipeline stages:
 
 $$
 
-\begin{array}{ccccccccc}
+\begin{array}{cccccccccc}
 & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} \\
 \text{movq 0(\%rax), \%rbx} & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} & & & & \\
 \text{subq \%rbx, \%rcx} & & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} & & & \\
@@ -1274,7 +1274,7 @@ If our speculation is correct, our pipeline will look like this:
 
 $$
 
-\begin{array}{ccccccccc}
+\begin{array}{cccccccccc}
 & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} \\
 \text{cmpq \%r8, \%r9} & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} & & & & \\
 \text{jne label} & & \text{F} & \text{D} & \text{E} & \text{M} & \text{W} & & & \\
@@ -1331,7 +1331,7 @@ Jump instructions are often used in loops, and they may take some time to resolv
 
 $$
 
-\begin{array}{ccccccccc}
+\begin{array}{cccccccccc}
 & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} \\
 \text{addq \%r8, \%r9} & \text{F} & \text{D} & \color{red}\text{E} & \text{M} & \text{W} & & & & \\
 \text{subq \%r10, \%r11} & \text{F} & \text{D} & \color{red}\text{E} & \text{M} & \text{W} & & & \\
@@ -1377,7 +1377,7 @@ The pipeline stages are as follows:
 
 $$
 
-\begin{array}{ccccccccc}
+\begin{array}{cccccccccc}
 & \text{0} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} & \text{8} & \text{9} \\
 \text{addq \%r10, \%r8} & \text{F} & & & & & \text{D} & \color{red}\text{E} & \text{M} & \text{W} \\
 \color{#808080}\text{movq \%r8, (\%rax)} & & \text{F} & & & & & \color{#808080}\text{D} & \color{#808080}\text{E} & \color{#808080}\text{M} & \color{#808080}\text{W} \\
@@ -1595,7 +1595,7 @@ Suppose we have 2 ALU execution units, meaning we could execute **at most** 2 in
 
 $$
 
-\begin{array}{ccccccccc}
+\begin{array}{cccccccccc}
 \text{Cycle\#:} & \text{1} & \text{2} & \text{3} & \text{4} & \text{5} & \text{6} & \text{7} \\
 \text{ALU 1} & \color{red}1 & \color{red}2 & \color{red}3 & \color{red}4 & \color{red}5 & \color{red}8 & \color{red}9 & & \\
 \text{ALU 2} & - & - & - & \color{red}6& \color{red}7 &- & - & & \\

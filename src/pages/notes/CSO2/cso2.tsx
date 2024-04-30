@@ -1,8 +1,8 @@
 import 'katex/dist/katex.min.css';
 import '../../../styles/blogPost.css';
 
-import Grid from '@mui/material/Grid';
 import { Pane } from 'evergreen-ui';
+import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
@@ -59,14 +59,42 @@ function processMarkdown(markdownContent: string): string {
 const markdownContent = processMarkdown(markdown);
 
 const CSO2 = () => {
-  
+  const [activeId, setActiveId] = useState('');
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!contentRef.current) {
+        return;
+      }
+      const sections = contentRef.current.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      let closestSectionId = '';
+      let minDistance = Number.POSITIVE_INFINITY;
+
+      sections.forEach((section) => {
+        const rect = section.getBoundingClientRect();
+        const distance = Math.abs(rect.top);
+
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestSectionId = section.id;
+        }
+      });
+
+      setActiveId(closestSectionId);
+    };
+
+    document.addEventListener('scroll', handleScroll);
+    return () => document.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div className="overall-container">
       <Pane className="mw-page-container-inner">
         <Pane className="vector-column-start">
-          <BlogMenu markdownContent={markdownContent} />
+          <BlogMenu markdownContent={markdownContent} activeId={activeId} />
         </Pane>
-        <Pane className="mw-content-container">
+        <Pane className="mw-content-container" ref={contentRef}>
           <Pane className="blog-content">
             <ReactMarkdown
               remarkPlugins={[remarkGfm, remarkMath]}
