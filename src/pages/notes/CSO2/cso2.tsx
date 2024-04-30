@@ -61,12 +61,11 @@ const markdownContent = processMarkdown(markdown);
 const CSO2 = () => {
   return (
     <div className="overall-container">
-      <Grid container spacing={3} style={{ width: '80%' }}>
-        <Grid item xs display="flex" justifyContent="center">
-          {/* Assuming BlogMenu is defined elsewhere */}
+      <Pane className="mw-page-container-inner">
+        <Pane className="vector-column-start">
           <BlogMenu markdownContent={markdownContent} />
-        </Grid>
-        <Grid item xs={9} display="flex" justifyContent="center">
+        </Pane>
+        <Pane className="mw-content-container">
           <Pane className="blog-content">
             <ReactMarkdown
               remarkPlugins={[remarkGfm, remarkMath]}
@@ -76,8 +75,8 @@ const CSO2 = () => {
               children={markdownContent}
             />
           </Pane>
-        </Grid>
-      </Grid>
+        </Pane>
+      </Pane>
     </div>
   );
 };
@@ -92,4 +91,21 @@ const CSO2 = () => {
 //   />
 // </div>
 
+<Grid container spacing={3} style={{ width: '80%' }}>
+  <Grid item xs display="flex" justifyContent="center">
+    {/* Assuming BlogMenu is defined elsewhere */}
+    <BlogMenu markdownContent={markdownContent} />
+  </Grid>
+  <Grid item xs={9} display="flex" justifyContent="center">
+    <Pane className="blog-content">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm, remarkMath]}
+        rehypePlugins={[rehypeKatex, rehypeRaw, rehypeHighlight, rehypeSlug]}
+        components={components}
+        // eslint-disable-next-line react/no-children-prop
+        children={markdownContent}
+      />
+    </Pane>
+  </Grid>
+</Grid>;
 export default CSO2;
