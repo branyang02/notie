@@ -26,7 +26,7 @@ const generateTableOfContents = (markdownContent: string) => {
   return res;
 };
 
-const BlogMenu = ({ markdownContent }: { markdownContent: string; activeId: string }) => {
+const BlogMenu = ({ markdownContent }: { markdownContent: string }) => {
   const toc = useMemo(() => generateTableOfContents(markdownContent), [markdownContent]);
 
   return (
