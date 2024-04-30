@@ -1635,18 +1635,3 @@ The `execute` stage typically _**forwards**_ the result to the `issue` stage of 
 ### **References**
 
 This note is based on [CS 3130 Spring 2024](https://www.cs.virginia.edu/~cr4bd/3130/S2024/) by Charles Reiss, used under CC BY-NC-SA 4.0.
-
-TODO:
-
-- Exceptions + context switche:
-  - exceptions vs context switches
-  - sending signal to procese vs thread
-- Process:
-  - count the` number of processes
-  - Fork children tree, pid stuff.
-  - waitpid, `wait, waitpid options
-
-Cache:
-
-- tag index offset
-- use index to access set
