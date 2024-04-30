@@ -1635,11 +1635,3 @@ The `execute` stage typically _**forwards**_ the result to the `issue` stage of 
 ### **References**
 
 This note is based on [CS 3130 Spring 2024](https://www.cs.virginia.edu/~cr4bd/3130/S2024/) by Charles Reiss, used under CC BY-NC-SA 4.0.
-
-$$
-
-
-$$
-
-$$
-$$
