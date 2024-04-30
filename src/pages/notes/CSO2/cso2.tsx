@@ -59,6 +59,7 @@ function processMarkdown(markdownContent: string): string {
 const markdownContent = processMarkdown(markdown);
 
 const CSO2 = () => {
+  
   return (
     <div className="overall-container">
       <Pane className="mw-page-container-inner">
@@ -81,31 +82,4 @@ const CSO2 = () => {
   );
 };
 
-// <div className="blog-content">
-//   <ReactMarkdown
-//     remarkPlugins={[remarkGfm, remarkMath]}
-//     rehypePlugins={[rehypeKatex, rehypeRaw, rehypeHighlight, rehypeSlug]}
-//     components={components}
-//     // eslint-disable-next-line react/no-children-prop
-//     children={markdownContent}
-//   />
-// </div>
-
-<Grid container spacing={3} style={{ width: '80%' }}>
-  <Grid item xs display="flex" justifyContent="center">
-    {/* Assuming BlogMenu is defined elsewhere */}
-    <BlogMenu markdownContent={markdownContent} />
-  </Grid>
-  <Grid item xs={9} display="flex" justifyContent="center">
-    <Pane className="blog-content">
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkMath]}
-        rehypePlugins={[rehypeKatex, rehypeRaw, rehypeHighlight, rehypeSlug]}
-        components={components}
-        // eslint-disable-next-line react/no-children-prop
-        children={markdownContent}
-      />
-    </Pane>
-  </Grid>
-</Grid>;
 export default CSO2;
