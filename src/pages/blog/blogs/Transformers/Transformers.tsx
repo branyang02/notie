@@ -47,9 +47,9 @@ const Transformers = () => {
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[rehypeKatex, rehypeRaw, rehypeHighlight, rehypeSlug]}
         components={components}
-        // eslint-disable-next-line react/no-children-prop
-        children={markdownContent}
-      />
+      >
+        {markdownContent}
+      </ReactMarkdown>
     </div>
   );
 };

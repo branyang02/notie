@@ -31,11 +31,9 @@ const BlogMenu = ({ markdownContent }: { markdownContent: string }) => {
 
   return (
     <Pane padding="20px" className="blog-menu">
-      <ReactMarkdown
-        rehypePlugins={[[rehypeSlug, { prefix: 'toc-' }]]}
-        // eslint-disable-next-line react/no-children-prop
-        children={toc}
-      />
+      <ReactMarkdown rehypePlugins={[[rehypeSlug, { prefix: 'toc-' }]]}>
+        {toc}
+      </ReactMarkdown>
     </Pane>
   );
 };
