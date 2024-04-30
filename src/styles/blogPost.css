@@ -26,6 +26,18 @@
 }
 
 @media screen and (max-width: 1100px) {
+  .mw-page-container-inner {
+    display: grid;
+    column-gap: 24px;
+    grid-template: min-content 1fr min-content / minmax(0, 1fr);
+    grid-template-areas:
+      'siteNotice'
+      'pageContent'
+      'footer';
+  }
+}
+
+@media screen and (max-width: 1100px) {
   .vector-column-start {
     display: none
   }
