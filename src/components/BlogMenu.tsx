@@ -1,7 +1,9 @@
 import '../styles/blog-menu.css';
 
 import { Pane } from 'evergreen-ui';
+import { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
+import rehypeSlug from 'rehype-slug';
 
 const generateTableOfContents = (markdownContent: string) => {
   let res = '### Contents\n---\n';
@@ -24,15 +26,15 @@ const generateTableOfContents = (markdownContent: string) => {
   return res;
 };
 
-const BlogMenu = ({ markdownContent }: { markdownContent: string }) => {
-  const toc = generateTableOfContents(markdownContent);
+const BlogMenu = ({ markdownContent }: { markdownContent: string; activeId: string }) => {
+  const toc = useMemo(() => generateTableOfContents(markdownContent), [markdownContent]);
 
   return (
-    <Pane marginTop="30px">
+    <Pane padding="20px" className="blog-menu">
       <ReactMarkdown
+        rehypePlugins={[[rehypeSlug, { prefix: 'toc-' }]]}
         // eslint-disable-next-line react/no-children-prop
         children={toc}
-        className="blog-menu"
       />
     </Pane>
   );
