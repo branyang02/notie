@@ -17,7 +17,7 @@
   .mw-page-container-inner {
     display: grid;
     column-gap: 24px;
-    grid-template: min-content 1fr min-content / 12.25rem minmax(0, 1fr);
+    grid-template: min-content 1fr min-content / 20.25rem minmax(0, 1fr);
     grid-template-areas:
       'siteNotice siteNotice'
       'columnStart pageContent'

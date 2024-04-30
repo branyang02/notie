@@ -28,7 +28,7 @@ const BlogMenu = ({ markdownContent }: { markdownContent: string }) => {
   const toc = generateTableOfContents(markdownContent);
 
   return (
-    <Pane marginTop="30px">
+    <Pane padding="20px">
       <ReactMarkdown
         // eslint-disable-next-line react/no-children-prop
         children={toc}
