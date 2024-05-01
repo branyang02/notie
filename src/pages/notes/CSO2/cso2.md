@@ -1178,9 +1178,286 @@ Suppose the next instruction `pushq %rbx` referes to the page table at VPN `0x7F
 
 </details>
 
+##### **Copy on Write**
+
+<blockquote class="definition">
+
+**Copy on Write** is a technique where the OS creates a copy of a page only when a write operation occurs.
+
+</blockquote>
+
+When a new process is created using `fork()`, the child process creates its own page table that points to the same physical pages as the parent process. The OS uses **copy on write** to avoid creating a new copy of the physical pages until a write operation occurs.
+
+<details><summary>Copy on Write Example</summary>
+
+For example, suppose we have the following page table for a process
+
+<div class="xsmall-table">
+
+| Valid? | Write? | PPN |
+| ------ | ------ | -------------------- |
+|1|1|`0x12345`|
+|1|1|`0x12347`|
+|1|1|`0x12340`|
+|1|1|`0x200DF`|
+|1|1|`0x200AF`|
+
+</div>
+
+When we call `fork()`, the child process creates a new page table that points to the same PPN, but with the **write bit** set to `0`. The parent process also sets the **write bit** to `0` in its page table.
+
+<div class="small-table">
 
 
+<table>
+<tr><th>Parent Process Page Table </th><th>Child Process Page Table</th></tr>
+<tr><td>
 
+
+| Valid? | Write? | PPN |
+| ------ | ------ | -------------------- |
+|1|0|`0x12345`|
+|1|0|`0x12347`|
+|1|0|`0x12340`|
+|1|0|`0x200DF`|
+|1|0|`0x200AF`|
+
+
+</td><td>
+
+
+| Valid? | Write? | PPN |
+| ------ | ------ | -------------------- |
+|1|0|`0x12345`|
+|1|0|`0x12347`|
+|1|0|`0x12340`|
+|1|0|`0x200DF`|
+|1|0|`0x200AF`|
+
+
+</td></tr> </table>
+
+</div>
+
+When a write operation occurs in the child process, the OS triggers a **page fault**. The OS then creates a new copy of the physical page and updates the child process's page table to point to the new physical page. Suppose the child process attempts to write to the page at row 5:
+
+<div class="small-table">
+
+
+<table>
+<tr><th>Parent Process Page Table </th><th>Child Process Page Table</th></tr>
+<tr><td>
+
+
+| Valid? | Write? | PPN |
+| ------ | ------ | -------------------- |
+|1|0|`0x12345`|
+|1|0|`0x12347`|
+|1|0|`0x12340`|
+|1|0|`0x200DF`|
+|1|0|`0x200AF`|
+
+
+</td><td>
+
+
+| Valid? | Write? | PPN |
+| ------ | ------ | -------------------- |
+|1|0|`0x12345`|
+|1|0|`0x12347`|
+|1|0|`0x12340`|
+|1|0|`0x200DF`|
+|$\color{red}1$|$\color{red}1$| $\color{red}\text{0x300FD}$ |
+
+
+</td></tr> </table>
+
+</div>
+
+After allocating a copy, the OS reruns the write operation in the child process.
+
+</details>
+
+##### **Page Table Storage**
+
+###### **In Memory**
+
+One of the options is to store the page table as an array in memory. To do this, we need to have a base register that points to the start of the page table.
+
+<blockquote class="definition">
+
+A **page table base register** is a register that holds the starting address of the page table. It also corresponds to index `0` of the page table.
+
+</blockquote>
+
+The OS has predefinied which bits at each memory address are used for the permission bits, PPN, and other unused bits. For example, a possible page table layout may look like this:
+
+<div class="small-table">
+
+| valid (bit 15)  | PPN (bits 4 - 14)  | unused (bits 0 - 3) |
+| --------------- | ------------------- | ------------------- |
+|... | ... | ... |
+
+</div>
+
+Therefore, to interpret PTE at a given address, we need to extract the bits that correspond to the valid bit and PPN. The overall process can be described in the following diagram:
+
+<img src="https://branyang02.github.io/images/page_table.png" alt="Page Table Memory" style="display: block; max-height: 70%; max-width: 70%;">
+
+We can also now formally write a formula that describes the process of translating a virtual address to a physical address:
+
+<blockquote class="equation">
+
+Given a virtual address $\text{VA}$, the **Page Table Base Register** $\text{PTBR}$, and the **Page Table Entry Size** $\text{PTE size}$, we can calculate the physical address $\text{PA}$ as:
+
+$$
+\begin{align*}
+\text{VPN} &= \text{VA} \text{ >> offset bits} \\
+\text{PTE} &= M \left[\text{PTBR} + \text{VPN} \times \text{PTE size}\right] \\
+\text{PPN} &= \text{PTE} \text{ \& }\text{PPN mask} \\
+\text{PA} &= \text{PPN} \text{ << offset bits} + \text{offset}
+\end{align*}
+$$
+
+where $M$ is the memory array that stores the page table, and $\text{PPN mask}$ is a mask that extracts the PPN bits from the PTE.
+
+</blockquote>
+
+<blockquote class="important">
+
+If you want the actual **value** that is stored at a physical address, make sure to index into the memory array using the **physical address**.
+
+$$
+\text{Value} = M[\text{PA}].
+$$
+
+</blockquote>
+
+###### **Multi-Level Page Table**
+
+We can also store the page table as a **multi-level page table** in a _tree-like data structure_. This is useful when the page table is too large to fit in memory.
+
+In a multi-level page table, the virtual address is split into multiple parts, each part corresponding to a level in the page table. The OS uses the first part of the virtual address to index into the first level of the page table, and the second part to index into the second level, and so on.
+
+Each level of the page table contains a regular PTE and PPN, but the PPN is converted to a physical address to perform the next level of indexing. The final page table entry contains the _actual_ PPN, which is used to access the physical memory.
+
+**Converting PPN to Physical Address for next level lookup**
+
+Once we retrieve the PPN in a page level lookup, we extract the PPN from the corresponding PTE, and **concatenate** it with the number of offset bits of `0`'s to find the _base address_ of the next level of the page table.
+
+<blockquote class="important">
+
+When checking for permission bits, if a PTE is invalid, the OS does **NOT** need to check the next level of the page table.
+
+</blockquote>
+
+<details open><summary>Multi-Level Page Table Example</summary>
+
+Suppose we have the following memory layout:
+
+<img src="https://branyang02.github.io/images/pt_example.png" alt="Multi-Level Page Table" style="display: block; max-height: 50%; max-width: 50%;">
+
+and the following configuration:
+
+- 9-bit virtual addresses
+- 6-bit physical addresses
+- 8 byte pages
+- 1 byte PTE size
+- PTE contains: 3 bit PPN, 1 valid bit, 4 unused bit.
+- page table base register at `0x20`
+- 2-level page table
+
+We want to translate the virtual address `0x129`.
+
+1. We find the VPN and offset bits:
+
+$$
+\begin{align*}
+  \text{VA space} = 2^9 &= 512 \text{ bytes} \\
+  \text{\# of PTEs} = \frac{512}{8} &= 64 \text{ entries}
+\end{align*}
+$$
+
+64 entries correspond to 6 bits of VPN, and 3 bits of offset. Therefore, we extract the VPN and offset bits from the lower 9 bits of the virtual address:
+
+$$
+\text{0x}129 = 0001 \; 0010\; 1001 =  \underbrace{1 \; 0010 \; 1}_{\text{VPN bits}} \underbrace{001}_{\text{offset bits}}
+$$
+
+Since we are dealing with 2-level page table, we split the VPN bits into two parts evenly:
+
+$$
+\text{VPN}_1 = 100_2, \quad \text{VPN}_2 = 101_2.
+$$
+
+Now, we can start the first level translation process. We first index into the first level of the page table to find the corresponding PTE:
+
+$$
+\begin{align*}
+  \text{PTE}_1 &= M \left[\text{PTBR} + \text{VPN}_1 \times \text{PTE size}\right] \\
+  &= M\left[\text{0x}20 + 100_2 \times 1 \text{ byte}\right] \\
+  &= M\left[\text{0x}24\right] \\
+  &= \text{0x}F4 = 1111 \; 0100_2
+\end{align*}
+$$
+
+Based on the configuration, we can splite the PTE into the valid bit and PPN:
+
+$$
+\begin{align*}
+  \text{PTE}_1 = \underbrace{111}_{\text{PPN}}\underbrace{1}_{\text{valid bit}} \; 0100_2
+\end{align*}
+$$
+
+We then find the next level page table's base address by concatenating the PPN with the offset bits of `0`'s:
+
+$$
+\begin{align*}
+  \text{Base Address} &= \text{PPN} \text{ << offset bits} \\
+  &= 111_2 \text{ << } 3 \\
+  &= 111000_2
+\end{align*}
+$$
+
+We then perform the second level translation process. We index into the second level of the page table to find the corresponding PTE:
+
+$$
+\begin{align*}
+  \text{PTE}_2 &= M \left[\text{Base Address} + \text{VPN}_2 \times \text{PTE size}\right] \\
+  &= M\left[\text{0x}38 + 101_2 \times 1 \text{ byte}\right] \\
+  &= M\left[\text{0x}3D\right] \\
+  &= \text{0x}DC = 1101 \; 1100_2
+\end{align*}
+$$
+
+Based on the configuration, we can splite the PTE into the valid bit and PPN:
+
+$$
+\begin{align*}
+  \text{PTE}_2 = \underbrace{110}_{\text{PPN}}\underbrace{1}_{\text{valid bit}} \; 1100_2
+\end{align*}
+$$
+
+Finally, we find the physical address by concatenating the PPN with the offset bits:
+
+$$
+\begin{align*}
+  \text{PA} &= \text{PPN} \text{ << offset bits} + \text{offset} \\
+  &= 110_2 \text{ << } 3 + 001_2 \\
+  &= 110000_2 + 001_2 \\
+  &= 110001_2 = \text{0x}31
+\end{align*}
+$$
+
+If we want to find the value that corresponds to the physical address `0x31`, we can index into the physical memory array at that address to find the value.
+
+$$
+\begin{align*}
+  M[\text{0x}31] &= \text{0x}0A.
+\end{align*}
+$$
+
+</details>
 
 
 #### **Cache**
