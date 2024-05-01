@@ -8,7 +8,7 @@ Date: 5/1/2024 | Author: Brandon Yang
 
 These are my notes for Computer Systems and Organization 2 (CSO2) at the University of Virginia in the Spring 2024 semester taught by Charles Reiss. This note contains live code examples and explanations for various topics in the course.
 
-Example _**live**_, _**runnable**_ C code:
+<!-- Example _**live**_, _**runnable**_ C code:
 
 ```execute-c
 #include <stdio.h>
@@ -39,9 +39,9 @@ int main() {
 
     return 0;
 }
-```
+``` -->
 
-```tikz
+<!-- ```tikz
 \begin{tikzpicture}
   \def \n {5}
   \def \radius {3cm}
@@ -54,11 +54,7 @@ int main() {
       arc ({360/\n * (\s - 1)+\margin}:{360/\n * (\s)-\margin}:\radius);
   }
 \end{tikzpicture}
-```
-
-<span
-    class="caption">A dining philosophers diagram drawn using TikZ.
-</span>
+``` -->
 
 #### **Building**
 
@@ -926,7 +922,266 @@ The parent process also waits for the child process to finish without using `wai
 
 #### **Virtual Memory**
 
-coming soon...
+Every process has its own **virtual address space** when running a program.
+
+<img src="https://branyang02.github.io/images/address_space.png" alt="Virtual Address Space" style="display: block; max-height: 50%; max-width: 50%;">
+
+<blockquote class="definition">
+
+**Virtual Address Space**: the memory that a process can access. It is an illusion of a program having its own memory.
+
+</blockquote>
+
+We can split any memory address (both virtual and physical) into two parts: the **page number** and the **page offset**.
+
+- **Page Number**: high-order bits of the address.
+- **Page Offset**: low-order bits of the address.
+
+
+
+To access the **physical memory**, the OS provides a **page table** that maps virtual addresses to physical addresses. The **page number** is used as the key to index into the **Page Table**, and the **page offset** is used to access the data within the page.
+
+##### **Page Table**
+
+<blockquote class="definition">
+
+A **page table** is a data structure that maps virtual addresses to physical addresses.
+
+</blockquote>
+
+A simple page table may look like this:
+
+<div class="small-table">
+
+| Valid? | Physical Page Number |
+| ------ | -------------------- |
+| 1 | 010 |
+| 0 | —   |
+| 1 | 101 |
+| 1 | 110 |
+
+</div>
+
+In the page table above, the index of the row corresponds to the **virtual page number (VPN)**, or the page number of the virtual address. Each row is called a **page table entry (PTE)**, where it contains a **valid bit** to indicate if the translation is valid or not, and the corresponding **physical page number (PPN)**.
+
+Since the page table is simply a _translation_ from virtual addresses to physical addresses, we define the main steps of the translation process:
+
+1. Given the virtual address, extract the **VPN** and **page offset**.
+2. Use the **VPN** to index into the **page table** and retrieve the **PTE**.
+3. If the **valid bit** is set, then the **PPN** is valid; otherwise, the translation is invalid and an exception is raised.
+4. Concatenate the **PPN** with the **page offset** to form the physical address.
+
+
+<blockquote class="important">
+
+We have a **different** page table for each process.
+
+</blockquote>
+
+
+##### **Address Space Size**
+
+<blockquote class="definition">
+
+The **address space size** is the maximum number of unique addresses that can be generated ba processor.
+
+</blockquote>
+
+<blockquote class='equation'>
+
+$$
+\begin{equation*}
+\text{Address Space Size} = 2^{\text{number of bits}}
+\end{equation*}
+$$
+
+</blockquote>
+
+For example, if we want to calculate the **virtual address space size** given that we have 32-bit virtual addresses:
+
+$$
+\begin{equation*}
+\text{Virtual Address Space Size} = 2^{32} \text{ bytes}.
+\end{equation*}
+$$
+
+Similarly, if we want to calculate the **physical address space size** given that we have 20-bit physical addresses:
+
+$$
+\begin{equation*}
+\text{Physical Address Space Size} = 2^{20} \text{ bytes}.
+\end{equation*}
+$$
+
+This is because each unique address stores **1** byte of data, and the number of unique addresses is equal to the size of the address space.
+
+We can also calculate other things once we know the address space size:
+
+
+<blockquote class="equation">
+
+$$
+\begin{align*}
+\text{Number of Virtual Pages} &= \frac{\text{Virtual Address Space Size}}{\text{Page Size}} \\
+\text{Number of Physical Pages} &= \frac{\text{Physical Address Space Size}}{\text{Page Size}} \\
+\\
+\text{VPN bits} &= \log_2(\text{Number of Virtual Pages}) \\
+\text{PPN bits} &= \log_2(\text{Number of Physical Pages}) \\
+\\
+\text{Number of PTEs} &= \text{Number of Virtual Pages} \\
+\end{align*}
+$$
+
+
+</blockquote>
+
+
+<details><summary>Exercise: page counting</summary>
+
+**Q1**: Suppose we have $32$-bit virtual addresses, and each page is $4096$ bytes. Calculate the number of virtual pages.
+
+Answer: Since each virtual address has $32$ bits, we have a total of $2^{32}$ unique virtual addresses, which corresponds to $2^{32}$ bytes of data. Since each page can store $4096$ bytes of data, we can calculate the number of virtual pages as follows:
+
+$$
+\begin{equation*}
+\text{Number of Virtual Pages} = \frac{2^{32} \text{ bytes}}{4096 \text{ bytes/page}} = \frac{2^{32}}{2^{12}} = 2^{20} \text{ pages}.
+\end{equation*}
+$$
+
+
+**Q2**: Suppose we have:
+- $32$-bit virtual addresses,
+- $30$-bit physical addresses,
+- each page is $4096$ (or $2^{12}$) bytes,
+- PTE have PPN, and valid bit.
+
+Calculate the size of the page table.
+
+Answer: To find the size of the overall page table, we need to know the number of PTEs, and the size of each PTE. Each PTE is made up of a single valid bit and a PPN. Therefore, we need to calculate the size of each PPN. First, we can find the number of physical pages:
+
+$$
+\begin{align*}
+\text{Number of Physical Pages} &= \frac{2^{30}}{2^{12}} = 2^{18} \text{ pages}
+\end{align*}
+$$
+
+Next, we can calculate the PPN bits:
+
+$$
+\begin{align*}
+\text{PPN bits} &= \log_2(\text{Number of Physical Pages}) = \log_2(2^{18}) = 18 \text{ bits}
+\end{align*}
+$$
+
+Alternatively, we can calculate the PPN bits by finding the number of **offset** bits. Given that we have $2^{20}$ virtual pages, we can first find the number of VPN bits:
+
+$$
+\begin{align*}
+\text{VPN bits} &= \log_2(\text{Number of Virtual Pages}) = \log_2(2^{20}) = 20 \text{ bits}
+\end{align*}
+$$
+
+Since we have $32$-bit virtual addresses, we can calculate the number of **offset** bits:
+
+$$
+\begin{align*}
+\text{Offset bits} &= 32 - \text{VPN bits} = 32 - 20 = 12 \text{ bits}
+\end{align*}
+$$
+
+Since both the virtual and physical addresses have the same number of offset bits, we can calculate the number of PPN bits as:
+
+$$
+\begin{align*}
+\text{PPN bits} &= 32 - \text{Offset bits} = 32 - 12 = 20 \text{ bits}
+\end{align*}
+$$
+
+
+Therefore, each PTE is made up of $1$ valid bit and $18$ PPN bits. Next, we need to find the number of PTEs. Since we have already found that we have $2^{20}$ virtual pages, we have $2^{20}$ PTEs. Therefore, the size of the page table is:
+
+$$
+\begin{align*}
+\text{Size of Page Table} &= \text{Number of PTEs} \times \text{Size of each PTE} \\
+&= 2^{20} \times (1 + 18) \text{ bits} \\
+&= 2^{20} \times 19 \text{ bits} \\
+\end{align*}
+$$
+
+
+</details>
+
+
+##### **Permission Bits**
+
+Usually, a page table entry contains permission bits that specify the access rights for the page. For example, the permission bits may include:
+
+- **Valid**: indicates if the translation is valid.
+- **User**: allows user-level code to access the page.
+- **Write**: allow writing to the page.
+- **Execute**: allow executing code on the page.
+
+<div class="small-table">
+
+| Valid | User | Write | Execute | Physical Page Number |
+| ----- | ---- | ----- | ------- | -------------------- |
+| 1     | 1    | 1     | 0       | 010                  |
+| 0     | 0    | 0     | 0       | —                    |
+| 1     | 1    | 0     | 1       | 101                  |
+
+
+</div>
+
+Permission bits allow page tables to enforce memory protection. For example, if a process tries to write to a read-only page, the OS can raise an exception.
+
+##### **Space On Demand**
+
+<blockquote class="definition">
+
+**Space on Demand** is a technique where the OS only loads pages into memory when they are needed.
+
+
+</blockquote>
+
+When a process is created, the OS does not load the entire program into memory. Instead, the OS only loads the pages that are needed. When a process tries to access a page that is not in memory, the OS raises a **page fault**.
+
+<blockquote class="important">
+
+A **page fault** is an exception raised by the hardware when a process tries to access a page that is not in memory (valid bit is 0).
+
+</blockquote>
+
+When a page fault occurs, the OS dynamically loads the page from disk into memory. The OS then updates the page table entry to indicate that the page is now in memory. This is known as **allocate on demand**.
+
+<details><summary>Allocate Stack Space on Demand Example</summary>
+
+Suppose we have the following initial page table:
+
+<img src="https://branyang02.github.io/images/allocate_on_demand.png" alt="Page Table" style="display: block; max-height: 30%; max-width: 30%;">
+
+We have the following code that needs to be executed
+
+```assembly
+pushq %rbx
+
+movq 8(%rcx), %rbx
+addq %rbx, %rax
+```
+
+Suppose the next instruction `pushq %rbx` referes to the page table at VPN `0x7FFFB`. The following occurs:
+
+1. OS sees that valid bit is `0`, triggers a **page fault**.
+2. OS looks up what happend, and realized that the program wants more stack space.
+3. OS allocates the new stack space _on demand_.
+4. OS returns to the program, and reruns `pushq %rbx`.
+
+
+</details>
+
+
+
+
+
 
 #### **Cache**
 
