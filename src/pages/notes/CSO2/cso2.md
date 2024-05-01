@@ -586,9 +586,25 @@ int main() {
 }
 ```
 
+##### **Signal Handler Unsafety**
+
+<blockquote class="important">
+
+Signal handlers should be **async-signal-safe**. This means that the functions called in the signal handler should not interfere with the normal execution of the program.
+
+</blockquote>
+
+- **Async-signal-safe functions**: functions that can be safely called from a signal handler.
+  - `write()`, `exit()` ...
+  - **DO NOT** use `printf()`, `malloc()`, `free()` ...
+
+We can also avoid running the signal handler while it is already running by blocking the signal.
+
 ##### **Blocking Signals**
 
-- Use `sigprocmask()` to block signals.
+<img src="https://branyang02.github.io/images/block_signal.png" alt="Blocking Signals" style="display: block; max-height: 30%; max-width: 30%;">
+
+We can block signals with `sigprocmask()` to prevent the signal handler from running immediately. When the signal is received, it will be _pending_ until it is unblocked, at which point the signal handler will run.
 
 ```c
 sigset_t sigint_as_set;
@@ -601,11 +617,312 @@ sigprocmask(SIG_UNBLOCK, &sigint_as_set, NULL);
 
 - `sigprocmask()` temporarily disables the signal handler from running. If a signal is sent to a process while it is blocked, then the OS will track that is pending. When the pending signal is unblocked, its signal handler will be run.
 - `sigsuspend()` temporarily unblocks a blocked signal just long enough to run its signal handler.
-- `sigwait()` blocks until a signal is received.
+- `sigwait()` waits for a signal to be received, blocking until the signal is received. This is used typically _instead of having signal handlers_.
 
 #### **Processes**
 
-coming soon...
+##### **Process Creation**
+
+- `pid_t fork()`: creates a new process by duplicating the calling process.
+  - Returns `0` to the child process, returns the **child process's PID** to the parent process.
+- `pid_t getpid()`: returns the PID of the calling process.
+
+When we create a new process, the child process is a **copy** of the parent process. The child process has its own virtual address space, but it shares the same code, data, and heap as the parent process.
+
+<details><summary>Example Fork</summary>
+
+```execute-c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main() {
+    pid_t pid;
+
+    // Create a new process
+    pid = fork();
+
+    if (pid == -1) {
+        // If fork() returns -1, an error occurred
+        perror("Failed to fork");
+        return 1;
+    } else if (pid > 0) {
+        // Parent process
+        printf("I am the parent process. PID: %d, Child PID: %d\n", getpid(), pid);
+        // Optionally, wait for the child to exit
+        wait(NULL);
+    } else {
+        // Child process
+        printf("I am the child process. PID: %d, Parent PID: %d\n", getpid(), getppid());
+        // Execute some code as the child
+    }
+
+    return 0;
+}
+```
+
+- `pid_t pid`: variable to store the return value of `fork()`.
+- `pid = fork()`: create a new process.
+
+</details>
+
+If we are running in a **single-core** setting, then running the parent and child processes require **context switching**. However, if we are running in a **multi-core** setting, then the parent and child processes can run concurrently.
+
+<blockquote class="important">
+
+The parent and child processes may run concurrently, so the order of output may vary.
+
+</blockquote>
+
+##### **Process Management**
+
+- `waitpid()`: wait for a specific child process to exit.
+
+We can use `waitpid()` to wait for a specific child process to **exit**. The function `waitpid()` blocks the parent process until the child process with the specified PID exits.
+
+<blockquote class="important">
+
+`waitpid()` only works for child processes.
+
+</blockquote>
+
+<details><summary>Example Waitpid</summary>
+
+```execute-c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main() {
+    pid_t pid;
+
+    // Create a new process
+    pid = fork();
+
+    if (pid == -1) {
+        // If fork() returns -1, an error occurred
+        perror("Failed to fork");
+        return 1;
+    } else if (pid > 0) {
+        // Parent process
+        // Wait for the child to exit
+        waitpid(pid, NULL, 0);
+        printf("I am the parent process. PID: %d, Child PID: %d\n", getpid(), pid);
+    } else {
+        // Child process
+        printf("I am the child process. PID: %d, Parent PID: %d\n", getpid(), getppid());
+        // Execute some code as the child
+    }
+
+    return 0;
+}
+```
+
+In this example, the parent process waits for the child process to exit using `waitpid(pid, NULL, 0)`. Therefore, the child process will run and print to console before the parent process prints to console.
+
+- `waitpid(pid, NULL, 0)`: wait for the child process with PID `pid` to exit.
+
+</details>
+
+We can also use `exec()` functions to replace the current process with a new process. For example, we may want to replace the current process with a new shell process:
+
+```c
+if (child_pid == 0) {
+  // child process
+  char *args[] = {"ls", "-l", NULL};
+  execv("/bin/ls", args);
+  // execv doesn't return unless there is an error
+  perror("execv");
+  exit(1);
+} else {
+  // parent process
+  // ...
+}
+```
+
+`exec` will simply run the new program and exit when the new program exits.
+
+##### **File Descriptors**
+
+In Unix, every process has an array of _open file descriptions_ that point to open files.
+
+<blockquote class="definition">
+
+A **file descriptor** is a non-negative integer that serves as the index into the array of open file descriptions.
+
+</blockquote>
+
+- **Standard File Descriptors**:
+  - `0`: standard input (stdin)
+  - `1`: standard output (stdout)
+  - `2`: standard error (stderr)
+
+**Getting File Descriptors**
+
+- `int open(const char *pathname, int flags)`: open a file and return a file descriptor.
+- `int close(int fd)`: close a file descriptor, returning `0` on success.
+  - `close()` simply deallocates the file descriptor, it does not delete the file, and does not affect other file descriptors.
+
+###### **Redirecting File Descriptors**
+
+We can manually **redirect** file descriptors. For example, we can perform shell redirection like this:
+
+- `./my_program ... < input.txt`
+  - run `my_program` with `stdin` redirected from `input.txt`.
+- `echo foo > output.txt`
+  - run `echo` with `stdout` redirected to `output.txt`.
+
+###### **Dup2**
+
+When we `fork` a process, the child process inherits the parent's file descriptors. However, we can **redirect** the child process's file descriptors using `dup2()`.
+
+- `int dup2(int oldfd, int newfd)`: make `newfd` refer to the same open file as `oldfd`.
+  - Ex. `dup2(fd, STDOUT_FILENO)`: overrwrites what `STDOUT_FILENO` points to with `fd`.
+
+<details><summary>Dup2 Example</summary>
+  
+````execute-c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <fcntl.h>
+#include <stdlib.h>
+
+int main() {
+pid_t pid;
+int fd;
+
+    // Open a file
+    fd = open("output.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+
+    // Create a new process
+    pid = fork();
+
+    if (pid == -1) {
+        // If fork() returns -1, an error occurred
+        perror("Failed to fork");
+        return 1;
+    } else if (pid > 0) {
+        // Parent process
+        // Wait for the child to exit
+        waitpid(pid, NULL, 0);
+        printf("I am the parent process. PID: %d, Child PID: %d\n", getpid(), pid);
+
+        printf("This is the content of output.txt:\n");
+        fflush(stdout);
+
+        // view output.txt
+        char *args[] = {"cat", "output.txt", NULL};
+        execv("/bin/cat", args);
+
+        perror("execv");
+        exit(1);
+    } else {
+        // Child process
+        // Redirect stdout to the file
+        dup2(fd, STDOUT_FILENO);
+        printf("I am the child process. PID: %d, Parent PID: %d\n", getpid(), getppid());
+        close(fd);  // optionally, we can close the file descriptor
+    }
+    return 0;
+
+}
+
+````
+
+In this example, the child process redirects `stdout` to the file `output.txt` using `dup2(fd, STDOUT_FILENO)`. Therefore, the child process will write to `output.txt` instead of the console.
+
+</details>
+
+
+###### **Pipes**
+
+- **Pipe**: a unidirectional communication channel between two processes.
+  - One process writes to the pipe, and the other reads from the pipe.
+- `pipe(int pipefd[2])`: create a pipe and return two file descriptors.
+  - `pipefd[0]`: read end of the pipe.
+  - `pipefd[1]`: write end of the pipe.
+
+When writing to the write end of the pipe, we follow these steps:
+1. `close(readfd)`: close the read end of the pipe.
+2. Write to the write end of the pipe.
+3. `close(writefd)`: close the write end of the pipe.
+
+When reading from the read end of the pipe, we follow these steps:
+1. `close(writefd)`: close the write end of the pipe.
+2. Read from the read end of the pipe.
+3. `close(readfd)`: close the read end of the pipe.
+
+<blockquote class="important">
+
+`pipe` must be called before `fork` to ensure that the parent and child processes share the pipe.
+
+</blockquote>
+
+<details><summary>Pipe Example</summary>
+
+```execute-c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <string.h>
+
+int main() {
+    int pipe_fd[2];
+    if (pipe(pipe_fd) == -1) {
+        perror("pipe");
+        return 1;
+    }
+    int readfd = pipe_fd[0];
+    int writefd = pipe_fd[1];
+
+    pid_t child_pid = fork();
+    if (child_pid == -1) {
+        perror("fork");
+        return 1;  // Fork failed
+    }
+
+    if (child_pid == 0) {
+        // Child process, write to pipe
+        close(readfd);  // Close the unused read end
+        char message[] = "Hello, parent!\n";
+        write(writefd, message, strlen(message));  // Write the message to the pipe
+        close(writefd);  // Close write end after writing
+        return 0;
+    } else {
+        // Parent process, read from pipe
+        close(writefd);  // Close the unused write end
+        char buf[100];
+        int nbytes = read(readfd, buf, sizeof(buf)-1);  // Read from the pipe
+        if (nbytes > 0) {
+            buf[nbytes] = '\0';  // Null-terminate the string
+            printf("Parent read: %s", buf);
+        }
+        close(readfd);  // Close read end
+    }
+
+    return 0;
+}
+
+```
+
+In this example, the following process happens:
+
+1. call `pipe` to create a pipe with two file descriptors.
+2. call `fork` to create a child process.
+3. in the child process, close the read end of the pipe, write a message to the pipe, and close the write end of the pipe.
+4. in the parent process, close the write end of the pipe, read from the pipe, close the read end of the pipe.
+
+
+The parent process also waits for the child process to finish without using `waitpid`.
+
+</details>
+
+
 
 #### **Virtual Memory**
 
@@ -728,7 +1045,7 @@ int main() {
 
     return 0;
 }
-```
+````
 
 ###### **Asymmetric Encryption Functions**
 
