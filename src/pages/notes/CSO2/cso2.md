@@ -8,7 +8,7 @@ Date: 5/1/2024 | Author: Brandon Yang
 
 These are my notes for Computer Systems and Organization 2 (CSO2) at the University of Virginia in the Spring 2024 semester taught by Charles Reiss. This note contains live code examples and explanations for various topics in the course.
 
-Example _**live**_, _**runnable**_ C code:
+<!-- Example _**live**_, _**runnable**_ C code:
 
 ```execute-c
 #include <stdio.h>
@@ -39,9 +39,9 @@ int main() {
 
     return 0;
 }
-```
+``` -->
 
-```tikz
+<!-- ```tikz
 \begin{tikzpicture}
   \def \n {5}
   \def \radius {3cm}
@@ -54,11 +54,7 @@ int main() {
       arc ({360/\n * (\s - 1)+\margin}:{360/\n * (\s)-\margin}:\radius);
   }
 \end{tikzpicture}
-```
-
-<span
-    class="caption">A dining philosophers diagram drawn using TikZ.
-</span>
+``` -->
 
 #### **Building**
 
@@ -586,9 +582,25 @@ int main() {
 }
 ```
 
+##### **Signal Handler Unsafety**
+
+<blockquote class="important">
+
+Signal handlers should be **async-signal-safe**. This means that the functions called in the signal handler should not interfere with the normal execution of the program.
+
+</blockquote>
+
+- **Async-signal-safe functions**: functions that can be safely called from a signal handler.
+  - `write()`, `exit()` ...
+  - **DO NOT** use `printf()`, `malloc()`, `free()` ...
+
+We can also avoid running the signal handler while it is already running by blocking the signal.
+
 ##### **Blocking Signals**
 
-- Use `sigprocmask()` to block signals.
+<img src="https://branyang02.github.io/images/block_signal.png" alt="Blocking Signals" style="display: block; max-height: 30%; max-width: 30%;">
+
+We can block signals with `sigprocmask()` to prevent the signal handler from running immediately. When the signal is received, it will be _pending_ until it is unblocked, at which point the signal handler will run.
 
 ```c
 sigset_t sigint_as_set;
@@ -601,15 +613,852 @@ sigprocmask(SIG_UNBLOCK, &sigint_as_set, NULL);
 
 - `sigprocmask()` temporarily disables the signal handler from running. If a signal is sent to a process while it is blocked, then the OS will track that is pending. When the pending signal is unblocked, its signal handler will be run.
 - `sigsuspend()` temporarily unblocks a blocked signal just long enough to run its signal handler.
-- `sigwait()` blocks until a signal is received.
+- `sigwait()` waits for a signal to be received, blocking until the signal is received. This is used typically _instead of having signal handlers_.
 
 #### **Processes**
 
-coming soon...
+##### **Process Creation**
+
+- `pid_t fork()`: creates a new process by duplicating the calling process.
+  - Returns `0` to the child process, returns the **child process's PID** to the parent process.
+- `pid_t getpid()`: returns the PID of the calling process.
+
+When we create a new process, the child process is a **copy** of the parent process. The child process has its own virtual address space, but it shares the same code, data, and heap as the parent process.
+
+<details><summary>Example Fork</summary>
+
+```execute-c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main() {
+    pid_t pid;
+
+    // Create a new process
+    pid = fork();
+
+    if (pid == -1) {
+        // If fork() returns -1, an error occurred
+        perror("Failed to fork");
+        return 1;
+    } else if (pid > 0) {
+        // Parent process
+        printf("I am the parent process. PID: %d, Child PID: %d\n", getpid(), pid);
+        // Optionally, wait for the child to exit
+        wait(NULL);
+    } else {
+        // Child process
+        printf("I am the child process. PID: %d, Parent PID: %d\n", getpid(), getppid());
+        // Execute some code as the child
+    }
+
+    return 0;
+}
+```
+
+- `pid_t pid`: variable to store the return value of `fork()`.
+- `pid = fork()`: create a new process.
+
+</details>
+
+If we are running in a **single-core** setting, then running the parent and child processes require **context switching**. However, if we are running in a **multi-core** setting, then the parent and child processes can run concurrently.
+
+<blockquote class="important">
+
+The parent and child processes may run concurrently, so the order of output may vary.
+
+</blockquote>
+
+##### **Process Management**
+
+- `waitpid()`: wait for a specific child process to exit.
+
+We can use `waitpid()` to wait for a specific child process to **exit**. The function `waitpid()` blocks the parent process until the child process with the specified PID exits.
+
+<blockquote class="important">
+
+`waitpid()` only works for child processes.
+
+</blockquote>
+
+<details><summary>Example Waitpid</summary>
+
+```execute-c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main() {
+    pid_t pid;
+
+    // Create a new process
+    pid = fork();
+
+    if (pid == -1) {
+        // If fork() returns -1, an error occurred
+        perror("Failed to fork");
+        return 1;
+    } else if (pid > 0) {
+        // Parent process
+        // Wait for the child to exit
+        waitpid(pid, NULL, 0);
+        printf("I am the parent process. PID: %d, Child PID: %d\n", getpid(), pid);
+    } else {
+        // Child process
+        printf("I am the child process. PID: %d, Parent PID: %d\n", getpid(), getppid());
+        // Execute some code as the child
+    }
+
+    return 0;
+}
+```
+
+In this example, the parent process waits for the child process to exit using `waitpid(pid, NULL, 0)`. Therefore, the child process will run and print to console before the parent process prints to console.
+
+- `waitpid(pid, NULL, 0)`: wait for the child process with PID `pid` to exit.
+
+</details>
+
+We can also use `exec()` functions to replace the current process with a new process. For example, we may want to replace the current process with a new shell process:
+
+```c
+if (child_pid == 0) {
+  // child process
+  char *args[] = {"ls", "-l", NULL};
+  execv("/bin/ls", args);
+  // execv doesn't return unless there is an error
+  perror("execv");
+  exit(1);
+} else {
+  // parent process
+  // ...
+}
+```
+
+`exec` will simply run the new program and exit when the new program exits.
+
+##### **File Descriptors**
+
+In Unix, every process has an array of _open file descriptions_ that point to open files.
+
+<blockquote class="definition">
+
+A **file descriptor** is a non-negative integer that serves as the index into the array of open file descriptions.
+
+</blockquote>
+
+- **Standard File Descriptors**:
+  - `0`: standard input (stdin)
+  - `1`: standard output (stdout)
+  - `2`: standard error (stderr)
+
+**Getting File Descriptors**
+
+- `int open(const char *pathname, int flags)`: open a file and return a file descriptor.
+- `int close(int fd)`: close a file descriptor, returning `0` on success.
+  - `close()` simply deallocates the file descriptor, it does not delete the file, and does not affect other file descriptors.
+
+###### **Redirecting File Descriptors**
+
+We can manually **redirect** file descriptors. For example, we can perform shell redirection like this:
+
+- `./my_program ... < input.txt`
+  - run `my_program` with `stdin` redirected from `input.txt`.
+- `echo foo > output.txt`
+  - run `echo` with `stdout` redirected to `output.txt`.
+
+###### **Dup2**
+
+When we `fork` a process, the child process inherits the parent's file descriptors. However, we can **redirect** the child process's file descriptors using `dup2()`.
+
+- `int dup2(int oldfd, int newfd)`: make `newfd` refer to the same open file as `oldfd`.
+  - Ex. `dup2(fd, STDOUT_FILENO)`: overrwrites what `STDOUT_FILENO` points to with `fd`.
+
+<details><summary>Dup2 Example</summary>
+  
+````execute-c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <fcntl.h>
+#include <stdlib.h>
+
+int main() {
+pid_t pid;
+int fd;
+
+    // Open a file
+    fd = open("output.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+
+    // Create a new process
+    pid = fork();
+
+    if (pid == -1) {
+        // If fork() returns -1, an error occurred
+        perror("Failed to fork");
+        return 1;
+    } else if (pid > 0) {
+        // Parent process
+        // Wait for the child to exit
+        waitpid(pid, NULL, 0);
+        printf("I am the parent process. PID: %d, Child PID: %d\n", getpid(), pid);
+
+        printf("This is the content of output.txt:\n");
+        fflush(stdout);
+
+        // view output.txt
+        char *args[] = {"cat", "output.txt", NULL};
+        execv("/bin/cat", args);
+
+        perror("execv");
+        exit(1);
+    } else {
+        // Child process
+        // Redirect stdout to the file
+        dup2(fd, STDOUT_FILENO);
+        printf("I am the child process. PID: %d, Parent PID: %d\n", getpid(), getppid());
+        close(fd);  // optionally, we can close the file descriptor
+    }
+    return 0;
+
+}
+
+````
+
+In this example, the child process redirects `stdout` to the file `output.txt` using `dup2(fd, STDOUT_FILENO)`. Therefore, the child process will write to `output.txt` instead of the console.
+
+</details>
+
+
+###### **Pipes**
+
+- **Pipe**: a unidirectional communication channel between two processes.
+  - One process writes to the pipe, and the other reads from the pipe.
+- `pipe(int pipefd[2])`: create a pipe and return two file descriptors.
+  - `pipefd[0]`: read end of the pipe.
+  - `pipefd[1]`: write end of the pipe.
+
+When writing to the write end of the pipe, we follow these steps:
+1. `close(readfd)`: close the read end of the pipe.
+2. Write to the write end of the pipe.
+3. `close(writefd)`: close the write end of the pipe.
+
+When reading from the read end of the pipe, we follow these steps:
+1. `close(writefd)`: close the write end of the pipe.
+2. Read from the read end of the pipe.
+3. `close(readfd)`: close the read end of the pipe.
+
+<blockquote class="important">
+
+`pipe` must be called before `fork` to ensure that the parent and child processes share the pipe.
+
+</blockquote>
+
+<details><summary>Pipe Example</summary>
+
+```execute-c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <string.h>
+
+int main() {
+    int pipe_fd[2];
+    if (pipe(pipe_fd) == -1) {
+        perror("pipe");
+        return 1;
+    }
+    int readfd = pipe_fd[0];
+    int writefd = pipe_fd[1];
+
+    pid_t child_pid = fork();
+    if (child_pid == -1) {
+        perror("fork");
+        return 1;  // Fork failed
+    }
+
+    if (child_pid == 0) {
+        // Child process, write to pipe
+        close(readfd);  // Close the unused read end
+        char message[] = "Hello, parent!\n";
+        write(writefd, message, strlen(message));  // Write the message to the pipe
+        close(writefd);  // Close write end after writing
+        return 0;
+    } else {
+        // Parent process, read from pipe
+        close(writefd);  // Close the unused write end
+        char buf[100];
+        int nbytes = read(readfd, buf, sizeof(buf)-1);  // Read from the pipe
+        if (nbytes > 0) {
+            buf[nbytes] = '\0';  // Null-terminate the string
+            printf("Parent read: %s", buf);
+        }
+        close(readfd);  // Close read end
+    }
+
+    return 0;
+}
+
+```
+
+In this example, the following process happens:
+
+1. call `pipe` to create a pipe with two file descriptors.
+2. call `fork` to create a child process.
+3. in the child process, close the read end of the pipe, write a message to the pipe, and close the write end of the pipe.
+4. in the parent process, close the write end of the pipe, read from the pipe, close the read end of the pipe.
+
+
+The parent process also waits for the child process to finish without using `waitpid`.
+
+</details>
+
+
 
 #### **Virtual Memory**
 
-coming soon...
+Every process has its own **virtual address space** when running a program.
+
+<img src="https://branyang02.github.io/images/address_space.png" alt="Virtual Address Space" style="display: block; max-height: 50%; max-width: 50%;">
+
+<blockquote class="definition">
+
+**Virtual Address Space**: the memory that a process can access. It is an illusion of a program having its own memory.
+
+</blockquote>
+
+We can split any memory address (both virtual and physical) into two parts: the **page number** and the **page offset**.
+
+- **Page Number**: high-order bits of the address.
+- **Page Offset**: low-order bits of the address.
+
+
+
+To access the **physical memory**, the OS provides a **page table** that maps virtual addresses to physical addresses. The **page number** is used as the key to index into the **Page Table**, and the **page offset** is used to access the data within the page.
+
+##### **Page Table**
+
+<blockquote class="definition">
+
+A **page table** is a data structure that maps virtual addresses to physical addresses.
+
+</blockquote>
+
+A simple page table may look like this:
+
+<div class="small-table">
+
+| Valid? | Physical Page Number |
+| ------ | -------------------- |
+| 1 | 010 |
+| 0 | —   |
+| 1 | 101 |
+| 1 | 110 |
+
+</div>
+
+In the page table above, the index of the row corresponds to the **virtual page number (VPN)**, or the page number of the virtual address. Each row is called a **page table entry (PTE)**, where it contains a **valid bit** to indicate if the translation is valid or not, and the corresponding **physical page number (PPN)**.
+
+Since the page table is simply a _translation_ from virtual addresses to physical addresses, we define the main steps of the translation process:
+
+1. Given the virtual address, extract the **VPN** and **page offset**.
+2. Use the **VPN** to index into the **page table** and retrieve the **PTE**.
+3. If the **valid bit** is set, then the **PPN** is valid; otherwise, the translation is invalid and an exception is raised.
+4. Concatenate the **PPN** with the **page offset** to form the physical address.
+
+
+<blockquote class="important">
+
+We have a **different** page table for each process.
+
+</blockquote>
+
+
+##### **Address Space Size**
+
+<blockquote class="definition">
+
+The **address space size** is the maximum number of unique addresses that can be generated ba processor.
+
+</blockquote>
+
+<blockquote class='equation'>
+
+$$
+\begin{equation*}
+\text{Address Space Size} = 2^{\text{number of bits}}
+\end{equation*}
+$$
+
+</blockquote>
+
+For example, if we want to calculate the **virtual address space size** given that we have 32-bit virtual addresses:
+
+$$
+\begin{equation*}
+\text{Virtual Address Space Size} = 2^{32} \text{ bytes}.
+\end{equation*}
+$$
+
+Similarly, if we want to calculate the **physical address space size** given that we have 20-bit physical addresses:
+
+$$
+\begin{equation*}
+\text{Physical Address Space Size} = 2^{20} \text{ bytes}.
+\end{equation*}
+$$
+
+This is because each unique address stores **1** byte of data, and the number of unique addresses is equal to the size of the address space.
+
+We can also calculate other things once we know the address space size:
+
+
+<blockquote class="equation">
+
+$$
+\begin{align*}
+\text{Number of Virtual Pages} &= \frac{\text{Virtual Address Space Size}}{\text{Page Size}} \\
+\text{Number of Physical Pages} &= \frac{\text{Physical Address Space Size}}{\text{Page Size}} \\
+\\
+\text{VPN bits} &= \log_2(\text{Number of Virtual Pages}) \\
+\text{PPN bits} &= \log_2(\text{Number of Physical Pages}) \\
+\\
+\text{Number of PTEs} &= \text{Number of Virtual Pages} \\
+\end{align*}
+$$
+
+
+</blockquote>
+
+
+<details><summary>Exercise: page counting</summary>
+
+**Q1**: Suppose we have $32$-bit virtual addresses, and each page is $4096$ bytes. Calculate the number of virtual pages.
+
+Answer: Since each virtual address has $32$ bits, we have a total of $2^{32}$ unique virtual addresses, which corresponds to $2^{32}$ bytes of data. Since each page can store $4096$ bytes of data, we can calculate the number of virtual pages as follows:
+
+$$
+\begin{equation*}
+\text{Number of Virtual Pages} = \frac{2^{32} \text{ bytes}}{4096 \text{ bytes/page}} = \frac{2^{32}}{2^{12}} = 2^{20} \text{ pages}.
+\end{equation*}
+$$
+
+
+**Q2**: Suppose we have:
+- $32$-bit virtual addresses,
+- $30$-bit physical addresses,
+- each page is $4096$ (or $2^{12}$) bytes,
+- PTE have PPN, and valid bit.
+
+Calculate the size of the page table.
+
+Answer: To find the size of the overall page table, we need to know the number of PTEs, and the size of each PTE. Each PTE is made up of a single valid bit and a PPN. Therefore, we need to calculate the size of each PPN. First, we can find the number of physical pages:
+
+$$
+\begin{align*}
+\text{Number of Physical Pages} &= \frac{2^{30}}{2^{12}} = 2^{18} \text{ pages}
+\end{align*}
+$$
+
+Next, we can calculate the PPN bits:
+
+$$
+\begin{align*}
+\text{PPN bits} &= \log_2(\text{Number of Physical Pages}) = \log_2(2^{18}) = 18 \text{ bits}
+\end{align*}
+$$
+
+Alternatively, we can calculate the PPN bits by finding the number of **offset** bits. Given that we have $2^{20}$ virtual pages, we can first find the number of VPN bits:
+
+$$
+\begin{align*}
+\text{VPN bits} &= \log_2(\text{Number of Virtual Pages}) = \log_2(2^{20}) = 20 \text{ bits}
+\end{align*}
+$$
+
+Since we have $32$-bit virtual addresses, we can calculate the number of **offset** bits:
+
+$$
+\begin{align*}
+\text{Offset bits} &= 32 - \text{VPN bits} = 32 - 20 = 12 \text{ bits}
+\end{align*}
+$$
+
+Since both the virtual and physical addresses have the same number of offset bits, we can calculate the number of PPN bits as:
+
+$$
+\begin{align*}
+\text{PPN bits} &= 32 - \text{Offset bits} = 32 - 12 = 20 \text{ bits}
+\end{align*}
+$$
+
+
+Therefore, each PTE is made up of $1$ valid bit and $18$ PPN bits. Next, we need to find the number of PTEs. Since we have already found that we have $2^{20}$ virtual pages, we have $2^{20}$ PTEs. Therefore, the size of the page table is:
+
+$$
+\begin{align*}
+\text{Size of Page Table} &= \text{Number of PTEs} \times \text{Size of each PTE} \\
+&= 2^{20} \times (1 + 18) \text{ bits} \\
+&= 2^{20} \times 19 \text{ bits} \\
+\end{align*}
+$$
+
+
+</details>
+
+
+##### **Permission Bits**
+
+Usually, a page table entry contains permission bits that specify the access rights for the page. For example, the permission bits may include:
+
+- **Valid**: indicates if the translation is valid.
+- **User**: allows user-level code to access the page.
+- **Write**: allow writing to the page.
+- **Execute**: allow executing code on the page.
+
+<div class="small-table">
+
+| Valid | User | Write | Execute | Physical Page Number |
+| ----- | ---- | ----- | ------- | -------------------- |
+| 1     | 1    | 1     | 0       | 010                  |
+| 0     | 0    | 0     | 0       | —                    |
+| 1     | 1    | 0     | 1       | 101                  |
+
+
+</div>
+
+Permission bits allow page tables to enforce memory protection. For example, if a process tries to write to a read-only page, the OS can raise an exception.
+
+##### **Space On Demand**
+
+<blockquote class="definition">
+
+**Space on Demand** is a technique where the OS only loads pages into memory when they are needed.
+
+
+</blockquote>
+
+When a process is created, the OS does not load the entire program into memory. Instead, the OS only loads the pages that are needed. When a process tries to access a page that is not in memory, the OS raises a **page fault**.
+
+<blockquote class="important">
+
+A **page fault** is an exception raised by the hardware when a process tries to access a page that is not in memory (valid bit is 0).
+
+</blockquote>
+
+When a page fault occurs, the OS dynamically loads the page from disk into memory. The OS then updates the page table entry to indicate that the page is now in memory. This is known as **allocate on demand**.
+
+<details><summary>Allocate Stack Space on Demand Example</summary>
+
+Suppose we have the following initial page table:
+
+<img src="https://branyang02.github.io/images/allocate_on_demand.png" alt="Page Table" style="display: block; max-height: 30%; max-width: 30%;">
+
+We have the following code that needs to be executed
+
+```assembly
+pushq %rbx
+
+movq 8(%rcx), %rbx
+addq %rbx, %rax
+```
+
+Suppose the next instruction `pushq %rbx` referes to the page table at VPN `0x7FFFB`. The following occurs:
+
+1. OS sees that valid bit is `0`, triggers a **page fault**.
+2. OS looks up what happend, and realized that the program wants more stack space.
+3. OS allocates the new stack space _on demand_.
+4. OS returns to the program, and reruns `pushq %rbx`.
+
+
+</details>
+
+##### **Copy on Write**
+
+<blockquote class="definition">
+
+**Copy on Write** is a technique where the OS creates a copy of a page only when a write operation occurs.
+
+</blockquote>
+
+When a new process is created using `fork()`, the child process creates its own page table that points to the same physical pages as the parent process. The OS uses **copy on write** to avoid creating a new copy of the physical pages until a write operation occurs.
+
+<details><summary>Copy on Write Example</summary>
+
+For example, suppose we have the following page table for a process
+
+<div class="xsmall-table">
+
+| Valid? | Write? | PPN |
+| ------ | ------ | -------------------- |
+|1|1|`0x12345`|
+|1|1|`0x12347`|
+|1|1|`0x12340`|
+|1|1|`0x200DF`|
+|1|1|`0x200AF`|
+
+</div>
+
+When we call `fork()`, the child process creates a new page table that points to the same PPN, but with the **write bit** set to `0`. The parent process also sets the **write bit** to `0` in its page table.
+
+<div class="small-table">
+
+
+<table>
+<tr><th>Parent Process Page Table </th><th>Child Process Page Table</th></tr>
+<tr><td>
+
+
+| Valid? | Write? | PPN |
+| ------ | ------ | -------------------- |
+|1|0|`0x12345`|
+|1|0|`0x12347`|
+|1|0|`0x12340`|
+|1|0|`0x200DF`|
+|1|0|`0x200AF`|
+
+
+</td><td>
+
+
+| Valid? | Write? | PPN |
+| ------ | ------ | -------------------- |
+|1|0|`0x12345`|
+|1|0|`0x12347`|
+|1|0|`0x12340`|
+|1|0|`0x200DF`|
+|1|0|`0x200AF`|
+
+
+</td></tr> </table>
+
+</div>
+
+When a write operation occurs in the child process, the OS triggers a **page fault**. The OS then creates a new copy of the physical page and updates the child process's page table to point to the new physical page. Suppose the child process attempts to write to the page at row 5:
+
+<div class="small-table">
+
+
+<table>
+<tr><th>Parent Process Page Table </th><th>Child Process Page Table</th></tr>
+<tr><td>
+
+
+| Valid? | Write? | PPN |
+| ------ | ------ | -------------------- |
+|1|0|`0x12345`|
+|1|0|`0x12347`|
+|1|0|`0x12340`|
+|1|0|`0x200DF`|
+|1|0|`0x200AF`|
+
+
+</td><td>
+
+
+| Valid? | Write? | PPN |
+| ------ | ------ | -------------------- |
+|1|0|`0x12345`|
+|1|0|`0x12347`|
+|1|0|`0x12340`|
+|1|0|`0x200DF`|
+|$\color{red}1$|$\color{red}1$| $\color{red}\text{0x300FD}$ |
+
+
+</td></tr> </table>
+
+</div>
+
+After allocating a copy, the OS reruns the write operation in the child process.
+
+</details>
+
+##### **Page Table Storage**
+
+###### **In Memory**
+
+One of the options is to store the page table as an array in memory. To do this, we need to have a base register that points to the start of the page table.
+
+<blockquote class="definition">
+
+A **page table base register** is a register that holds the starting address of the page table. It also corresponds to index `0` of the page table.
+
+</blockquote>
+
+The OS has predefinied which bits at each memory address are used for the permission bits, PPN, and other unused bits. For example, a possible page table layout may look like this:
+
+<div class="small-table">
+
+| valid (bit 15)  | PPN (bits 4 - 14)  | unused (bits 0 - 3) |
+| --------------- | ------------------- | ------------------- |
+|... | ... | ... |
+
+</div>
+
+Therefore, to interpret PTE at a given address, we need to extract the bits that correspond to the valid bit and PPN. The overall process can be described in the following diagram:
+
+<img src="https://branyang02.github.io/images/page_table.png" alt="Page Table Memory" style="display: block; max-height: 70%; max-width: 70%;">
+
+We can also now formally write a formula that describes the process of translating a virtual address to a physical address:
+
+<blockquote class="equation">
+
+Given a virtual address $\text{VA}$, the **Page Table Base Register** $\text{PTBR}$, and the **Page Table Entry Size** $\text{PTE size}$, we can calculate the physical address $\text{PA}$ as:
+
+$$
+\begin{align*}
+\text{VPN} &= \text{VA} \text{ >> offset bits} \\
+\text{PTE} &= M \left[\text{PTBR} + \text{VPN} \times \text{PTE size}\right] \\
+\text{PPN} &= \text{PTE} \text{ \& }\text{PPN mask} \\
+\text{PA} &= \text{PPN} \text{ << offset bits} + \text{offset}
+\end{align*}
+$$
+
+where $M$ is the memory array that stores the page table, and $\text{PPN mask}$ is a mask that extracts the PPN bits from the PTE.
+
+</blockquote>
+
+<blockquote class="important">
+
+If you want the actual **value** that is stored at a physical address, make sure to index into the memory array using the **physical address**.
+
+$$
+\text{Value} = M[\text{PA}].
+$$
+
+</blockquote>
+
+###### **Multi-Level Page Table**
+
+We can also store the page table as a **multi-level page table** in a _tree-like data structure_. This is useful when the page table is too large to fit in memory.
+
+In a multi-level page table, the virtual address is split into multiple parts, each part corresponding to a level in the page table. The OS uses the first part of the virtual address to index into the first level of the page table, and the second part to index into the second level, and so on.
+
+Each level of the page table contains a regular PTE and PPN, but the PPN is converted to a physical address to perform the next level of indexing. The final page table entry contains the _actual_ PPN, which is used to access the physical memory.
+
+**Converting PPN to Physical Address for next level lookup**
+
+Once we retrieve the PPN in a page level lookup, we extract the PPN from the corresponding PTE, and **concatenate** it with the number of offset bits of `0`'s to find the _base address_ of the next level of the page table.
+
+<blockquote class="important">
+
+When checking for permission bits, if a PTE is invalid, the OS does **NOT** need to check the next level of the page table.
+
+</blockquote>
+
+<details open><summary>Multi-Level Page Table Example</summary>
+
+Suppose we have the following memory layout:
+
+<img src="https://branyang02.github.io/images/pt_example.png" alt="Multi-Level Page Table" style="display: block; max-height: 50%; max-width: 50%;">
+
+and the following configuration:
+
+- 9-bit virtual addresses
+- 6-bit physical addresses
+- 8 byte pages
+- 1 byte PTE size
+- PTE contains: 3 bit PPN, 1 valid bit, 4 unused bit.
+- page table base register at `0x20`
+- 2-level page table
+
+We want to translate the virtual address `0x129`.
+
+1. We find the VPN and offset bits:
+
+$$
+\begin{align*}
+  \text{VA space} = 2^9 &= 512 \text{ bytes} \\
+  \text{\# of PTEs} = \frac{512}{8} &= 64 \text{ entries}
+\end{align*}
+$$
+
+64 entries correspond to 6 bits of VPN, and 3 bits of offset. Therefore, we extract the VPN and offset bits from the lower 9 bits of the virtual address:
+
+$$
+\text{0x}129 = 0001 \; 0010\; 1001 =  \underbrace{1 \; 0010 \; 1}_{\text{VPN bits}} \underbrace{001}_{\text{offset bits}}
+$$
+
+Since we are dealing with 2-level page table, we split the VPN bits into two parts evenly:
+
+$$
+\text{VPN}_1 = 100_2, \quad \text{VPN}_2 = 101_2.
+$$
+
+Now, we can start the first level translation process. We first index into the first level of the page table to find the corresponding PTE:
+
+$$
+\begin{align*}
+  \text{PTE}_1 &= M \left[\text{PTBR} + \text{VPN}_1 \times \text{PTE size}\right] \\
+  &= M\left[\text{0x}20 + 100_2 \times 1 \text{ byte}\right] \\
+  &= M\left[\text{0x}24\right] \\
+  &= \text{0x}F4 = 1111 \; 0100_2
+\end{align*}
+$$
+
+Based on the configuration, we can splite the PTE into the valid bit and PPN:
+
+$$
+\begin{align*}
+  \text{PTE}_1 = \underbrace{111}_{\text{PPN}}\underbrace{1}_{\text{valid bit}} \; 0100_2
+\end{align*}
+$$
+
+We then find the next level page table's base address by concatenating the PPN with the offset bits of `0`'s:
+
+$$
+\begin{align*}
+  \text{Base Address} &= \text{PPN} \text{ << offset bits} \\
+  &= 111_2 \text{ << } 3 \\
+  &= 111000_2
+\end{align*}
+$$
+
+We then perform the second level translation process. We index into the second level of the page table to find the corresponding PTE:
+
+$$
+\begin{align*}
+  \text{PTE}_2 &= M \left[\text{Base Address} + \text{VPN}_2 \times \text{PTE size}\right] \\
+  &= M\left[\text{0x}38 + 101_2 \times 1 \text{ byte}\right] \\
+  &= M\left[\text{0x}3D\right] \\
+  &= \text{0x}DC = 1101 \; 1100_2
+\end{align*}
+$$
+
+Based on the configuration, we can splite the PTE into the valid bit and PPN:
+
+$$
+\begin{align*}
+  \text{PTE}_2 = \underbrace{110}_{\text{PPN}}\underbrace{1}_{\text{valid bit}} \; 1100_2
+\end{align*}
+$$
+
+Finally, we find the physical address by concatenating the PPN with the offset bits:
+
+$$
+\begin{align*}
+  \text{PA} &= \text{PPN} \text{ << offset bits} + \text{offset} \\
+  &= 110_2 \text{ << } 3 + 001_2 \\
+  &= 110000_2 + 001_2 \\
+  &= 110001_2 = \text{0x}31
+\end{align*}
+$$
+
+If we want to find the value that corresponds to the physical address `0x31`, we can index into the physical memory array at that address to find the value.
+
+$$
+\begin{align*}
+  M[\text{0x}31] &= \text{0x}0A.
+\end{align*}
+$$
+
+</details>
+
 
 #### **Cache**
 
@@ -728,7 +1577,7 @@ int main() {
 
     return 0;
 }
-```
+````
 
 ###### **Asymmetric Encryption Functions**
 
