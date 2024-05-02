@@ -1339,6 +1339,17 @@ We can also store the page table as a **multi-level page table** in a _tree-like
 
 In a multi-level page table, the virtual address is split into multiple parts, each part corresponding to a level in the page table. The OS uses the first part of the virtual address to index into the first level of the page table, and the second part to index into the second level, and so on.
 
+<blockquote class="equation">
+
+We split the VPN into $n$ parts, where $n$ is the number of levels in the page table:
+
+$$
+\text{VPN} = \text{VPN}_1, \text{VPN}_2, \ldots, \text{VPN}_n
+$$
+
+
+</blockquote>
+
 Each level of the page table contains a regular PTE and PPN, but the PPN is converted to a physical address to perform the next level of indexing. The final page table entry contains the _actual_ PPN, which is used to access the physical memory.
 
 **Converting PPN to Physical Address for next level lookup**
@@ -1669,7 +1680,7 @@ To calculate the cache size of an associative cache, we need to multiply the **n
 
 $$
 \begin{align*}
-&E && \text{ number of blocks per set ("ways")} \\
+&E && \text{ number of blocks per set (``ways")} \\
 &C = B \times S \times E && \text{ cache size} \\
 \end{align*}
 $$
@@ -1705,7 +1716,7 @@ If the value is **NOT** in the cache, we can:
 
 If the value is in the cache, we can:
 - **write-through**: write to cache, and also write to next layers of memory.
-- **write-back**: write to cache, and only write to next layers of memory when the block is evicted from the cache.
+- **write-back**: write to cache, and **only** write to next layers of memory when the block is evicted from the cache.
 
 <blockquote class="important">
 
@@ -1718,7 +1729,7 @@ If the value is in the cache, we can:
 
 <img src="https://branyang02.github.io/images/cache_exercise.png" alt="Write Allocate" style="display: block; max-height: 50%; max-width: 50%;">
 
-First, we need to compute the tag, index, and offset bits for the target memory address `0x04`. From the 2-way set associative cache table, we can conlude that:
+1. First, we need to compute the tag, index, and offset bits for the target memory address `0x04`:
 
 $$
 \begin{align*}
@@ -1726,11 +1737,39 @@ $$
 \end{align*}
 $$
 
-Next, we index into the cache at set 0, and find that both ways are occupied. Therefore we choose to evict the block at way 1, since `LRU` bit is set to `1`. However, since the block at way 1 has a **dirty bit** set to 1, we need to write the value in the block to next layer of memory before we can evict the block.
+2. Next, we need to find the index bits and offset bits for the memory address `0x04`:
 
-After we perform write-back, we need to not only load the value `0xFF` into address `0x04`, but also load the rest of the block into the cache. In this case, since the offset bit is `1`, and `0x04` has the offset bit `0`, we need to also read the value from the same cache block where the offset bit is `1`, thereby reading in the value at address `0x05`.
+$$
+\begin{align*}
+\text{0x04} = 0000 \; 0100_2 = \underbrace{0000\;01}_{\text{tag bits}} \; \underbrace{0}_{\text{index bits}} \; \underbrace{0}_{\text{offset bits}}.
+\end{align*}
+$$
 
-Finally, we update the cache block at way 1 with the new tag `0x00`, and the new value `0xFF`. We also set the **dirty bit** to `0`, since the block has not been modified. We also update the `LRU` bit to `0`, since the block has been recently used.
+3. We index into the table at set 0, and check if we have a tag match for any of the ways. In this case, we have a **cache miss** since both ways are occupied and the tags do not match.
+
+4. We choose to evict the block at way 1, since the `LRU` bit is set to `1`. However, since the block at way 1 has a **dirty bit** set to 1, we need to perform **write-back** to write the value in the block to next layer of memory before we can evict the block. We can find the corresponding memory address by the current block's tag and index bits:
+$$
+\begin{align*}
+\text{Tag} &= 01\; 1000 \\
+\text{Index} &= 0 \\
+\end{align*}
+$$
+Since the size of each cache block contains 2 bytes, we need to write the value back to the memory address at:
+
+$$
+\begin{align*}
+\text{write-back addr.}_1 &= \text{Tag, Index, Offset} \\
+&= 01 \; 1000 \; 0 \; 0 = \text{0x}60 \\
+\text{write-back addr.}_2 &= \text{Tag, Index, Offset} \\
+&= 01 \; 1000 \; 0 \; 1 = \text{0x}61 \\
+\end{align*}
+$$
+
+Therefore, we need to write teh values in the current block to memory address `0x60` and `0x61`.
+
+5. After we perform write-back, we need to perform the **write-allocate** policy, where we not only update the value at address `0x04`, but also load the rest of the block into the cache. To find the other memory address that we need to read from, we need to read the value from the same cache block where the offset bit is `1`, thereby reading in the value at address `0x05`.
+
+6. Finally, we **update the cache block** at way 1 with the new tag `000001`, and the new block value `0xFF`, as well as `M[0x05]`. We also set the **dirty bit** to `0`, since the block has not been modified. We also update the `LRU` bit to `0`, since way 0 has been the least recently used.
 
 The final cache table is shown below:
 
@@ -1739,10 +1778,58 @@ The final cache table is shown below:
 </details>
 
 
+###### **Faster Writes**
+
+A **write buffer** is a type of data buffer that can be used to hold data being written from the cache to main memory or to the next cache in the memory hierarchy to improve performance and reduce latency.
+
+
+##### **TLB**
+
+The **Translation Lookaside Buffer** (**TLB**) is a cache that stores the most recent translations from virtual memory to physical memory. The TLB is used to speed up the translation process by avoiding the need to access the page table in memory.
+
+<blockquote class="definition">
+
+a **TLB** is a cache that stores the most recent translations from virtual memory to physical memory.
+
+</blockquote>
+
+A TLB functions similarly to a regular cache, but it stores different data
+
+<div class="small-table">
+
+|Typical L1 Cache|TLB|
+|----------------|---|
+|physical address | VPN|
+|bytes from memory|**last-level** PTE|
+|tens of bytes per block | **one** PTE per block|
+
+</div>
+
+Therefore, given a **VPN**, we can find the corresponding **PTE** in the TLB without going through the translation process in the page table. We can think of it as a function that takes a **VPN** as input and returns the corresponding **PTE**.
+
+$$
+\text{TLB}: \text{VPN} \rightarrow \text{PTE}
+$$
+
+<blockquote class="important">
+
+Since we only store **one** PTE per block, we always have $0$ bits for the **cache offset**. Therefore, the **VPN** is split into the **tag** and **index** bits.
+
+</blockquote>
+
+On a **TLB hit**, meaning we have a corresponding PTE given a VPN, we can simply extract the PTE can check for permission bits before getting the PPN. On a **TLB miss**, we need to access the page table in memory to find the corresponding PTE, and then update the TLB with the new translation.
+
+
+<blockquote class="important">
+
+In a multi-level page table setup, we use the **entire** VPN to index into the TLB, not the individual parts of the VPN that correspond to each level of the page table.
+
+</blockquote>
 
 
 
-#### **Synchonization**
+
+#### **Threads**
 
 coming soon...
 
