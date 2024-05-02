@@ -1462,37 +1462,285 @@ $$
 
 #### **Cache**
 
+Make things go 🚀🚀🚀
+
+##### **Memory Hierarchy**
+
+The memory hierarchy is a structure that organizes memory into different levels based on their access speed and size. The memory hierarchy typically consists of:
+
+- **Registers**: the fastest and smallest memory.
+- **L1 Cache**: a small, fast cache that is close to the CPU.
+- **L2 Cache**: a larger cache that is slower than L1 cache.
+- **Main Memory (RAM)**: slower than cache but larger in size.
+- **Secondary Storage (HDD/SSD)**: the slowest and largest storage.
+
+Cache can also be shared among multiple cores. One typical configuration can be seen below:
+
+<img src="https://branyang02.github.io/images/cache_sharing.png" alt="Memory Hierarchy" style="display: block; max-height: 50%; max-width: 50%;">
+
+<span class="caption">
+  Each core has its own L1 cache (instruction and data), and its own L2 cache. The L3 cache is shared among all cores.
+</span>
+
+###### **Assumptions**
+
+We assume **temporal** and **spatial** locality when designing the memory hierarchy.
+
+<blockquote class="definition">
+
+- **Temporal Locality**: the principle that programs access the same memory locations frequently.
+- **Spatial Locality**: the principle that programs access memory locations near each other.
+
+</blockquote>
+
+##### **Cache Block**
+
+A **cache block** stores a block of data from the main memory. The size of the cache block is determined by the **block size**. The block size is typically a power of 2, such as 32 bytes or 64 bytes.
+
+This is an example of a cache block that stores 2 bytes of data:
+
+<img src="https://branyang02.github.io/images/cache_block.png" alt="Cache Block" style="display: block; max-height: 50%; max-width: 50%;">
+
+Multiple cache blocks form the **cache table**. The cache table is essentially a lookup table to quickly retrieve data stored in the cache blocks, if it exists.
+
+
+##### **Direct-Mapped Cache**
+
+A **direct-mapped cache** is a type of cache where each block of main memory maps to exactly one block in the cache. Each row in the table is called a **set**, and each set contains bookeeping information such as the **tag**, **valid bit**, as well as a **cache block** that stores the data from the main memory.
+
+<blockquote class="definition">
+
+**Tag**: a unique identifier that corresponds to a block of data in the main memory.
+
+</blockquote>
+
+<blockquote class="definition">
+
+**Set**: a row in the cache that contains a cache block.
+
+</blockquote>
+
+Below is an example of a direct-mapped cache:
+
+<img src="https://branyang02.github.io/images/direct_mapped_cache.png" alt="Direct-Mapped Cache" style="display: block; max-height: 30%; max-width: 30%;">
+
+In this example, the cache has 8 sets, and each set contains a valid bit, a tag, and a cache block. The cache block stores 2 bytes of data from the main memory.
+
+##### **Tag-Index-Offset**
+
+To access a block in the cache, we need to split the memory address into three parts: the **tag**, the **index**, and the **offset**.
+
+- **Tag**: high-order bits of the address that uniquely identify the block.
+- **Index**: bits that are used to index into the cache table.
+- **Offset**: bits that determine the position of the data _within_ the block.
+
+<blockquote class="important">
+
+The **cache offset** is different from the **page offset**. The **cache offset** is used to access data within a cache block, while the **page offset** is used to access data within a page.
+
+</blockquote>
+
+##### **Cache Formulas**
+
 <blockquote class="equation">
 
 $$
-\begin{equation*}
-f(x) =
-\begin{cases}
-\int_{-\infty}^{x} e^{-t^2}dt & \text{for } x \geq 0 \\
-1 + \sum_{n=1}^{|\lfloor x \rfloor|} \frac{1}{n!} & \text{for } x < 0
-\end{cases}
-\end{equation*}
-$$
-
-And let's consider a matrix $A$ defined as:
-
-$$
-\begin{equation*}
-A = \begin{pmatrix}
-a_{11} & a_{12} & \cdots & a_{1n} \\
-a_{21} & a_{22} & \cdots & a_{2n} \\
-\vdots & \vdots & \ddots & \vdots \\
-a_{m1} & a_{m2} & \cdots & a_{mn}
-\end{pmatrix}
-\end{equation*}
-
-\text{ where } a_{ij} = \begin{cases}
-0 & \text{if } i = j \\
-\frac{i+j}{ij} & \text{otherwise}
-\end{cases}
+\begin{align*}
+&m && \text{ memory address bits} \\
+&s && \text{ index bits} \\
+&b && \text{ offset bits} \\
+&t = m - (s + b) && \text{ tag bits} \\
+\\
+&S=2^s && \text{ number of sets} \\
+&B=2^b && \text{ block size} \\
+&C=B \times S && \text{ cache size} \\
+\end{align*}
 $$
 
 </blockquote>
+
+<blockquote class="important">
+
+The **cache size** is the product of the **block size** and the **number of sets**. It does **NOT** include the size of the tag or other metadata.
+
+</blockquote>
+
+<details><summary>Exercise: Cache Formulas</summary>
+
+Suppose 64-byte blocks, 128 set cache. Calculate the number of bits for the tag, index, and offset.
+
+We first calculate the number offset bits based on the size of the cache block:
+
+$$
+\text{offset bits} = b = \log_2(64) = 6 \text{ bits}.
+$$
+
+Next we calculate the number of index bits based on the set size:
+
+$$
+\text{index bits} = s = \log_2(128) = 7 \text{ bits}.
+$$
+
+Finally, we calculate the number of tag bits:
+
+$$
+\text{tag bits} = t = 32 - (6 + 7) = 19 \text{ bits}.
+$$
+
+Which bytes are stored in the same **block** as byte from `0x1037`?
+
+We first convert `0x1037` to binary:
+
+$$
+\text{0x1037} = 0001 \; 0000 \; 0011 \; 0111_2.
+$$
+
+We can extract the tag, index, and offset bits:
+
+$$
+\underbrace{0 \dots 0}_{\text{tag bits}} \; \underbrace{1\;0000\;00}_{\text{index bits}} \; \underbrace{ 11 \;0111}_{\text{offset bits}}.
+$$
+$$
+\begin{align*}
+\text{index} &= 1\;0000\;00_2 &&= 128_{10} \\
+\text{offset} &= 11\;0111_2 &&= 55_{10}.
+\end{align*}
+$$
+
+Therefore, the byte from memory address `0x1037` is stored at set `128` and cache block offset `55`. This means that memory addresses that have the same **index bits** have their bytes stored in the same cache block.
+</details>
+
+
+
+##### **Access Pattern**
+
+<blockquote class="definition">
+
+A **cache hit** occurs when the data is found in the cache. A **cache miss** occurs when the data is not found in the cache.
+
+</blockquote>
+
+When accessing the cache, we go through the following steps:
+
+1. Extract the **tag**, **index**, and **offset** bits from the memory address.
+2. Use the **index** bits to find the corresponding set in the cache.
+3. Check if **valid bit** is set; otherwise it is a **cache miss**.
+4. Check if the **tag** in the cache matches the **tag** from the memory address.
+4. If the tags match, it is a **cache hit**; otherwise, it is a **cache miss**.
+
+If we have a **cache miss**:
+1. Load the **entire block** from the main memory into the cache.
+2. Update the **tag** and **valid bit** in the cache.
+3. Retrieve the data from the cache.
+
+<blockquote class="important">
+
+To load the entire block from the main memory, we can simply zero out the **offset** bits to find the start memory address, and load the block of data into the cache based on the **block size**.
+
+</blockquote>
+
+If we have a **cache hit**:
+
+1. Use the **offset** bits to find the position of the data within the block.
+2. Retrieve the data from the cache.
+
+
+##### **Associative Cache**
+
+In order to avoid having too many cache misses, we can use an **associative cache**. In an associative cache, each index in the cache can map to multiple cache blocks in the same set.
+
+<blockquote class="definition">
+
+An **associative cache** is a type of cache where each index in the cache can map to **multiple** cache blocks in the same set, where a **way** is a "column" in the cache.
+
+</blockquote>
+
+<img src="https://branyang02.github.io/images/associative_cache.png" alt="Associative Cache" style="display: block; max-height: 40%; max-width: 40%;">
+
+<span class="caption">
+  In this example 2-way set associative cache, each set contains 2 cache blocks.
+</span>
+
+When accessing an associative cache, we follow the same steps as a direct-mapped cache, but we need to check for **multiple** tags in the set to check for a cache hit. If we have a **cache miss** meaning that none of the tags from any of the blocks in the set match the tag from the memory address, we need to evict a block from the set to make room for the new block. If there is an empty block in the set, we can simply load the block from the main memory into the cache.
+
+To calculate the cache size of an associative cache, we need to multiply the **number of sets** by the **number of ways** by the **block size**.
+
+<blockquote class="equation">
+
+$$
+\begin{align*}
+&E && \text{ number of blocks per set ("ways")} \\
+&C = B \times S \times E && \text{ cache size} \\
+\end{align*}
+$$
+
+</blockquote>
+
+
+
+###### **Replacement Policies**
+
+When we have a **cache miss** in an associative cache, we need to decide which block to evict from the set to make room for the new block. This decision is based on the **replacement policy**.
+
+<blockquote class="definition">
+
+**Least Recently Used** (**LRU**) is a replacement policy that evicts the block that has not been used for the longest time.
+
+</blockquote>
+
+One way to implement LRU is use include a `LRU` bit for each set in the associative cache. The `LRU` bit indicates which **way** is the least recently used. When a block is accessed (either read (hits) or write (misses)), the `LRU` bit is updated. When we evict a block from the set, we evict the block that has the `LRU` bit set.
+
+There are aos other replacement policies such as **First-In-First-Out** (**FIFO**), **Least Frequently Used** (**LFU**), and **Random**.
+
+
+
+
+
+
+##### **Write Policies**
+
+If the value is **NOT** in the cache, we can:
+- **write-allocate**: write value to cache, then load the rest of the **entire** block from memory.
+- **write-no-allocate**: write directly to memory, DO NOT add to cache.
+
+If the value is in the cache, we can:
+- **write-through**: write to cache, and also write to next layers of memory.
+- **write-back**: write to cache, and only write to next layers of memory when the block is evicted from the cache.
+
+<blockquote class="important">
+
+**Write-back** requires a **dirty bit** to indicate if the block has been modified. If the block is evicted from the cache and the **dirty bit** is set, the block is written back to the next layer of memory.
+
+</blockquote>
+
+<details><summary>Exercise: write-allocate + write-back</summary>
+
+
+<img src="https://branyang02.github.io/images/cache_exercise.png" alt="Write Allocate" style="display: block; max-height: 50%; max-width: 50%;">
+
+First, we need to compute the tag, index, and offset bits for the target memory address `0x04`. From the 2-way set associative cache table, we can conlude that:
+
+$$
+\begin{align*}
+\text{offset bits} = b = 1 \text{ bit}, \quad \text{index bits} = s = 1 \text{ bit}, \quad \text{tag bits} = t = 6 \text{ bits}.
+\end{align*}
+$$
+
+Next, we index into the cache at set 0, and find that both ways are occupied. Therefore we choose to evict the block at way 1, since `LRU` bit is set to `1`. However, since the block at way 1 has a **dirty bit** set to 1, we need to write the value in the block to next layer of memory before we can evict the block.
+
+After we perform write-back, we need to not only load the value `0xFF` into address `0x04`, but also load the rest of the block into the cache. In this case, since the offset bit is `1`, and `0x04` has the offset bit `0`, we need to also read the value from the same cache block where the offset bit is `1`, thereby reading in the value at address `0x05`.
+
+Finally, we update the cache block at way 1 with the new tag `0x00`, and the new value `0xFF`. We also set the **dirty bit** to `0`, since the block has not been modified. We also update the `LRU` bit to `0`, since the block has been recently used.
+
+The final cache table is shown below:
+
+<img src="https://branyang02.github.io/images/cache_exercise_solution.png" alt="Write Allocate Solution" style="display: block; max-height: 50%; max-width: 50%;">
+
+</details>
+
+
+
+
 
 #### **Synchonization**
 
