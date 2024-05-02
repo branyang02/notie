@@ -1831,7 +1831,94 @@ In a multi-level page table setup, we use the **entire** VPN to index into the T
 
 #### **Threads**
 
-coming soon...
+- Motivation
+  - **concurrency**: perform multiple tasks can be executed simultaneously.
+  - **parallelism**: perform multiple tasks with _more resources_.
+
+We can run multiple threads in a single process to achieve concurrency and parallelism. Threads in the same process share the same **virtual memory space**, but have their own **registers** and **stack**.
+
+<img src="https://branyang02.github.io/images/single_vs_multi_threads.png" alt="Threads" style="display: block; max-height: 50%; max-width: 50%;">
+
+##### **Thread Creation**
+
+We can use the `pthread_create` function to create a new thread in C. Below is a typical pattern for creating a new thread:
+
+```c
+void *ComputePi(void *argument) { ... }
+void *PrintClassList(void *argument) { ... }
+int main() {
+  pthread_t pi_thread, list_thread;
+  if (0 != pthread_create(&pi_thread, NULL, ComputePi, NULL)) {
+    handle_error();
+  }
+  if (0 != pthread_create(&list_thread, NULL, PrintClassList, NULL)) {
+    handle_error();
+  }
+  // more code in the main function
+}
+```
+
+In this example, we have two functions `ComputePi` and `PrintClassList` that perform different tasks on different threads.
+
+`pthread_create` takes four arguments:
+- `pthread_t *thread`: a pointer to a `pthread_t` variable that stores the thread ID.
+- `const pthread_attr_t *attr`: a pointer to a `pthread_attr_t` variable that specifies the thread attributes.
+- `void *(*start_routine)(void *)`: a function pointer that points to the function that the thread will execute.
+- `void *arg`: an argument that is passed to the function that the thread will execute.
+
+When `pthread_create` is called, the OS creates a new thread and executes the function `start_routine` with the argument `arg`. The thread runs _concurrently_ with the main thread. When the specified function returns, the thread is terminated.
+
+<blockquote class="important">
+
+The function that `pthread_create` points to must have the following signature:
+
+```c
+void *function_name(void *argument);
+```
+
+</blockquote>
+
+<details><summary>Example: Thread Creation</summary>
+
+We can create a new thread that prints "Hello, World!" using the following code:
+
+```execute-c
+#include <pthread.h>
+#include <stdio.h>
+
+void *PrintHello(void *arg) {
+    printf("Hello, World from thread!\n");
+    return NULL;
+}
+
+int main() {
+    pthread_t thread_id;
+    if (0 != pthread_create(&thread_id, NULL, PrintHello, NULL)) {
+        perror("pthread_create");
+        return 1;
+    }
+    printf("Hello, World from main!\n");
+    return 0;
+}
+```
+
+In this example, we create a new thread using `pthread_create`, and continue to execute the main thread. However, we see that the output for this program is **non-deterministic**. Sometimes the output from the main thread is printed first, and sometimes the output from the new thread is printed first.
+
+This is because the main thread could finish before the new thread finishes, causing the **entire** process to terminate.
+
+
+</details>
+
+<blockquote class="important">
+
+Returning from the `main` function ends the **entire** process, killing **all** threads in the process.
+
+</blockquote>
+
+##### **Race Conditions**
+
+
+
 
 #### **Networking**
 
