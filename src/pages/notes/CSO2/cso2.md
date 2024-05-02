@@ -1870,6 +1870,13 @@ When `pthread_create` is called, the OS creates a new thread and executes the fu
 
 <blockquote class="important">
 
+Returning from the `main` function ends the **entire** process, killing **all** threads in the process.
+
+</blockquote>
+
+
+<blockquote class="important">
+
 The function that `pthread_create` points to must have the following signature:
 
 ```c
@@ -1878,7 +1885,7 @@ void *function_name(void *argument);
 
 </blockquote>
 
-<details><summary>Example: Thread Creation</summary>
+<details open><summary>Example: Thread Creation</summary>
 
 We can create a new thread that prints "Hello, World!" using the following code:
 
@@ -1909,13 +1916,594 @@ This is because the main thread could finish before the new thread finishes, cau
 
 </details>
 
-<blockquote class="important">
 
-Returning from the `main` function ends the **entire** process, killing **all** threads in the process.
+
+
+
+
+
+
+
+
+
+##### **Race Conditions**
+
+From the example above, we see that the output of the program is **non-deterministic**. This is because the two threads are **racing** to print their respective messages. This is known as a **race condition**.
+
+<img src="https://i.ytimg.com/vi/KGnXr62bgHM/maxresdefault.jpg" alt="Race Conditions" style="display: block; max-height: 70%; max-width: 70%;">
+
+<span class="caption">
+  Source: <a href="https://dennylesmana.medium.com/what-is-race-condition-d678f87af108">What is race condition?
+</a>
+</span>
+
+We can use `pthread_join` to wait for a thread to finish before continuing execution in the main thread. `pthread_join` takes two arguments:
+- `pthread_t thread`: the thread ID of the thread to wait for.
+- `void **value_ptr`: a pointer to a variable that stores the return value of the thread.
+
+<details open><summary>Example: pthread_join</summary>
+
+Now, we want to wait for the new thread to finish before return in the `main` function. We use `pthread_join(thread_id, NULL)` to wait for the new thread to finish before returning.
+
+```execute-c
+#include <pthread.h>
+#include <stdio.h>
+
+void *PrintHello(void *arg) {
+    printf("Hello, World from thread!\n");
+    return NULL;
+}
+
+int main() {
+    pthread_t thread_id;
+    if (0 != pthread_create(&thread_id, NULL, PrintHello, NULL)) {
+        perror("pthread_create");
+        return 1;
+    }
+    printf("Hello, World from main!\n");
+    pthread_join(thread_id, NULL);
+    return 0;
+}
+```
+
+Now, the output of the program prints the result from both threads.
+
+</details>
+
+##### **Passing Arguments to Threads**
+
+
+To pass in multiple arguments to the funciton, we can create a `struct` that contains all the arguments, and pass in a pointer to the `struct` as the argument. Below is an example:
+
+```c
+int values[1024];
+struct ThreadInfo {
+  int start, end, result;  // start and end index of the array, and the result
+};
+void *sum_thread(void *arg) {
+  struct ThreadInfo *info = (struct ThreadInfo *) arg;
+  int sum = 0;
+  for (int i = info->start; i < info->end; i++) {
+    sum += values[i];  // sum the values in the array from `start` to `end`
+  }
+  info->result = sum;  // store the result in the `result` field
+  return NULL;
+}
+int sum_all() {
+  pthread_t thread[2];
+  struct ThreadInfo info[2];
+  for (int i = 0; i < 2; i++) {
+    info[i].start = i*512;
+    info[i].end = (i+1)*512;
+    pthread_create(&thread[i], NULL, sum_thread, &info[i]);
+  }
+  // wait for threads to finish
+  for (int i = 0; i < 2; i++) {
+    pthread_join(thread[i], NULL);
+  }
+  // combine results
+  return info[0].result + info[1].result;
+}
+```
+
+In this example, we create a struct `ThreadInfo` that contains the start and end index of the array that we want to sum for each thread, as well as the `result` of the local sum. In the `sum_all` function, we assign index `0-511` to thread 1 and index `512-1023` to thread 2 to compute the overall sum of the array `values`. We then wait for both threads to finish using `pthread_join`, and combine the results to get the final sum.
+
+
+<details ><summary>Running the above program</summary>
+
+```execute-c
+#include <pthread.h>
+#include <stdio.h>
+
+int values[1024];
+struct ThreadInfo {
+  int start, end, result;  // start and end index of the array, and the result
+};
+
+void *sum_thread(void *arg) {
+  struct ThreadInfo *info = (struct ThreadInfo *) arg;
+  int sum = 0;
+  for (int i = info->start; i < info->end; i++) {
+    sum += values[i];  // sum the values in the array from `start` to `end`
+  }
+  info->result = sum;  // store the result in the `result` field
+  return NULL;
+}
+
+int sum_all() {
+  pthread_t thread[2];
+  struct ThreadInfo info[2];
+  for (int i = 0; i < 2; i++) {
+    info[i].start = i*512;
+    info[i].end = (i+1)*512;
+    pthread_create(&thread[i], NULL, sum_thread, &info[i]);
+  }
+  // wait for threads to finish
+  for (int i = 0; i < 2; i++) {
+    pthread_join(thread[i], NULL);
+  }
+  // combine results
+  return info[0].result + info[1].result;
+}
+
+int main() {
+  for (int i = 0; i < 1024; i++) {
+    values[i] = i*i;
+  }
+  printf("Sum of values (2 threads): %d\n", sum_all());
+
+  int sum = 0;
+  for (int i = 0; i < 1024; i++) {
+    sum += values[i];
+  }
+  printf("Sum of values (1 thread): %d\n", sum);
+  return 0;
+}
+```
+
+</details>
+
+
+##### **Synchronization**
+
+When multiple threads access shared resources, we need to ensure that the threads do not interfere with each other when reading or writing to the shared resources. One way to achieve this is to use only **atomic operations** to access shared resources.
+
+<blockquote class="definition">
+
+An **atomic operation** is an operation that is _indivisible_, meaning it cannot be interrupted by another thread. An atomic operation is either fully completed or not started at all.
 
 </blockquote>
 
-##### **Race Conditions**
+However, not all operations can be made _atomic_. We introduce the idea of **mutual exclusion** to ensure that only one thread can access a shared resource at a time.
+
+###### **Mutual Exclusion**
+
+<blockquote class="definition">
+
+**Mutual exclusion** is a property that ensures that only one thread can access a shared resource at a time.
+
+</blockquote>
+
+We call code that only **ONE** thread could execute at a time a **critical section**. We can use **locks** to protect the critical section.
+
+##### **Locks**
+
+<blockquote class="definition">
+
+A **lock** is a synchronization primitive (object) that provides **mutual exclusion** to shared resources.
+
+</blockquote>
+
+the lock has two operations:
+
+- **lock**: _wait_ until the lock is free, then acquire the lock, preventing other threads from accessing the shared resource.
+- **unlock**: release the lock, allowing other threads to access the shared resource.
+
+<blockquote class="important">
+
+A thread must **wait** until the lock is available before it can acquire the lock. The thread will not execute other code while waiting for the lock.
+
+</blockquote>
+
+
+**`pthread_mutex_t`** is a type of lock that is used to provide mutual exclusion in C. Below is an example of using a `pthread_mutex_t` to protect a critical section:
+
+```c
+#include <pthread.h>
+
+pthread_mutex_t lock;  // declare a lock
+pthread_mutex_init(&lock, NULL);  // initialize the lock
+
+void *thread_function(void *arg) {
+  pthread_mutex_lock(&lock);  // acquire the lock
+  // critical section
+  pthread_mutex_unlock(&lock);  // release the lock
+  return NULL;
+}
+```
+
+We use `pthread_mutex_lock` to acquire the lock before entering the critical section, and `pthread_mutex_unlock` to release the lock after exiting the critical section. We can use `pthread_mutex_destroy` to destroy the lock after all threads have finished using it.
+
+<details><summary>Example: Using pthread_mutex_t</summary>
+
+
+```execute-c
+#include <pthread.h>
+#include <stdio.h>
+
+int shared_resource = 0;
+pthread_mutex_t lock;
+
+void *increment(void *arg) {
+    pthread_mutex_lock(&lock);
+    for (int i = 0; i < 10000; i++) {
+        shared_resource++;
+    }
+    pthread_mutex_unlock(&lock);
+    return NULL;
+}
+
+int main() {
+    int n = 50;
+    pthread_t thread[n];
+    pthread_mutex_init(&lock, NULL);
+    for (int i = 0; i < n; i++) {
+        pthread_create(&thread[i], NULL, increment, NULL);
+    }
+    for (int i = 0; i < n; i++) {
+        pthread_join(thread[i], NULL);
+    }
+    printf("Shared resource: %d\n", shared_resource);
+    pthread_mutex_destroy(&lock);
+    return 0;
+}
+```
+
+
+In this example, we have a shared resource `shared_resource` that is incremented by $n$ threads. We use a `pthread_mutex_t` lock to protect the critical section where the shared resource is incremented. We initialize the lock using `pthread_mutex_init`, and destroy the lock using `pthread_mutex_destroy` after all threads have finished.
+
+</details>
+
+**`pthread_barrier_t`**: a synchronization primitive that allows multiple threads to wait for each other at a certain point in the program.
+
+A barrier has a wait operation:
+- `pthread_barrier_wait`: a thread waits at the barrier until **ALL** threads have reached the barrier.
+
+Instead of using acquiring and releasing locks for every shared resources that are computed in the critical section, we can use a barrier to ensure that all threads have reached a certain point in the program before continuing.
+
+To use a `pthread_barrier_t`, we need to initialize the barrier using `pthread_barrier_init`, and wait for all threads to reach the barrier using `pthread_barrier_wait`. We can destroy the barrier using `pthread_barrier_destroy` after all threads have finished using it.
+
+The pattern is as follows:
+
+```c
+pthread_barrier_t barrier;
+pthread_barrier_init(&barrier, NULL, n);  // initialize the barrier with `n` threads
+
+void *thread_function(void *arg) {
+  // do some work
+  pthread_barrier_wait(&barrier);  // wait for all threads to reach the barrier
+  // continue with the program
+  return NULL;
+}
+```
+
+
+<details><summary>Example: Using pthread_barrier_t</summary>
+
+```execute-c
+#include <pthread.h>
+#include <stdio.h>
+#include <stdint.h>
+
+pthread_barrier_t barrier;
+
+struct thread_args {
+    int id;
+};
+
+void *increment(void *arg) {
+    struct thread_args *args = (struct thread_args *) arg;
+    printf("Thread %d: before barrier\n", args->id);
+    pthread_barrier_wait(&barrier);
+    return NULL;
+}
+
+int main() {
+    int n = 5;
+    pthread_t thread[n];
+    pthread_barrier_init(&barrier, NULL, n);
+    struct thread_args args[n];
+    for (int i = 0; i < n; i++) {
+        args[i].id = i;
+        pthread_create(&thread[i], NULL, increment, &args[i]);
+    }
+    for (int i = 0; i < n; i++) {
+        pthread_join(thread[i], NULL);
+    }
+    pthread_barrier_destroy(&barrier);
+    return 0;
+}
+```
+
+In this example, we have `n` threads that wait at the barrier before continuing with the program. We use `pthread_barrier_init` to initialize the barrier with `n` threads, and `pthread_barrier_wait` to wait for all threads to reach the barrier. After all threads have reached the barrier, the program continues.
+
+</details>
+
+
+###### **Deadlocks**
+
+Although locks are useful for protecting shared resources, they can also lead to **deadlocks** if not used correctly.
+
+<blockquote class="definition">
+
+A **deadlock** occurs when two or more threads are waiting for each other to release a lock, causing all threads to be blocked indefinitely.
+
+</blockquote>
+
+Suppose we have the following scenario:
+
+```c
+pthread_mutex_t lock1, lock2;
+pthread_mutex_init(&lock1, NULL);
+pthread_mutex_init(&lock2, NULL);
+
+void *thread1(void *arg) {
+  pthread_mutex_lock(&lock1);
+  pthread_mutex_lock(&lock2);
+  // critical section
+  pthread_mutex_unlock(&lock2);
+  pthread_mutex_unlock(&lock1);
+  return NULL;
+}
+
+void *thread2(void *arg) {
+  pthread_mutex_lock(&lock2);
+  pthread_mutex_lock(&lock1);
+  // critical section
+  pthread_mutex_unlock(&lock1);
+  pthread_mutex_unlock(&lock2);
+  return NULL;
+}
+```
+
+In this example, `thread1` acquires `lock1` first, and then tries to acquire `lock2`. At the same time, `thread2` acquires `lock2` first, and then tries to acquire `lock1`. If `thread1` and `thread2` run concurrently, they can cause a **deadlock** if `thread1` acquires `lock1` and `thread2` acquires `lock2` at the same time.
+
+<div class="small-table">
+
+|Thread 1|Thread 2|
+|--------|--------|
+|acquire `lock1`   | acquire `lock2`   |
+| attempt to acquire `lock2` | attempt to acquire `lock1` |
+
+</div>
+
+<span class="caption">
+  We reach a deadlock when thread1 acquires lock1 and thread2 acquires lock2 at the same time.
+</span>
+
+A **deadlock** has 4 necessary conditions:
+1. **Mutual Exclusion**: At least one resource must be held in a non-sharable mode.
+2. **Hold and Wait**: A process must be holding at least one resource and waiting to acquire additional resources held by other processes.
+3. **No Preemption**: Resources cannot be preempted from a process holding them.
+4. **Circular Wait**: A cycle must exist in the resource allocation graph.
+
+
+###### **Avoiding Deadlocks vs. Breaking Deadlocks**
+
+When we are in a deadlock, we can break the deadlock by following these strategies:
+- **Lock Timeout**: Use a timeout when acquiring locks to prevent indefinite waiting.
+
+To avoid deadlocks, we can follow these strategies:
+- **Lock Ordering**: Always acquire locks in the same order to prevent circular waits.
+- **Lock Hierarchy**: Assign a unique ID to each lock and acquire locks in increasing order of ID.
+
+
+##### **Monitors**
+
+A **monitor** is a high-level synchronization construct that provides a way to ensure that only one thread can execute a critical section at a time.
+
+A monitor consists of:
+- **lock**: a lock that protects the monitor.
+- **shared data**: data that is shared between threads.
+- **condition variables**: a list of threads that are waiting for a certain condition to be true.
+
+<div class="xsmall-table">
+
+| A Monitor|
+|----------|
+| Lock     |
+| Shared Data |
+|condvar 1|
+|condvar 2|
+|...|
+| `operation1()` |
+| `operation2()` |
+
+</div>
+
+We can have 0 or more condition variables in a monitor.
+
+<blockquote class="important">
+
+A monitor **must acquire the lock** before accessing the shared data and performing conditional variable operations.
+
+</blockquote>
+
+**conditional variable** operations:
+- `wait(cv, lock)`
+  - 1. Unlock lock
+  - 2. Add **current** thread to the cv queue.
+  - 3. **Reacquire** lock before returning
+- `broadcast(cv)`
+  - remove **all** threads from the cv queue.
+- `signal(cv)`
+  - remove **one** thread from the cv queue.
+
+
+<blockquote class="important">
+
+When a thread is in a condition variable queue, it is **not** holding the lock. It is in a **blocked** state, waiting to be **signaled** or **broadcasted**.
+
+</blockquote>
+
+Suppose we have the following setup:
+
+```c
+pthread_mutex_t lock;
+bool finished = false;
+pthread_cont_t finished_cv;
+
+void WaitForFinished() {
+  pthread_mutext_lock(&lock);  // always acquire the lock first
+  while (!finished) {
+    pthread_cond_wait(&finished_cv, &lock);  // wait for the condition to be true
+  }
+  pthread_mutex_unlock(&lock);  // always release the lock before returning
+}
+
+void Finish() {
+  pthread_mutex_lock(&lock);  // always acquire the lock first
+  finished = true;
+  pthread_cond_signal(&finished_cv);  // signal the condition variable
+  pthread_mutex_unlock(&lock);
+}
+```
+
+We have a single shared resource `finished` that is protected by the `lock`. Suppose we have 2 threads `thread1` and `thread2` that call `WaitForFinished` and `Finish` respectively.
+
+If `Finish` is called before `WaitForFinished`, `Finish` will set `finished` to `true` and unlock the `lock`. When `WaitForFinished` is called, it will acquire the `lock`, and check that `finished` is set to true, therefore it skips the `while` loop and continues with the program to release the `lock`.
+
+However, if `WaitForFinished` is called first, it will acquire the `lock`, and check that `finished` is set to false, therefore it will enter the `while` loop and `pthread_cond_wait` for the condition to be true. When `pthread_cond_wait` is called, `thread1` that calls the `WaitForFinished` will:
+
+1. **unlock** the `lock` that it acquired in the beginning of the funciton.
+2. Add itself (`thread1`) to the `finished_cv` queue.
+
+In the mean time, `thread2` that calls the `Finish` has been waiting for the `lock` to be released. Once it acquires the `lock`, it sets `finished` to `true`, and calls `pthread_cond_signal` to **release all threads** in the `finished_cv` queue, including `thread1`.
+
+Now, back in `thread1`, it will return from the `pthread_cond_wait` and **reacquire** the `lock`, once `thread2` releases the `lock`. Since we are still in the `while` loop, `thread1` will check that `finished` is set to `true`, and continue with the program. Finally, `thread1` will release the `lock` before returning.
+
+
+###### **Producer Consumer Pattern**
+
+The **producer/consumer** pattern is a synchronization pattern where one or more threads produce data and put it into a **shared buffer**, while one or more threads consume the data from the shared buffer.
+
+
+```c
+pthread_mutex_t lock;  // lock to protect the buffer
+pthread_cond_t data_ready; pthread_cond_t space_ready;  // condition variables
+BoundedQueue buffer;  // shared buffer
+
+Produce(item) {
+  pthread_mutex_lock(&lock);  // acquire the lock
+  while (buffer is full) {
+    pthread_cond_wait(&space_ready, &lock);  // wait for space in the buffer
+  }
+  // Once there is space in the buffer, add the item
+  buffer.add(item);
+  pthread_cond_signal(&data_ready);  // signal that there is data in the buffer
+  pthread_mutex_unlock(&lock);
+}
+
+Consume() {
+  pthread_mutex_lock(&lock);  // acquire the lock
+  while (buffer is empty) {
+    pthread_cond_wait(&data_ready, &lock);  // wait for data in the buffer
+  }
+  // Once there is data in the buffer, remove the last item from the queue
+  item = buffer.dequeue();
+  pthread_cond_signal(&space_ready); // signal that there is space in the buffer
+  pthread_mutex_unlock(&lock);
+  return item;
+}
+```
+
+
+<details><summary>Example: Producer Consumer Pattern</summary>
+
+```execute-c
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#define BUFFER_SIZE 10
+
+pthread_mutex_t lock;
+pthread_cond_t data_ready, space_ready;
+int buffer[BUFFER_SIZE];
+int in = 0, out = 0;
+
+void Produce(int item) {
+    pthread_mutex_lock(&lock);
+    while ((in + 1) % BUFFER_SIZE == out) {
+        pthread_cond_wait(&space_ready, &lock);
+    }
+    buffer[in] = item;
+    in = (in + 1) % BUFFER_SIZE;
+    pthread_cond_signal(&data_ready);
+    pthread_mutex_unlock(&lock);
+}
+
+int Consume() {
+    pthread_mutex_lock(&lock);
+    while (in == out) {
+        pthread_cond_wait(&data_ready, &lock);
+    }
+    int item = buffer[out];
+    out = (out + 1) % BUFFER_SIZE;
+    pthread_cond_signal(&space_ready);
+    pthread_mutex_unlock(&lock);
+    return item;
+}
+
+void *Producer(void *arg) {
+    for (int i = 0; i < 100; i++) {
+        Produce(i);
+        printf("Produced: %d\n", i);
+    }
+    return NULL;
+}
+
+void *Consumer(void *arg) {
+    for (int i = 0; i < 100; i++) {
+        int item = Consume();
+        printf("             Consumed: %d\n", item);
+    }
+    return NULL;
+}
+
+int main() {
+    pthread_t producer, consumer;
+    pthread_mutex_init(&lock, NULL);
+    pthread_cond_init(&data_ready, NULL);
+    pthread_cond_init(&space_ready, NULL);
+    pthread_create(&producer, NULL, Producer, NULL);
+    pthread_create(&consumer, NULL, Consumer, NULL);
+    pthread_join(producer, NULL);
+    pthread_join(consumer, NULL);
+    pthread_mutex_destroy(&lock);
+    pthread_cond_destroy(&data_ready);
+    pthread_cond_destroy(&space_ready);
+    return 0;
+}
+```
+
+In this example, we have a producer that produces items from `0` to `99`, and a consumer that consumes the items from the shared buffer. We use a `pthread_mutex_t` lock to protect the shared buffer, and two condition variables `data_ready` and `space_ready` to signal when there is data in the buffer and when there is space in the buffer respectively.
+
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
