@@ -1027,6 +1027,7 @@ $$
 \\
 \text{VPN bits} &= \log_2(\text{Number of Virtual Pages}) \\
 \text{PPN bits} &= \log_2(\text{Number of Physical Pages}) \\
+\text{offset bits} &= \log_2(\text{Page Size}) \\
 \\
 \text{Number of PTEs} &= \text{Number of Virtual Pages} \\
 \end{align*}
@@ -1776,6 +1777,13 @@ The final cache table is shown below:
 <img src="https://branyang02.github.io/images/cache_exercise_solution.png" alt="Write Allocate Solution" style="display: block; max-height: 50%; max-width: 50%;">
 
 </details>
+
+<blockquote class="important">
+
+When performing **write-allocate + write-back**, if we write to an _unallocated_ block, we need to read the entire block from memory, update the block, and set the **dirty bit** to `1`.
+
+</blockquote>
+
 
 
 ###### **Faster Writes**
