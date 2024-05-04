@@ -1,17 +1,17 @@
-.blog-menu {
+.note-toc {
     position: sticky;
     top: 0;
     overflow-y: auto;
     max-height: 100vh;
 }
 
-.blog-menu a {
+.note-toc a {
     color: #172b41;
     text-decoration: none;
 }
 
-.blog-menu a:hover,
-.blog-menu a:focus {
+.note-toc a:hover,
+.note-toc a:focus {
     color: #777777;
     text-decoration: underline;
 }

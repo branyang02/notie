@@ -1,4 +1,4 @@
-import '../styles/blog-menu.css';
+import '../styles/note-toc.css';
 
 import { Pane } from 'evergreen-ui';
 import { useMemo } from 'react';
@@ -26,7 +26,7 @@ const BlogMenu = ({ markdownContent }: { markdownContent: string }) => {
   const toc = useMemo(() => generateTableOfContents(markdownContent), [markdownContent]);
 
   return (
-    <Pane padding="20px" className="blog-menu">
+    <Pane padding="20px" className="note-toc">
       <ReactMarkdown rehypePlugins={[[rehypeSlug, { prefix: 'toc-' }]]}>
         {toc}
       </ReactMarkdown>

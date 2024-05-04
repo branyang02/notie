@@ -401,3 +401,9 @@ body.dark-mode .blog-content .tikz-drawing svg {
   -webkit-filter: invert(100%);
   filter: invert(100%);
 }
+
+.blog-content .tikz-drawing svg {
+  max-width: 100%;
+  width: 500px;
+  margin: 20px auto;
+}

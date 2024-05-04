@@ -2,8 +2,6 @@ import { Card, Heading, majorScale, Pane, Text } from 'evergreen-ui';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useDarkMode } from '../context/DarkModeContext';
-
 interface NotesMetaData {
   title?: string;
   subtitle?: string;
@@ -13,7 +11,6 @@ interface NotesMetaData {
 function NoteCards() {
   const [notesMetaData, setNotesMetaData] = useState<NotesMetaData[]>([]);
   const navigate = useNavigate();
-  const { darkMode } = useDarkMode();
 
   useEffect(() => {
     const fetchNotes = async () => {
