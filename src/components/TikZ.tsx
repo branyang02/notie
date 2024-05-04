@@ -1,6 +1,8 @@
 import { Pane } from 'evergreen-ui';
 import React, { useEffect, useRef } from 'react';
 
+import tikzjaxJs from '../utils/tikzjax?raw';
+
 type TikZProps = {
   tikzScript: string;
 };
@@ -16,6 +18,8 @@ const TikZ: React.FC<TikZProps> = ({ tikzScript }) => {
       );
     }
   }, [tikzScript]);
+
+  console.log(tikzjaxJs);
 
   return (
     <Pane

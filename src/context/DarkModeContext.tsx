@@ -10,9 +10,7 @@ const DarkModeContext = createContext<DarkModeContextType | undefined>(undefined
 export const DarkModeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     const savedMode = localStorage.getItem('darkMode');
-    return savedMode === 'true'
-      ? true
-      : new Date().getHours() >= 18 || new Date().getHours() < 6;
+    return savedMode === 'true';
   });
 
   useEffect(() => {
