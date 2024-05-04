@@ -28,7 +28,7 @@ const Header = () => {
         alignItems="center"
         paddingRight={majorScale(5)}
       >
-        <Avatar name="John Doe" shape="square" size={40} marginRight={16} />
+        {/* <Avatar name="John Doe" shape="square" size={40} marginRight={16} /> */}
       </Pane>
     </Pane>
   );
