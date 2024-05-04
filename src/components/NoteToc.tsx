@@ -22,7 +22,7 @@ const generateTableOfContents = (markdownContent: string) => {
   return res;
 };
 
-const BlogMenu = ({ markdownContent }: { markdownContent: string }) => {
+const NoteToc = ({ markdownContent }: { markdownContent: string }) => {
   const toc = useMemo(() => generateTableOfContents(markdownContent), [markdownContent]);
 
   return (
@@ -34,4 +34,4 @@ const BlogMenu = ({ markdownContent }: { markdownContent: string }) => {
   );
 };
 
-export default BlogMenu;
+export default NoteToc;

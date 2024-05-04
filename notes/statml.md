@@ -5,8 +5,11 @@
 Jensen's inequality is a fundamental result in convex analysis that provides a lower bound on the expected value of a convex function of a random variable. The inequality states that if $f$ is a convex function and $X$ is a random variable, then the expected value of $f(X)$ is greater than or equal to the convex function of the expected value of $X$.
 
 ```tikz
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+
 \begin{document}
-  \begin{tikzpicture}[domain=0:4, scale=2.0]
+  \begin{tikzpicture}[domain=0:4, scale=1.2]
     \draw[very thin,color=gray] (-0.1,-1.1) grid (3.9,3.9);
     \draw[->] (-0.2,0) -- (4.2,0) node[right] {$x$};
     \draw[->] (0,-1.2) -- (0,4.2) node[above] {$f(x)$};
@@ -14,16 +17,8 @@ Jensen's inequality is a fundamental result in convex analysis that provides a l
     \draw[color=blue]   plot (\x,{sin(\x r)})    node[right] {$f(x) = \sin x$};
     \draw[color=orange] plot (\x,{0.05*exp(\x)}) node[right] {$f(x) = \frac{1}{20} \mathrm e^x$};
   \end{tikzpicture}
-\end{document}
-```
 
-```tikz
-\usepackage{pgfplots}
-\pgfplotsset{compat=1.16}
-
-\begin{document}
-
-\begin{tikzpicture}
+  \begin{tikzpicture}
 \begin{axis}[colormap/viridis]
 \addplot3[
 	surf,
@@ -36,6 +31,10 @@ Jensen's inequality is a fundamental result in convex analysis that provides a l
 
 \end{document}
 ```
+
+<span class="caption">
+You can draw awesome plots with TikZ and PGFPlots.
+</span>
 
 <blockquote class="theorem">
 

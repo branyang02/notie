@@ -12,8 +12,8 @@ import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 
-import BlogMenu from '../components/BlogMenu';
 import CodeBlock from '../components/CodeBlock';
+import NoteToc from '../components/NoteToc';
 import StaticCodeBlock from '../components/StaticCodeBlock';
 import TikZ from '../components/TikZ';
 
@@ -89,7 +89,7 @@ const Notes = () => {
     <div className="overall-container">
       <Pane className="mw-page-container-inner">
         <Pane className="vector-column-start">
-          <BlogMenu markdownContent={markdownContent} />
+          <NoteToc markdownContent={markdownContent} />
         </Pane>
         <Pane className="mw-content-container">
           <Pane className="blog-content">
