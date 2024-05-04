@@ -10,6 +10,7 @@ NOTIE is a note taking template based on **markdown**. It is designed to be mini
 - [Writing notes](#writing-notes)
   - [What is Markdown?](#what-is-markdown)
   - [Features and Documentation](#features-and-documentation)
+- [Deploy your notes (Vercel)](#deploy-your-notes-vercel)
 - [What is NOTIE?](#what-is-notie)
 
 ## Features
