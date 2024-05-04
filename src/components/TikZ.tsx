@@ -8,14 +8,14 @@ type TikZProps = {
 const TikZ: React.FC<TikZProps> = ({ tikzScript }) => {
   const scriptRef = useRef<HTMLScriptElement>(null);
 
-  useEffect(() => {
-    if (scriptRef.current) {
-      scriptRef.current.textContent = tikzScript;
-      (window as Window & { TikZJax?: (element: HTMLScriptElement) => void })?.TikZJax?.(
-        scriptRef.current,
-      );
-    }
-  }, [tikzScript]);
+  // useEffect(() => {
+  //   if (scriptRef.current) {
+  //     scriptRef.current.textContent = tikzScript;
+  //     (window as Window & { TikZJax?: (element: HTMLScriptElement) => void })?.TikZJax?.(
+  //       scriptRef.current,
+  //     );
+  //   }
+  // }, [tikzScript]);
 
   return (
     <Pane
@@ -25,7 +25,9 @@ const TikZ: React.FC<TikZProps> = ({ tikzScript }) => {
       alignItems="center"
       flexGrow={1}
     >
-      <script ref={scriptRef} type="text/tikz"></script>
+      <script ref={scriptRef} type="text/tikz">
+        {tikzScript}
+      </script>
     </Pane>
   );
 };
