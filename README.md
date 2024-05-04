@@ -54,6 +54,8 @@ Markdown is a lightweight markup language with plain-text-formatting syntax. Che
    print("Hello, World!")
    ```
    ````
+   ![image](https://github.com/branyang02/notie/assets/107154811/c129e7a7-4f15-4641-949d-0604f130fb77)
+
 2. **Static Code Blocks**
    Simply type the language name after the triple backticks to create a static code block. For example, to write a static Python code snippet, use the following syntax:
    ````markdown
@@ -61,6 +63,8 @@ Markdown is a lightweight markup language with plain-text-formatting syntax. Che
    print("Hello, World!")
    ```
    ````
+   ![image](https://github.com/branyang02/notie/assets/107154811/121c518a-7149-4f40-8271-172b442e4f72)
+
 3. **TikZ Diagrams**
    Use the following syntax to create TikZ diagrams in your notes:
    ````markdown
@@ -68,6 +72,8 @@ Markdown is a lightweight markup language with plain-text-formatting syntax. Che
    [type a tikz diagram]
    ```
    ````
+   ![image](https://github.com/branyang02/notie/assets/107154811/91e9278a-ee28-41b6-9703-a23be42c20ff)
+
 4. **Theorems, proofs, examples, definitions** and more.
    Use the following syntax to create theorems, proofs, examples, definitions, etc. in your notes:
 
