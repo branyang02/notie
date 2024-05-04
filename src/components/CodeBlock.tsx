@@ -114,6 +114,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ initialCode, language = 'python' 
             extensions={[languageCode, indentUnit.of('    ')]}
             // height="500px"
             maxHeight="800px"
+            minHeight="100px"
             theme={darkMode ? tokyoNightStorm : duotoneLight}
             onChange={onChange}
           />
