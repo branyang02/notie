@@ -1,34 +1,56 @@
 import { Pane } from 'evergreen-ui';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
-type TikZProps = {
-  tikzScript: string;
-};
+const TikZ = ({ tikzScript }: { tikzScript: string }) => {
+  const scriptContainerRef = useRef<HTMLDivElement>(null);
 
-const TikZ: React.FC<TikZProps> = ({ tikzScript }) => {
-  const scriptRef = useRef<HTMLScriptElement>(null);
+  // Load TikZ script from https://github.com/artisticat1/obsidian-tikzjax/blob/main/tikzjax.js
+  useEffect(() => {
+    fetch(
+      'https://raw.githubusercontent.com/artisticat1/obsidian-tikzjax/main/styles.css',
+    )
+      .then((response) => {
+        if (response.ok) return response.text();
+        throw new Error('Failed to load CSS');
+      })
+      .then((cssContent) => {
+        const styleEl = document.createElement('style');
+        styleEl.textContent = cssContent;
+        document.head.appendChild(styleEl);
+      })
+      .catch((error) => console.error('Failed to load CSS', error));
+    fetch(
+      'https://raw.githubusercontent.com/artisticat1/obsidian-tikzjax/main/tikzjax.js',
+    )
+      .then((response) => response.text())
+      .then((scriptContent) => {
+        const scriptEl = document.createElement('script');
+        scriptEl.textContent = scriptContent;
+        document.body.appendChild(scriptEl);
+      })
+      .catch((error) => console.error('Failed to load script', error));
+  }, []);
 
-  // useEffect(() => {
-  //   if (scriptRef.current) {
-  //     scriptRef.current.textContent = tikzScript;
-  //     (window as Window & { TikZJax?: (element: HTMLScriptElement) => void })?.TikZJax?.(
-  //       scriptRef.current,
-  //     );
-  //   }
-  // }, [tikzScript]);
+  useEffect(() => {
+    const scriptEl = document.createElement('script');
+    scriptEl.type = 'text/tikz';
+    scriptEl.async = true;
+    scriptEl.textContent = tikzScript;
+
+    if (scriptContainerRef.current) {
+      scriptContainerRef.current.appendChild(scriptEl);
+    }
+  }, [tikzScript]);
 
   return (
     <Pane
+      ref={scriptContainerRef}
       className="tikz-drawing"
       display="flex"
       justifyContent="center"
       alignItems="center"
       flexGrow={1}
-    >
-      <script ref={scriptRef} type="text/tikz">
-        {tikzScript}
-      </script>
-    </Pane>
+    ></Pane>
   );
 };
 

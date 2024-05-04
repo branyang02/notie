@@ -6,7 +6,7 @@ Jensen's inequality is a fundamental result in convex analysis that provides a l
 
 ```tikz
 \begin{document}
-  \begin{tikzpicture}[domain=0:4]
+  \begin{tikzpicture}[domain=0:4, scale=2.0]
     \draw[very thin,color=gray] (-0.1,-1.1) grid (3.9,3.9);
     \draw[->] (-0.2,0) -- (4.2,0) node[right] {$x$};
     \draw[->] (0,-1.2) -- (0,4.2) node[above] {$f(x)$};
@@ -14,6 +14,26 @@ Jensen's inequality is a fundamental result in convex analysis that provides a l
     \draw[color=blue]   plot (\x,{sin(\x r)})    node[right] {$f(x) = \sin x$};
     \draw[color=orange] plot (\x,{0.05*exp(\x)}) node[right] {$f(x) = \frac{1}{20} \mathrm e^x$};
   \end{tikzpicture}
+\end{document}
+```
+
+```tikz
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+
+\begin{document}
+
+\begin{tikzpicture}
+\begin{axis}[colormap/viridis]
+\addplot3[
+	surf,
+	samples=18,
+	domain=-3:3
+]
+{exp(-x^2-y^2)*x};
+\end{axis}
+\end{tikzpicture}
+
 \end{document}
 ```
 
