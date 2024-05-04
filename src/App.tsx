@@ -1,6 +1,6 @@
 import './styles/App.css';
 
-import { IconButton, LightbulbIcon, MoonIcon } from 'evergreen-ui';
+import { HomeIcon, IconButton, LightbulbIcon, MoonIcon } from 'evergreen-ui';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import Header from './components/Header';
@@ -18,6 +18,17 @@ const App = () => {
           height={56}
           icon={darkMode ? LightbulbIcon : MoonIcon}
           onClick={() => toggleDarkMode()}
+          style={{
+            position: 'fixed',
+            bottom: '20px',
+            right: '20px',
+            zIndex: 1000,
+          }}
+        />
+        <IconButton
+          height={56}
+          icon={HomeIcon}
+          onClick={() => window.location.replace('/')}
           style={{
             position: 'fixed',
             bottom: '20px',

@@ -194,3 +194,7 @@ graph = {
 source = 'A'
 print(dijkstra(graph, source))
 ```
+
+## Conclusion
+
+Algorithms are cool.
