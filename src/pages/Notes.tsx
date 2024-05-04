@@ -62,7 +62,7 @@ const Notes = () => {
 
   useEffect(() => {
     const fetchNote = async () => {
-      const rawFilePath = `../notes/${noteId}.md?raw`;
+      const rawFilePath = `../public/notes/${noteId}.md?raw`;
       const module = await import(/* @vite-ignore */ rawFilePath);
       const rawMDString = processMarkdown(module.default);
 
