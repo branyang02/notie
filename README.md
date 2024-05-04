@@ -50,7 +50,7 @@ npm run dev
 
 ## Writing notes
 
-Simply navigate to the `/notes` directory, create a new markdown file, and start writing your notes!
+Simply navigate to the `/src/notes` directory, create a new markdown file, and start writing your notes!
 
 ### What is Markdown?
 
