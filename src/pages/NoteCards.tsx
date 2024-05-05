@@ -15,7 +15,7 @@ function NoteCards() {
 
   useEffect(() => {
     const fetchNotes = async () => {
-      const markdownFiles = import.meta.glob('../public/notes/*.md');
+      const markdownFiles = import.meta.glob('../notes/*.md');
       const dateFilter = /\b(Spring|Summer|Fall|Autumn|Winter)\s+\d{4}\b/;
 
       const notesData = await Promise.all(
