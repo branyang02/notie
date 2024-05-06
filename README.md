@@ -11,6 +11,7 @@ NOTIE is a note taking template based on **markdown**.
   - [What is Markdown?](#what-is-markdown)
   - [Features and Documentation](#features-and-documentation)
 - [Deploy your notes (Vercel)](#deploy-your-notes-vercel)
+- [Contribution](#contribution)
 - [Acknowledgements](#acknowledgements)
 
 ## Features
@@ -65,6 +66,10 @@ Checkout the tutorial at the main demo page [https://notie-nine.vercel.app/](htt
 ## Deploy your notes (Vercel)
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbranyang02%2Fnotie)
+
+## Contribution
+
+Checkout [CONTRIBUTING.md](https://github.com/branyang02/notie/blob/main/CONTRIBUTING.md).
 
 ## Acknowledgements
 
