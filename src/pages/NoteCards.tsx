@@ -2,7 +2,7 @@ import { Card, Heading, majorScale, Pane, Text } from 'evergreen-ui';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const modules = import.meta.glob('../notes/*.md', { as: 'raw' });
+const modules = import.meta.glob('../../notes/*.md', { as: 'raw' });
 
 interface NotesMetaData {
   title?: string;
