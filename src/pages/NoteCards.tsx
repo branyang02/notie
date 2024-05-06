@@ -2,6 +2,8 @@ import { Card, Heading, majorScale, Pane, Text } from 'evergreen-ui';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const modules = import.meta.glob('../notes/*.md', { as: 'raw' });
+
 interface NotesMetaData {
   title?: string;
   subtitle?: string;
@@ -14,38 +16,26 @@ function NoteCards() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchNotes = async () => {
-      const markdownFiles = import.meta.glob('../notes/*.md');
-      const dateFilter = /\b(Spring|Summer|Fall|Autumn|Winter)\s+\d{4}\b/;
+    function fetchNotes() {
+      const notesData = [];
+      for (const path in modules) {
+        const rawMDString = String(modules[path]);
+        const title = /^#\s(.+)$/m.exec(rawMDString)?.[1].replace(/\*/g, '');
+        const fileName = path.split('/').pop()?.replace(/\.md$/, '');
+        const subtitle = fileName?.replace(/-/g, ' ').replace(/.md$/, '');
+        const dateFilter = /\b(Spring|Summer|Fall|Autumn|Winter)\s+\d{4}\b/;
+        const date = dateFilter.exec(rawMDString)?.[0];
 
-      const notesData = await Promise.all(
-        Object.keys(markdownFiles).map(async (path) => {
-          const rawFilePath = `${path}?raw`;
-          const module = await import(/* @vite-ignore */ rawFilePath);
-          const rawMDString = module.default;
-
-          // Extracting title
-          const title = /^#\s(.+)$/m.exec(rawMDString)?.[1].replace(/\*/g, '');
-          // Extracting subtitle
-          const fileName = path.split('/').pop()?.replace(/\.md$/, '');
-          const subtitle = fileName?.replace(/-/g, ' ').replace(/.md$/, '');
-
-          // Extracting date
-          const date = dateFilter.exec(rawMDString)?.[0];
-
-          return {
-            title: title,
-            subtitle: subtitle,
-            link: `/notes/${fileName}`,
-            date: date,
-          };
-        }),
-      );
-
+        notesData.push({
+          title: title,
+          subtitle: subtitle,
+          link: `/notes/${fileName}`,
+          date: date,
+        });
+      }
       notesData.sort((b, a) => sortNotesByDate(a.date, b.date));
-
       setNotesMetaData(notesData);
-    };
+    }
 
     fetchNotes();
   }, []);
