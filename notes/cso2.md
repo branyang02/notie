@@ -3466,6 +3466,19 @@ We **only** update the scoreboard table after the entire **ALL** `execute` stage
 
 The `execute` stage typically _**forwards**_ the result to the `issue` stage of the next instruction.
 
-### **References**
+## **References**
 
 This note is based on [CS 3130 Spring 2024](https://www.cs.virginia.edu/~cr4bd/3130/S2024/) by Charles Reiss, used under CC BY-NC-SA 4.0.
+
+Reiss, Charles. _CS 3130 Spring 2024_. Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (CC BY-NC-SA 4.0). Accessed May 1, 2024. Available at: https://www.cs.virginia.edu/~cr4bd/3130/S2024/
+
+## **License**
+
+The notes taken from the course _CS 3130 Spring 2024_ by Charles Reiss are licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (CC BY-NC-SA 4.0). These notes are intended for non-commercial use and must be shared under the same license terms.
+
+<span class="caption">
+Yifan (Brandon) Yang, Released under the CC BY-NC-SA 4.0 License.
+</span>
+<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+    <img src="https://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-sa.png" alt="CC BY-NC-SA 4.0" style="display: block; max-height: 10%; max-width: 10%; margin-top: 0px" >
+</a>

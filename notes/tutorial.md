@@ -41,7 +41,6 @@ You can use **any** code editor (vim, notepad, whatever) to edie you `.md` files
 
 <img width="1624" alt="image" src="https://github.com/branyang02/notie/assets/107154811/13466b3d-14e4-498d-a51a-8c377aeb8d84">
 
-
 There's no need to reinvent the wheel. Use the tools that VS Code offers to make your note-taking experience more enjoyable. I personally love using GitHub Copilot to generate code snippets and Markdown Preview Enhanced to preview my notes. Search for these extensions in the VS Code marketplace and install them to enhance your note-taking experience.
 
 ## Features

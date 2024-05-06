@@ -11,7 +11,7 @@ NOTIE is a note taking template based on **markdown**.
   - [What is Markdown?](#what-is-markdown)
   - [Features and Documentation](#features-and-documentation)
 - [Deploy your notes (Vercel)](#deploy-your-notes-vercel)
-- [What is NOTIE?](#what-is-notie)
+- [Acknowledgements](#acknowledgements)
 
 ## Features
 
@@ -60,12 +60,54 @@ Markdown is a lightweight markup language with plain-text-formatting syntax. Che
 
 ### Features and Documentation
 
-Checkout the tutorial at the main demo page [https://notie-nine.vercel.app/](https://notie-nine.vercel.app/). 
+Checkout the tutorial at the main demo page [https://notie-nine.vercel.app/](https://notie-nine.vercel.app/).
 
 ## Deploy your notes (Vercel)
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbranyang02%2Fnotie)
 
-## What is NOTIE?
+## Acknowledgements
 
-It's just a React app with a markdown parser and a code editor. Run it locally and start taking notes! Or, deploy it to a server and take notes from anywhere!
+This project makes use of several open-source projects and resources. We extend our gratitude to the developers and maintainers of these projects. Here is a list of them along with their respective licenses:
+
+### [React CodeMirror](https://uiwjs.github.io/react-codemirror/)
+
+- **Author(s)**: uiw
+- **License**: MIT
+
+### [Bootstrap](https://getbootstrap.com/)
+
+- **Author(s)**: The Bootstrap Authors
+- **License**: MIT
+
+### [Evergreen UI](https://evergreen.segment.com/)
+
+- **Author(s)**: Segment.io, Inc.
+- **License**: MIT
+
+### [KaTeX](https://katex.org/)
+
+- **Author(s)**: Khan Academy
+- **License**: MIT
+
+### [react-code-blocks](https://react-code-blocks-rajinwonderland.vercel.app/?path=/story/code--default)
+
+- **Author(s)**: Raj K Singh
+- **License**: MIT
+
+### [react-markdown](https://remarkjs.github.io/react-markdown/)
+
+- **Author(s)**: Espen Hovlandsdal
+- **License**: MIT
+
+## [rehype-highlight](https://github.com/rehypejs/rehype-highlight)
+
+- **Author(s)**: Titus Wormer
+- **License**: MIT
+
+## [remark-math](https://remark.js.org/)
+
+- **Author(s)**: Junyoung Choi
+- **License**: MIT
+
+We are thankful to all the open-source projects and their contributors for making their resources available, which have greatly facilitated the development of this project.
