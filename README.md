@@ -39,7 +39,7 @@ cd notie && npm install
 npm run dev
 ```
 
-Checkout 
+Checkout
 
 ## Showcase
 
@@ -60,74 +60,7 @@ Markdown is a lightweight markup language with plain-text-formatting syntax. Che
 
 ### Features and Documentation
 
-1. **Live Coding**
-   Simply type your code snippet inside the `execute-[language]` tag. For example, to write a live Python code snippet, use the following syntax:
-
-   ````markdown
-   ```execute-python
-   print("Hello, World!")
-   ```
-   ````
-
-   ![image](https://github.com/branyang02/notie/assets/107154811/c129e7a7-4f15-4641-949d-0604f130fb77)
-
-2. **Static Code Blocks**
-   Simply type the language name after the triple backticks to create a static code block. For example, to write a static Python code snippet, use the following syntax:
-
-   ````markdown
-   ```python
-   print("Hello, World!")
-   ```
-   ````
-
-   ![image](https://github.com/branyang02/notie/assets/107154811/121c518a-7149-4f40-8271-172b442e4f72)
-
-3. **TikZ Diagrams**
-   Use the following syntax to create TikZ diagrams in your notes:
-
-   ````markdown
-   ```tikz
-   [type a tikz diagram]
-   ```
-   ````
-
-   ![image](https://github.com/branyang02/notie/assets/107154811/91e9278a-ee28-41b6-9703-a23be42c20ff)
-
-4. **Theorems, proofs, examples, definitions** and more.
-   Use the following syntax to create theorems, proofs, examples, definitions, etc. in your notes:
-
-   ```markdown
-   <blockquote class="theorem">
-   [type your theorem here]
-   </blockquote>
-   ```
-
-   ```markdown
-   <blockquote class="proof">
-   [type your proof here]
-   </blockquote>
-   ```
-
-   ```markdown
-   <blockquote class="example">
-   [type your example here]
-   </blockquote>
-   ```
-
-   ```markdown
-   <blockquote class="definition">
-   [type your definition here]
-   </blockquote>
-   ```
-
-   To create collapsible sections in your notes, use the following syntax:
-
-   ```markdown
-    <details open> <!-- open the section by default -->
-    <summary>Section Title</summary>
-            [type your content here]
-    </details>
-   ```
+Checkout the [tutorial](https://notie-nine.vercel.app/notes/tutorial) for more information.
 
 ## Deploy your notes (Vercel)
 
