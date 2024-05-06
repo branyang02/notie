@@ -1,5 +1,5 @@
 import { Pane } from 'evergreen-ui';
-import { atomOneLight, CopyBlock, nord } from 'react-code-blocks';
+import { atomOneLight, CodeBlock, CopyBlock, nord } from 'react-code-blocks';
 
 import { useDarkMode } from '../context/DarkModeContext';
 
@@ -21,14 +21,27 @@ const StaticCodeBlock = ({ code, language }: { code: string; language: string })
         {''}
         {language}
       </Pane>
-      <CopyBlock
-        text={code}
-        language={language}
-        showLineNumbers={false}
-        theme={darkMode ? nord : atomOneLight}
-        startingLineNumber={2}
-        customStyle={{ borderRadius: '0 0 10px 10px' }}
-      />
+      <div className="code-blocks">
+        {code.includes('\n') ? (
+          <CopyBlock
+            text={code}
+            language={language}
+            showLineNumbers={false}
+            theme={darkMode ? nord : atomOneLight}
+            startingLineNumber={0}
+            customStyle={{ borderRadius: '0 0 10px 10px' }}
+          />
+        ) : (
+          <CodeBlock
+            text={code}
+            language={language}
+            showLineNumbers={false}
+            theme={darkMode ? nord : atomOneLight}
+            startingLineNumber={0}
+            customStyle={{ borderRadius: '0 0 10px 10px' }}
+          />
+        )}
+      </div>
     </Pane>
   );
 };

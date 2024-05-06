@@ -1,6 +1,6 @@
 # NOTIE: Your personal note taking template!
 
-NOTIE is a note taking template based on **markdown**. It is designed to be minimalistic and easy to use.
+NOTIE is a note taking template based on **markdown**.
 
 ## Table of Contents
 
@@ -38,6 +38,8 @@ cd notie && npm install
 ```bash
 npm run dev
 ```
+
+Checkout 
 
 ## Showcase
 
