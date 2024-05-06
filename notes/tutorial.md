@@ -125,6 +125,15 @@ def hello_world():
 hello_world()
 ```
 
+```execute-c
+#include <stdio.h>
+
+int main() {
+    printf("Hello, World!\n");
+    return 0;
+}
+```
+
 #### LaTeX
 
 You can write LaTeX equations in your markdown file by wrapping the equation in double dollar signs. For example,
