@@ -60,7 +60,7 @@ Markdown is a lightweight markup language with plain-text-formatting syntax. Che
 
 ### Features and Documentation
 
-Checkout the [tutorial](https://notie-nine.vercel.app/notes/tutorial) for more information.
+Checkout the tutorial at the main demo page [https://notie-nine.vercel.app/](https://notie-nine.vercel.app/). 
 
 ## Deploy your notes (Vercel)
 
