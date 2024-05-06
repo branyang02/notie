@@ -17,7 +17,7 @@ import NoteToc from '../components/NoteToc';
 import StaticCodeBlock from '../components/StaticCodeBlock';
 import TikZ from '../components/TikZ';
 
-const modules = import.meta.glob('../notes/*.md', { as: 'raw' });
+const modules = import.meta.glob('../../notes/*.md', { as: 'raw' });
 
 type CodeProps = React.HTMLAttributes<HTMLElement> & {
   node?: unknown;
