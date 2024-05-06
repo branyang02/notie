@@ -17,6 +17,8 @@ import NoteToc from '../components/NoteToc';
 import StaticCodeBlock from '../components/StaticCodeBlock';
 import TikZ from '../components/TikZ';
 
+const modules = import.meta.glob('../notes/*.md', { as: 'raw' });
+
 type CodeProps = React.HTMLAttributes<HTMLElement> & {
   node?: unknown;
   inline?: boolean;
@@ -62,11 +64,12 @@ const Notes = () => {
 
   useEffect(() => {
     const fetchNote = async () => {
-      const rawFilePath = `../public/notes/${noteId}.md?raw`;
-      const module = await import(/* @vite-ignore */ rawFilePath);
-      const rawMDString = processMarkdown(module.default);
-
-      setMarkdownContent(rawMDString);
+      for (const path in modules) {
+        if (path.includes(noteId as string)) {
+          const rawMDString = String(modules[path]);
+          setMarkdownContent(processMarkdown(rawMDString));
+        }
+      }
     };
 
     fetchNote();
