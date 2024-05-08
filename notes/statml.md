@@ -1,4 +1,4 @@
-# Statistical Machine Learning
+# Example: Statistical Machine Learning
 
 ## Jansen's Inequality
 

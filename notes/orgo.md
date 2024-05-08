@@ -1,4 +1,4 @@
-# **Organic Chemistry 2**
+# Example: **Organic Chemistry 2**
 
 <span class="subtitle">
 Spring 2024

@@ -1,4 +1,4 @@
-# Algorithms
+# Example: Algorithms
 
 <span class="subtitle">
     Spring 2023
