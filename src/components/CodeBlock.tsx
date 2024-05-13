@@ -1,5 +1,9 @@
 import { cpp } from '@codemirror/lang-cpp';
+import { go } from '@codemirror/lang-go';
+import { java } from '@codemirror/lang-java';
+import { javascript } from '@codemirror/lang-javascript';
 import { python } from '@codemirror/lang-python';
+import { rust } from '@codemirror/lang-rust';
 import { indentUnit } from '@codemirror/language';
 import { duotoneLight } from '@uiw/codemirror-theme-duotone';
 import { tokyoNightStorm } from '@uiw/codemirror-theme-tokyo-night-storm';
@@ -17,7 +21,7 @@ import {
 import { useCallback, useRef, useState } from 'react';
 
 import { useDarkMode } from '../context/DarkModeContext';
-import { runCCode, RunCodeResponse, runPythonCode } from '../service/api';
+import { runCode, RunCodeResponse } from '../service/api';
 
 interface CodeBlockProps {
   initialCode: string;
@@ -33,8 +37,30 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ initialCode, language = 'python' 
   const editorRef = useRef<ReactCodeMirrorRef>(null);
   const { darkMode } = useDarkMode();
 
-  const runCode = language === 'c' ? runCCode : runPythonCode;
-  const languageCode = language === 'c' ? cpp() : python();
+  let languageCode;
+  switch (language) {
+    case 'c':
+    case 'cpp':
+      languageCode = cpp();
+      break;
+    case 'go':
+      languageCode = go();
+      break;
+    case 'java':
+      languageCode = java();
+      break;
+    case 'rust':
+      languageCode = rust();
+      break;
+    case 'javascript':
+    case 'js':
+    case 'typescript':
+      languageCode = javascript();
+      break;
+
+    default:
+      languageCode = python();
+  }
 
   const onChange = useCallback((value: string) => {
     setCode(value);
@@ -43,7 +69,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ initialCode, language = 'python' 
   const runCodeAsync = async () => {
     setIsLoading(true);
     try {
-      const data: RunCodeResponse = await runCode(code);
+      const data: RunCodeResponse = await runCode(code, language);
       if (
         data.output.trim().startsWith('Traceback') ||
         data.output.trim().startsWith('File') ||
