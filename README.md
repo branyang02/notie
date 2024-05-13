@@ -2,6 +2,10 @@
 
 NOTIE is a note taking template based on **markdown**.
 
+## Updates
+
+5/13/2024: Updated the list of supported languages for the live coding feature at https://notie-nine.vercel.app/notes/programming.
+
 ## Table of Contents
 
 - [Features](#features)
