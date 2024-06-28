@@ -4,46 +4,43 @@ NOTIE is a simple and lightweight note-taking app that allows you to write and p
 
 ## Download and Setup
 
-1. Clone the repository
+1. Visual Studio Code
+
+We recommend using [Visual Studio Code](https://code.visualstudio.com/) to write your notes. Once downloaded, click `Terminal`, and then `New Terminal` to open up a terminal session.
+
+2. Clone the repository
+
+Enter the following command in the new terminal session:
 
 ```bash
 git clone https://github.com/branyang02/notie.git
 ```
 
-2. Install the required dependencies
+3. Install dependencies
 
 ```bash
 cd notie && npm install
 ```
 
-3. Start the development server and preview your notes!
+4. Start the local notie server
 
 ```bash
 npm run dev
 ```
 
-The terminal process should tell you to open the link, which is usually `http://localhost:3000`. Open the link in your browser to start writing notes.
+The terminal process should tell you to open the link, which is usually `http://localhost:3000`. Open the link in your browser to see your notes in action!
 
 ## Writing Notes
 
-Once you have cloned the `notie` repo, navigate to `notie/notes` where you can see all the markdown files. Create a new markdown file and start writing your notes!
+Navigate to `notie/notes` where you can see all the existing markdown files. Create a new markdown file and start writing! You will see that the broswer live updates as you write your notes.
 
 ## Best Practice
 
-You can use **any** code editor (vim, notepad, whatever) to edie you `.md` files, however, I recommend using [Visual Studio Code](https://code.visualstudio.com/) for the best experience.
+The best part about VS Code with notie is the availbility of GitHub Copilot, free for students to use. This AI tool will shorten your note taking time by **a lot**, as it scans through your note and suggest smart auto completes. You can download and enable GitHub Copilot by going to `Extensions` in VS Code and search for `GitHub Copilot`.
 
-### VS Code Setup
+## Notie Features
 
-1. Open an integrated terminal and run the commands above to start a local server.
-2. Create a new markdown file in the `notes` directory.
-3. Search for a "Simple Browser: Show" in the command palette and click on it, and enter the local dev link (usually `http://localhost:3000`).
-4. Start writing your notes in the markdown file and see the preview in real-time.
-
-<img width="1624" alt="image" src="https://github.com/branyang02/notie/assets/107154811/13466b3d-14e4-498d-a51a-8c377aeb8d84">
-
-There's no need to reinvent the wheel. Use the tools that VS Code offers to make your note-taking experience more enjoyable. I personally love using GitHub Copilot to generate code snippets and Markdown Preview Enhanced to preview my notes. Search for these extensions in the VS Code marketplace and install them to enhance your note-taking experience.
-
-## Features
+In the following sections, we give a brief overview of everything that notie offers. You can also check out the numerous example note files in the `notie/notes` directory.
 
 ### Markdown
 
