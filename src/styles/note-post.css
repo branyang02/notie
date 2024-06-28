@@ -36,13 +36,11 @@
 
 @media screen and (max-width: 1100px) {
   .vector-column-start {
-    display: none
+    display: none;
   }
 }
 
-
 @media screen and (min-width: 1100px) {
-
   .vector-column-start,
   .vector-column-end {
     border-top: 1px solid transparent;
@@ -94,7 +92,6 @@
   font-size: 1.3em;
 }
 
-
 .katex {
   font-size: 1.25em;
 }
@@ -116,7 +113,6 @@
   margin-top: 20px;
   margin-bottom: 20px;
 }
-
 
 /* Table Styles */
 .blog-content table {
@@ -145,8 +141,7 @@
   margin: 20px auto;
 }
 
-
-.blog-content input[type="checkbox"] {
+.blog-content input[type='checkbox'] {
   margin-right: 10px;
 }
 
@@ -164,7 +159,6 @@
   color: #777777;
   text-decoration: underline;
 }
-
 
 /* Caption Styles */
 .caption {
@@ -234,7 +228,7 @@
 /* Definition */
 .blog-content blockquote.definition::before {
   color: #31dd2e;
-  content: "Definition";
+  content: 'Definition';
 }
 
 .blog-content blockquote.definition {
@@ -245,7 +239,7 @@
 /* Proof */
 .blog-content blockquote.proof::before {
   color: #31dd2e;
-  content: "Proof";
+  content: 'Proof';
 }
 
 .blog-content blockquote.proof {
@@ -256,7 +250,7 @@
 /* Equation */
 .blog-content blockquote.equation::before {
   color: #486bd5;
-  content: "Equation";
+  content: 'Equation';
 }
 
 .blog-content blockquote.equation {
@@ -264,11 +258,10 @@
   border-left: 5px solid #486bd5;
 }
 
-
 /* Theorem */
 .blog-content blockquote.theorem::before {
   color: #486bd5;
-  content: "Theorem";
+  content: 'Theorem';
 }
 
 .blog-content blockquote.theorem {
@@ -276,12 +269,10 @@
   border-left: 5px solid #486bd5;
 }
 
-
-
 /* Important */
 .blog-content blockquote.important::before {
   color: #dd2e2e;
-  content: "Important";
+  content: 'Important';
 }
 
 .blog-content blockquote.important {
@@ -292,7 +283,7 @@
 /* Example */
 .blog-content blockquote.example::before {
   color: #555555;
-  content: "Example";
+  content: 'Example';
 }
 
 .blog-content blockquote.example {
@@ -300,19 +291,15 @@
   border-left: 5px solid #555555;
 }
 
-
 body.dark-mode .blog-content blockquote.example::before {
   color: #cfcdcd;
-  content: "Example";
+  content: 'Example';
 }
 
 body.dark-mode .blog-content blockquote.example {
   background: #444;
   border-left: 5px solid #cfcdcd;
 }
-
-
-
 
 body.dark-mode {
   background-color: #333;
@@ -359,7 +346,7 @@ body.dark-mode .caption {
 }
 
 body.dark-mode .note-postHeading {
-  color: #E4E7EB;
+  color: #e4e7eb;
 }
 
 .BlogCard {
@@ -371,15 +358,15 @@ body.dark-mode .note-postHeading {
 }
 
 body.dark-mode .BlogCard {
-  background-color: gray
+  background-color: gray;
 }
 
 body.dark-mode .blog-content th {
-  background-color: hsla(0, 0%, 93%, .2);
+  background-color: hsla(0, 0%, 93%, 0.2);
 }
 
 .blog-content code:not([class]):not(.code-blocks code) {
-  padding: .2em .4em;
+  padding: 0.2em 0.4em;
   margin: 0;
   font-size: 85%;
   white-space: break-spaces;
@@ -389,7 +376,7 @@ body.dark-mode .blog-content th {
 }
 
 body.dark-mode .blog-content code:not([class]):not(.code-blocks code) {
-  padding: .2em .4em;
+  padding: 0.2em 0.4em;
   margin: 0;
   font-size: 85%;
   white-space: break-spaces;

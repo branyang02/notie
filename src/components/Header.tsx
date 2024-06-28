@@ -1,4 +1,4 @@
-import { Avatar, Heading, majorScale, Pane } from 'evergreen-ui';
+import { Heading, majorScale, Pane } from 'evergreen-ui';
 import { useNavigate } from 'react-router-dom';
 
 import { useDarkMode } from '../context/DarkModeContext';

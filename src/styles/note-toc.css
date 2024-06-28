@@ -1,17 +1,17 @@
 .note-toc {
-    position: sticky;
-    top: 0;
-    overflow-y: auto;
-    max-height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+  max-height: 100vh;
 }
 
 .note-toc a {
-    color: #172b41;
-    text-decoration: none;
+  color: #172b41;
+  text-decoration: none;
 }
 
 .note-toc a:hover,
 .note-toc a:focus {
-    color: #777777;
-    text-decoration: underline;
+  color: #777777;
+  text-decoration: underline;
 }

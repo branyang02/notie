@@ -1,5 +1,6 @@
-html, body {
-  height: 100%; 
+html,
+body {
+  height: 100%;
   margin: 0;
   padding: 0;
 }
@@ -11,8 +12,8 @@ html, body {
 }
 
 .main-content {
-  flex: 1; 
-  box-sizing: border-box; 
+  flex: 1;
+  box-sizing: border-box;
 }
 
 :root {
@@ -21,7 +22,6 @@ html, body {
 
   --link: #2a0b0b;
 }
-
 
 .custom-padding {
   max-width: 1100px;
