@@ -5,10 +5,10 @@
       "use": "@vercel/static-build"
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "destination": "/demo-app/dist/index.html"
+      "src": "/(.*)",
+      "dest": "/demo-app/$1"
     }
   ]
 }
