@@ -1,4 +1,5 @@
 {
+  "installCommand": "cd demo-app && npm install",
   "buildCommand": "cd demo-app && npm run build",
   "outputDirectory": "demo-app/dist",
   "rewrites": [
