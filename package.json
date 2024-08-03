@@ -45,7 +45,6 @@
     "bootstrap": "^5.3.3",
     "evergreen-ui": "^7.1.9",
     "katex": "^0.16.11",
-    "npm-version-git": "^2.2.1",
     "react": "^18.3.1",
     "react-code-blocks": "^0.1.6",
     "react-dom": "^18.3.1",
