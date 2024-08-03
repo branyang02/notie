@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Button,
   IconButton,
@@ -7,8 +7,8 @@ import {
   Menu,
   Position,
   Text,
-} from "evergreen-ui";
-import { useNavigate } from "react-router-dom";
+} from 'evergreen-ui';
+import { useNavigate } from 'react-router-dom';
 
 const NavMobileMenu = ({ tabs }: { tabs: string[] }) => {
   const navigate = useNavigate();
@@ -17,14 +17,14 @@ const NavMobileMenu = ({ tabs }: { tabs: string[] }) => {
     let path: string;
 
     switch (tab) {
-      case "Home":
-        path = "/";
+      case 'Home':
+        path = '/';
         break;
-      case "Relevant Coursework":
-        path = "/coursework";
+      case 'Relevant Coursework':
+        path = '/coursework';
         break;
       default:
-        path = `/${tab.toLowerCase().replace(/\s+/g, "")}`;
+        path = `/${tab.toLowerCase().replace(/\s+/g, '')}`;
         break;
     }
 
@@ -51,38 +51,32 @@ const NavMobileMenu = ({ tabs }: { tabs: string[] }) => {
   );
 };
 
-const NavButton = ({
-  label,
-  darkMode,
-}: {
-  label: string;
-  darkMode: boolean;
-}) => {
+const NavButton = ({ label, darkMode }: { label: string; darkMode: boolean }) => {
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
 
   const buttonStyle: React.CSSProperties = {
-    backgroundColor: darkMode && isHovered ? "#444" : "transparent",
-    transition: "background-color 0.3s ease",
+    backgroundColor: darkMode && isHovered ? '#444' : 'transparent',
+    transition: 'background-color 0.3s ease',
   };
 
   const defaultStyle: React.CSSProperties = {
-    WebkitFontSmoothing: "antialiased",
-    appearance: "none",
+    WebkitFontSmoothing: 'antialiased',
+    appearance: 'none',
   };
 
   const handleClick = () => {
     let path: string;
 
     switch (label) {
-      case "Home":
-        path = "/";
+      case 'Home':
+        path = '/';
         break;
-      case "Relevant Coursework":
-        path = "/coursework";
+      case 'Relevant Coursework':
+        path = '/coursework';
         break;
       default:
-        path = `/${label.toLowerCase().replace(/\s+/g, "")}`;
+        path = `/${label.toLowerCase().replace(/\s+/g, '')}`;
         break;
     }
 
@@ -97,7 +91,7 @@ const NavButton = ({
       onClick={handleClick}
       style={darkMode ? buttonStyle : defaultStyle}
     >
-      <Text size={500} color={darkMode ? "tint2" : "default"}>
+      <Text size={500} color={darkMode ? 'tint2' : 'default'}>
         {label}
       </Text>
     </Button>

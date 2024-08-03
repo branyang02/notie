@@ -17,7 +17,7 @@ npm install notie-markdown
 Then, import the `Notie` component in your React application:
 
 ```typescript
-import { Notie } from "notie-markdown";
+import { Notie } from 'notie-markdown';
 
 const markdownContent = `# Hello, World!`;
 

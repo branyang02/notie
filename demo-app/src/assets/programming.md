@@ -108,20 +108,6 @@ const n = 10;
 console.log(fibonacci(n));
 ```
 
-## TypeScript
-
-```execute-typescript
-function fibonacci(n: number): number {
-    if (n <= 1) {
-        return n;
-    }
-    return fibonacci(n - 1) + fibonacci(n - 2);
-}
-
-const n: number = 10;
-console.log(fibonacci(n));
-```
-
 ## Bash
 
 ```execute-bash
@@ -142,19 +128,6 @@ n=10
 
 result=$(fibonacci $n)
 echo "$result"
-```
-
-## CoffeeScript
-
-```execute-coffeescript
-fibonacci = (n) ->
-    if n <= 1
-        n
-    else
-        fibonacci(n - 1) + fibonacci(n - 2)
-
-n = 10
-console.log fibonacci(n)
 ```
 
 ## Ruby

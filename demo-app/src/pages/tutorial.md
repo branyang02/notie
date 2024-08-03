@@ -350,12 +350,7 @@ This generates the following:
 Or you can use raw html to include images with custom sizes:
 
 ```html
-<img
-  src="https://via.placeholder.com/250"
-  alt="Alt text"
-  width="250"
-  height="250"
-/>
+<img src="https://via.placeholder.com/250" alt="Alt text" width="250" height="250" />
 ```
 
 This generates the following:

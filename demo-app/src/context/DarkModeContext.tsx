@@ -1,37 +1,27 @@
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 type DarkModeContextType = {
   darkMode: boolean;
   toggleDarkMode: () => void;
 };
 
-const DarkModeContext = createContext<DarkModeContextType | undefined>(
-  undefined
-);
+const DarkModeContext = createContext<DarkModeContextType | undefined>(undefined);
 
-export const DarkModeProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+export const DarkModeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     // Get saved mode from localStorage or determine based on time of day
-    const savedMode = localStorage.getItem("darkMode");
+    const savedMode = localStorage.getItem('darkMode');
     if (savedMode === null) {
       // If no saved preference, use the time of day to determine initial mode
       const currentHour = new Date().getHours();
       return currentHour >= 18 || currentHour < 6;
     }
-    return savedMode === "true";
+    return savedMode === 'true';
   });
 
   useEffect(() => {
     // Save the dark mode preference to localStorage
-    localStorage.setItem("darkMode", darkMode.toString());
+    localStorage.setItem('darkMode', darkMode.toString());
   }, [darkMode]);
 
   const toggleDarkMode = () => {
@@ -48,7 +38,7 @@ export const DarkModeProvider: React.FC<{ children: ReactNode }> = ({
 export const useDarkMode = () => {
   const context = useContext(DarkModeContext);
   if (context === undefined) {
-    throw new Error("useDarkMode must be used within a DarkModeProvider");
+    throw new Error('useDarkMode must be used within a DarkModeProvider');
   }
   return context;
 };

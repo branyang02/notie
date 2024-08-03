@@ -1,15 +1,15 @@
-import { Notie } from "notie-markdown";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useDarkMode } from "../context/DarkModeContext";
+import { Notie } from 'notie-markdown';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useDarkMode } from '../context/DarkModeContext';
 
-const modules = import.meta.glob("../assets/**.md", {
-  query: "?raw",
-  import: "default",
+const modules = import.meta.glob('../assets/**.md', {
+  query: '?raw',
+  import: 'default',
 });
 
 const ExamplePage = () => {
-  const [markdownContent, setMarkdownContent] = useState<string>("");
+  const [markdownContent, setMarkdownContent] = useState<string>('');
   const { noteId } = useParams();
   const { darkMode } = useDarkMode();
 
