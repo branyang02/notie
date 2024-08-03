@@ -5,11 +5,10 @@
       "use": "@vercel/static-build"
     }
   ],
-  "redirects": [
+  "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/demo-app/$1",
-      "permanent": true
+      "destination": "/demo-app/index.html"
     }
   ]
 }
