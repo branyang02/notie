@@ -2,10 +2,7 @@
   "builds": [
     {
       "src": "demo-app/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "demo-app/dist"
-      }
+      "use": "@vercel/static-build"
     }
   ],
   "routes": [
