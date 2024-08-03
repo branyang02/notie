@@ -1,17 +1,14 @@
 {
   "builds": [
     {
-      "src": "demo-app/vite.config.js",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "demo-app/dist"
-      }
+      "src": "demo-app/package.json",
+      "use": "@vercel/node"
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "destination": "/demo-app/$1"
+      "src": "/(.*)",
+      "dest": "/demo-app/$1"
     }
   ]
 }

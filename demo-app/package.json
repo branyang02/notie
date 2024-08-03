@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "notie-markdown": "file:../",
+    "notie-markdown": "^1.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.0"
