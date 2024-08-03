@@ -4,7 +4,7 @@
       "src": "demo-app/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "buildCommand": "npm run build"
+        "buildCommand": "npm run builddfdfd"
       }
     }
   ],
