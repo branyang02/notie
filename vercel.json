@@ -1,3 +1,14 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/demo-app/$1"
+    }
+  ],
+  "builds": [
+    {
+      "src": "demo-app/package.json",
+      "use": "@vercel/node"
+    }
+  ]
 }
