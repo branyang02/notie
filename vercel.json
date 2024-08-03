@@ -1,8 +1,17 @@
 {
+  "builds": [
+    {
+      "src": "demo-app/vite.config.js",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "demo-app/dist"
+      }
+    }
+  ],
   "rewrites": [
     {
-      "source": "/demo-app(.*)",
-      "destination": "/demo-app"
+      "source": "/(.*)",
+      "destination": "/demo-app/$1"
     }
   ]
 }
