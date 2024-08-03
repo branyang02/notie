@@ -10,5 +10,11 @@
       "src": "/(.*)",
       "dest": "/demo-app/$1"
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/demo-app/(.*)",
+      "destination": "/demo-app"
+    }
   ]
 }
