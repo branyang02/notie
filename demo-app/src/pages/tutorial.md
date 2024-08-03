@@ -1,12 +1,12 @@
-# NOTIE Turotial
+# **notie** Turotial
 
-## Notie Features
+## **notie** Features
 
 ### Markdown
 
 #### Title and headings
 
-Notie automatically generates the title and the table of contents based on the headings in your markdown file. You can use the following syntax to create headings:
+**notie** automatically generates the title and the table of contents based on the headings in your markdown file. You can use the following syntax to create headings:
 
 ```markdown
 `# Title`
@@ -66,7 +66,7 @@ This generates the following:
 
 #### Code blocks
 
-NOTIE supports both static code blocks, and **live**, **editable**, and **runnable** code blocks.
+**notie** supports both static code blocks, and **live**, **editable**, and **runnable** code blocks.
 
 To create a static code block, wrap your code in triple backticks and specify the language, which creates the following:
 
@@ -206,7 +206,7 @@ You can create TikZ diagrams in your markdown file by including `tikz` after the
 ```
 
 <span class="caption">
-Source: https://texample.net/tikz/examples/merge-sort-recursion-tree/
+<a href="https://texample.net/tikz/examples/merge-sort-recursion-tree/">Source</a>
 </span>
 
 Note that this uses an external library which requires an internet connection to render the diagram.
@@ -313,7 +313,7 @@ This generates the following:
 | Row 2    | Row 2    | Row 2    |
 | Row 3    | Row 3    | Row 3    |
 
-Notie offers `small-table` and `xsmall-table` css classes to create smaller tables. For example,
+**notie** offers `small-table` and `xsmall-table` css classes to create smaller tables. For example,
 
 <div class="small-table">
 
