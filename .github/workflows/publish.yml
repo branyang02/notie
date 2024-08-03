@@ -37,7 +37,12 @@ jobs:
           else
             echo "bump=patch" >> $GITHUB_ENV
           fi
-          NEW_VERSION=$(npm version ${{ env.bump }} --no-git-tag-version | grep 'version' | awk '{ print $2 }')
+
+      - name: Bump version
+        id: bump_version
+        run: |
+          npm version ${{ env.bump }} --no-git-tag-version
+          NEW_VERSION=$(node -p "require('./package.json').version")
           echo "new_version=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Build the package
