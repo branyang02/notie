@@ -1,10 +1,6 @@
 {
-  "builds": [
-    {
-      "src": "demo-app/package.json",
-      "use": "@vercel/static-build"
-    }
-  ],
+  "buildCommand": "cd demo-app && npm run build",
+  "outputDirectory": "demo-app/dist",
   "rewrites": [
     {
       "source": "/(.*)",
