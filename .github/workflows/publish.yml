@@ -37,9 +37,8 @@ jobs:
           else
             echo "bump=patch" >> $GITHUB_ENV
           fi
-
-      - name: Bump version
-        run: npm version ${{ env.bump }} --no-git-tag-version
+          NEW_VERSION=$(npm version ${{ env.bump }} --no-git-tag-version | grep 'version' | awk '{ print $2 }')
+          echo "new_version=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Build the package
         run: npm run build
@@ -54,7 +53,7 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git add package.json
-          git commit -m "ci: bump version to ${{ steps.version_bump.outputs.new_version }}"
+          git commit -m "ci: bump version to ${{ env.new_version }}"
           git push origin HEAD:main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
