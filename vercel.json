@@ -1,14 +1,11 @@
 {
-  "builds": [
+  "installCommand": "cd demo-app && npm install",
+  "buildCommand": "cd demo-app && npm run build",
+  "outputDirectory": "demo-app/dist",
+  "rewrites": [
     {
-      "src": "demo-app/package.json",
-      "use": "@vercel/static-build"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/demo-app/(.*)",
-      "dest": "/demo-app/$1"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
