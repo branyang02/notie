@@ -1,37 +1,48 @@
-import { Pane, majorScale } from "evergreen-ui";
-import { Notie } from "notie-markdown";
-import NavBar from "./components/NavBar";
-import { useDarkMode } from "./context/DarkModeContext";
-import { Route, Routes } from "react-router-dom";
-import Examples from "./pages/Examples";
-import ExamplePage from "./pages/ExamplePage";
+import { Pane, majorScale } from 'evergreen-ui';
+import { Notie } from 'notie-markdown';
+import NavBar from './components/NavBar';
+import { useDarkMode } from './context/DarkModeContext';
+import { Route, Routes } from 'react-router-dom';
+import Examples from './pages/Examples';
+import ExamplePage from './pages/ExamplePage';
+import { useEffect, useState } from 'react';
 
-const homeModule = import.meta.glob("./pages/home.md", {
-  query: "?raw",
-  import: "default",
+const homeModule = import.meta.glob('./pages/home.md', {
+  query: '?raw',
+  import: 'default',
 });
 
-const HOMECONTENT = (await homeModule[Object.keys(homeModule)[0]]()) as string;
-
-const tutorialModule = import.meta.glob("./pages/tutorial.md", {
-  query: "?raw",
-  import: "default",
+const tutorialModule = import.meta.glob('./pages/tutorial.md', {
+  query: '?raw',
+  import: 'default',
 });
-
-const TUTORIALCONTENT = (await tutorialModule[
-  Object.keys(tutorialModule)[0]
-]()) as string;
 
 const App = () => {
   const { darkMode } = useDarkMode();
+  const [homeContent, setHomeContent] = useState<string>('');
+  const [tutorialContent, setTutorialContent] = useState<string>('');
+
+  useEffect(() => {
+    async function fetchContent() {
+      const newhomeContent = (await homeModule[Object.keys(homeModule)[0]]()) as string;
+      const newtutorialContent = (await tutorialModule[
+        Object.keys(tutorialModule)[0]
+      ]()) as string;
+
+      setHomeContent(newhomeContent);
+      setTutorialContent(newtutorialContent);
+    }
+
+    fetchContent();
+  }, []);
 
   return (
     <Pane
-      background={darkMode ? "#333" : "white"}
+      background={darkMode ? '#333' : 'white'}
       style={{
-        display: "flex",
-        flexDirection: "column",
-        minHeight: "100vh",
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
       }}
     >
       <NavBar />
@@ -48,12 +59,12 @@ const App = () => {
           <Routes>
             <Route
               path="/"
-              element={<Notie markdown={HOMECONTENT} darkMode={darkMode} />}
+              element={<Notie markdown={homeContent} darkMode={darkMode} />}
             />
             <Route path="/examples" element={<Examples />} />
             <Route
               path="/tutorial"
-              element={<Notie markdown={TUTORIALCONTENT} darkMode={darkMode} />}
+              element={<Notie markdown={tutorialContent} darkMode={darkMode} />}
             />
             <Route path="/examples/:noteId" element={<ExamplePage />} />
           </Routes>
