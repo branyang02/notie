@@ -4,7 +4,6 @@
       "src": "demo-app/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "demo-app/dist",
         "buildCommand": "npm run build"
       }
     }
