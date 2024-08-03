@@ -1,46 +1,6 @@
 # NOTIE Turotial
 
-NOTIE is a simple and lightweight note-taking app that allows you to write and preview your notes in real-time. It supports Markdown, LaTeX, TikZ diagrams, and more.
-
-## Download and Setup
-
-1. Visual Studio Code
-
-We recommend using [Visual Studio Code](https://code.visualstudio.com/) to write your notes. Once downloaded, click `Terminal`, and then `New Terminal` to open up a terminal session.
-
-2. Clone the repository
-
-Enter the following command in the new terminal session:
-
-```bash
-git clone https://github.com/branyang02/notie.git
-```
-
-3. Install dependencies
-
-```bash
-cd notie && npm install
-```
-
-4. Start the local notie server
-
-```bash
-npm run dev
-```
-
-The terminal process should tell you to open the link, which is usually `http://localhost:3000`. Open the link in your browser to see your notes in action!
-
-## Writing Notes
-
-Navigate to `notie/notes` where you can see all the existing markdown files. Create a new markdown file and start writing! You will see that the broswer live updates as you write your notes.
-
-## Best Practice
-
-The best part about VS Code with notie is the availbility of GitHub Copilot, free for students to use. This AI tool will shorten your note taking time by **a lot**, as it scans through your note and suggest smart auto completes. You can download and enable GitHub Copilot by going to `Extensions` in VS Code and search for `GitHub Copilot`.
-
 ## Notie Features
-
-In the following sections, we give a brief overview of everything that notie offers. You can also check out the numerous example note files in the `notie/notes` directory.
 
 ### Markdown
 
@@ -390,7 +350,12 @@ This generates the following:
 Or you can use raw html to include images with custom sizes:
 
 ```html
-<img src="https://via.placeholder.com/250" alt="Alt text" width="250" height="250" />
+<img
+  src="https://via.placeholder.com/250"
+  alt="Alt text"
+  width="250"
+  height="250"
+/>
 ```
 
 This generates the following:

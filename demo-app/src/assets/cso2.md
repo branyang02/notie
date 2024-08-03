@@ -8,46 +8,31 @@ Date: 5/1/2024 | Author: Brandon Yang
 
 These are my notes for Computer Systems and Organization 2 (CSO2) at the University of Virginia in the Spring 2024 semester taught by Charles Reiss. This note contains live code examples and explanations for various topics in the course.
 
-<!-- ```tikz
-\begin{tikzpicture}
-  \def \n {5}
-  \def \radius {3cm}
-  \def \margin {8} % margin in angles, depends on the radius
-
-  \foreach \s in {1,...,\n}
-  {
-    \node[draw, circle] at ({360/\n * (\s - 1)}:\radius) {$\s$};
-    \draw[->, >=latex] ({360/\n * (\s - 1)+\margin}:\radius)
-      arc ({360/\n * (\s - 1)+\margin}:{360/\n * (\s)-\margin}:\radius);
-  }
-\end{tikzpicture}
-``` -->
-
 ## **Building**
 
 ### **Compilation**
 
-- `clang` / `gcc` flags:
-  - compile only: `clang -S foo.c` (output: `foo.s`)
-  - assemble only: `clang -c foo.s` (output: `foo.o`)
-  - **compile and assemble**: `clang -c foo.c` (output: `foo.o`)
-  - link only: `clang foo.o bar.o` (output: `a.out`)
-  - compile, assemble, and link: `clang foo.c bar.c` (output: `a.out`)
-  - **compile, assemble, and link**: `clang foo.c bar.c -o myprog` (output: `myprog`)
+-   `clang` / `gcc` flags:
+    -   compile only: `clang -S foo.c` (output: `foo.s`)
+    -   assemble only: `clang -c foo.s` (output: `foo.o`)
+    -   **compile and assemble**: `clang -c foo.c` (output: `foo.o`)
+    -   link only: `clang foo.o bar.o` (output: `a.out`)
+    -   compile, assemble, and link: `clang foo.c bar.c` (output: `a.out`)
+    -   **compile, assemble, and link**: `clang foo.c bar.c -o myprog` (output: `myprog`)
 
 ### **Static Libraries**
 
-- **Become part of executable (archive of .o files).**
-- Create a static library `libfoo.a`: `ar rcs libfoo.a foo.o bar.o`
-- Link with a static library: `cc -o myprog foo.c bar.c -L/path/to/lib -lfoo`
+-   **Become part of executable (archive of .o files).**
+-   Create a static library `libfoo.a`: `ar rcs libfoo.a foo.o bar.o`
+-   Link with a static library: `cc -o myprog foo.c bar.c -L/path/to/lib -lfoo`
 
 ### **Dynamic Libraries**
 
-- **Loaded when executable starts.**
-- Create a shared library:
-  1. Compile with `-fPIC`: `cc -c -fPIC foo.c bar.c` (output: `foo.o`, `bar.o`)
-  2. Link with `-shared` to create `libfoo.so`: `cc -shared -o libfoo.so foo.o bar.o`
-- Link with a shared library: `cc -o myprog foo.c bar.c -L/path/to/lib -lfoo`
+-   **Loaded when executable starts.**
+-   Create a shared library:
+    1. Compile with `-fPIC`: `cc -c -fPIC foo.c bar.c` (output: `foo.o`, `bar.o`)
+    2. Link with `-shared` to create `libfoo.so`: `cc -shared -o libfoo.so foo.o bar.o`
+-   Link with a shared library: `cc -o myprog foo.c bar.c -L/path/to/lib -lfoo`
 
 ### **Makefile**
 
@@ -56,7 +41,7 @@ target: dependencies
     command
 ```
 
-- make runs `command` if `target` is older than any of the `dependencies`.
+-   make runs `command` if `target` is older than any of the `dependencies`.
 
 ```makefile
 CC = clang
@@ -84,8 +69,8 @@ clean:
 .PHONY: clean
 ```
 
-- Macros: `CC`, `CFLAGS`, `LDFLAGS`
-- `PHONY` target: `clean` (not a file)
+-   Macros: `CC`, `CFLAGS`, `LDFLAGS`
+-   `PHONY` target: `clean` (not a file)
 
 <details><summary>Practice</summary>
 
@@ -100,12 +85,12 @@ Y: X, Z
 
 To make sure `W` is up to date, we need to:
 
-- Make sure `X` is up to date.
-  - Make sure `Q` is up to date.
-- Make sure `Y` is up to date.
-  - Make sure `X` is up to date.
-    - Make sure `Q` is up to date.
-  - Make sure `Z` is up to date.
+-   Make sure `X` is up to date.
+    -   Make sure `Q` is up to date.
+-   Make sure `Y` is up to date.
+    -   Make sure `X` is up to date.
+        -   Make sure `Q` is up to date.
+    -   Make sure `Z` is up to date.
 
 In summary, Makefile follows the dependency graph to ensure all dependencies are up to date.
 
@@ -127,9 +112,9 @@ main.o: main.c main.h extra.h
     $(CC) $(CFLAGS) -o $@ -c $<
 ```
 
-- `$@`: target
-- `$^`: all dependencies
-- `$<`: first dependency
+-   `$@`: target
+-   `$^`: all dependencies
+-   `$<`: first dependency
 
 To build any file ending in `.o`, make should look for a `.c` file with the same stem (the part before the extension) and use the command specified in the rule to compile the `.c` file into an `.o` file.
 
@@ -139,7 +124,7 @@ $(CC) $(CFLAGS) -o $@ -c $<
 
 ```
 
-- `%`: wildcard
+-   `%`: wildcard
 
 #### **Built-in rules**
 
@@ -181,75 +166,75 @@ extra.o: extra.c extra.h
 
 ### **User IDs**
 
-- **User ID (UID)**: unique identifier for a user.
-- Every process has a user ID.
-- User ID used to decide what process is authorized to do.
+-   **User ID (UID)**: unique identifier for a user.
+-   Every process has a user ID.
+-   User ID used to decide what process is authorized to do.
 
 ### **Group IDs**
 
-- **Group ID (GID)**: unique identifier for a group.
+-   **Group ID (GID)**: unique identifier for a group.
 
 ### **File Permissions**
 
-- 2 types
-  - Access control list (ACL): list of permissions attached to an object.
-  - `chmod` style permissions.
-- Each file has the following permissions:
-  - User permissions
-  - Group permissions
-  - Other permissions
-- Each permission can be one of the following:
-  - **Read (r)**: read the contents of the file.
-  - **Write (w)**: modify the contents of the file.
-  - **Execute (x)**: execute the file as a program. (For directories, search the directory.)
+-   2 types
+    -   Access control list (ACL): list of permissions attached to an object.
+    -   `chmod` style permissions.
+-   Each file has the following permissions:
+    -   User permissions
+    -   Group permissions
+    -   Other permissions
+-   Each permission can be one of the following:
+    -   **Read (r)**: read the contents of the file.
+    -   **Write (w)**: modify the contents of the file.
+    -   **Execute (x)**: execute the file as a program. (For directories, search the directory.)
 
 #### **Permissions Encoding**
 
-- separated into 3 groups of 3 bits each.
-  - user, group, other
-- Example:
-  - User can read, write, and execute. Group can read and execute Other can read.
-    - **Symbolic notation**: `rwxr-xr--`
-    - **Octal notation**: `754`
-    - **Binary notation**: `111101100`
+-   separated into 3 groups of 3 bits each.
+    -   user, group, other
+-   Example:
+    -   User can read, write, and execute. Group can read and execute Other can read.
+        -   **Symbolic notation**: `rwxr-xr--`
+        -   **Octal notation**: `754`
+        -   **Binary notation**: `111101100`
 
 ### **Changing Permissions**
 
-- **Symbolic notation**:
-  - `chmod u+x file`: add execute permission for user.
-  - `chmod g-w file`: remove write permission for group.
-  - `chmod o=r file`: set read permission for other.
-  - `chmod a=rwx file`: set read, write, and execute permission for all.
-  - `chmod u=rw,go=r file`: set read and write permission for user, read permission for group and other.
-- **Octal notation**:
-  - `chmod 754 file`: set permissions to `rwxr-xr--`.
+-   **Symbolic notation**:
+    -   `chmod u+x file`: add execute permission for user.
+    -   `chmod g-w file`: remove write permission for group.
+    -   `chmod o=r file`: set read permission for other.
+    -   `chmod a=rwx file`: set read, write, and execute permission for all.
+    -   `chmod u=rw,go=r file`: set read and write permission for user, read permission for group and other.
+-   **Octal notation**:
+    -   `chmod 754 file`: set permissions to `rwxr-xr--`.
 
 #### **POSIX ACL Syntax**
 
-- **Symbolic notation**:
-  - `getfacl file`: get ACL for file.
-  - `setfacl -m u:brandon:rw file`: set read and write permission for user `brandon`.
-  - `setfacl -m g:staff:r file`: set read permission for group `staff`.
-  - `setfacl -m o::r file`: set read permission for other.
-  - `setfacl -m u::rwx,g::r-x,o::r-- file`: set read, write, and execute permission for user, read and execute permission for group, read permission for other.
-- **Octal notation**:
-  - `setfacl -m u::7 file`: set read, write, and execute permission for user.
-  - `setfacl -m g::5 file`: set read and execute permission for group.
-  - `setfacl -m o::4 file`: set read permission for other.
+-   **Symbolic notation**:
+    -   `getfacl file`: get ACL for file.
+    -   `setfacl -m u:brandon:rw file`: set read and write permission for user `brandon`.
+    -   `setfacl -m g:staff:r file`: set read permission for group `staff`.
+    -   `setfacl -m o::r file`: set read permission for other.
+    -   `setfacl -m u::rwx,g::r-x,o::r-- file`: set read, write, and execute permission for user, read and execute permission for group, read permission for other.
+-   **Octal notation**:
+    -   `setfacl -m u::7 file`: set read, write, and execute permission for user.
+    -   `setfacl -m g::5 file`: set read and execute permission for group.
+    -   `setfacl -m o::4 file`: set read permission for other.
 
 #### **Superuser**
 
-- **Superuser**: user with special privileges (user ID = 0).
-- **Root**: superuser on Unix-like systems.
-- **sudo**: run a command as the superuser.
+-   **Superuser**: user with special privileges (user ID = 0).
+-   **Root**: superuser on Unix-like systems.
+-   **sudo**: run a command as the superuser.
 
 ## **Kernel + System Calls**
 
 ### **Kernel Mode vs. User Mode**
 
-- **Kernel mode**: unrestricted access to hardware.
-- **User mode**: restricted access to hardware.
-- **Kernel**: the space where the operating system runs.
+-   **Kernel mode**: unrestricted access to hardware.
+-   **User mode**: restricted access to hardware.
+-   **Kernel**: the space where the operating system runs.
 
 <div style="display: flex; justify-content: center; align-items: center;">
     <div style="background-color: white;">
@@ -262,8 +247,8 @@ extra.o: extra.c extra.h
 
 ### **Implementation**
 
-- **Mode bit**: bit in the processor that determines the mode. (0 = kernel mode, 1 = user mode)
-- **Mode Switch**: change from user mode to kernel mode using **exceptions**.
+-   **Mode bit**: bit in the processor that determines the mode. (0 = kernel mode, 1 = user mode)
+-   **Mode Switch**: change from user mode to kernel mode using **exceptions**.
 
 ### **Exceptions**
 
@@ -282,9 +267,9 @@ The basic mechanism for any exception to be handled is
 3. Jump to code designed to react to the exception in question, called an **exception handler**.
 4. When the handler finishes, enter user mode and restore processor state (program counter, kernel mode bit, etc.)
 
-- **Exception Handler**
-  - **Exception Table/Vector**: a table of pointers to exception handlers.
-  - **Exception Number**: index into the table.
+-   **Exception Handler**
+    -   **Exception Table/Vector**: a table of pointers to exception handlers.
+    -   **Exception Number**: index into the table.
 
 ![](https://branyang02.github.io/images/exception_table.png)
 <span
@@ -293,8 +278,8 @@ The basic mechanism for any exception to be handled is
 
 ### **System Calls**
 
-- **System Call**: a way of communication from user mode to kernel mode.
-  - Implemented as a `trap` with exception number `128`. The "action number" is passed into register `%rax`.
+-   **System Call**: a way of communication from user mode to kernel mode.
+    -   Implemented as a `trap` with exception number `128`. The "action number" is passed into register `%rax`.
 
 <details><summary>Example Socket System Call</summary>
 
@@ -307,28 +292,28 @@ socket:
     syscall
 ```
 
-- `endbr64`: control-flow enforcement. Not relevant to the system call.
-- `mov $0x29,%eax`: move `41` (`0x29`) into `%rax`. `41` is the system call number for `socket`.
-- `syscall`: A `trap` instruction, generating _**exception number**_ `128`. Then the following happens:
-  1. Processor saves the current state of the program.
-  2. Enters kernel mode.
-  3. Jump to `exception_handler[128]`.
-     1. `system_call_handler[41]` is called with `%rax` set to `41`.
-  4. When the handler finishes, enter user mode and restore processor state.
+-   `endbr64`: control-flow enforcement. Not relevant to the system call.
+-   `mov $0x29,%eax`: move `41` (`0x29`) into `%rax`. `41` is the system call number for `socket`.
+-   `syscall`: A `trap` instruction, generating _**exception number**_ `128`. Then the following happens:
+    1. Processor saves the current state of the program.
+    2. Enters kernel mode.
+    3. Jump to `exception_handler[128]`.
+        1. `system_call_handler[41]` is called with `%rax` set to `41`.
+    4. When the handler finishes, enter user mode and restore processor state.
 
 </details>
 
 ## **Multitasking**
 
-- **Multitasking**: a generic term for having multiple processes running on a single machine.
-- **Preemptive Multitasking**: the operating system can interrupt a process and switch to another process.
-- **Cooperative Multitasking**: the process must voluntarily give up control.
+-   **Multitasking**: a generic term for having multiple processes running on a single machine.
+-   **Preemptive Multitasking**: the operating system can interrupt a process and switch to another process.
+-   **Cooperative Multitasking**: the process must voluntarily give up control.
 
 ### **Processes**
 
-- **Process**: an instance of a program in execution, acts like a _virtual machine_.
-  - A process has its own program registers, condition codes, **virtual address space**, etc.
-- **Virtual Address Space**: the memory that a process can access. (illusion of a program having its own memory)
+-   **Process**: an instance of a program in execution, acts like a _virtual machine_.
+    -   A process has its own program registers, condition codes, **virtual address space**, etc.
+-   **Virtual Address Space**: the memory that a process can access. (illusion of a program having its own memory)
 
 <img src="https://branyang02.github.io/images/address_space.png" alt="Virtual Address Space" style="display: block; max-height: 70%; max-width: 70%;">
 <span
@@ -337,12 +322,12 @@ socket:
 
 #### **Context Switch**
 
-- **Context Switch**: the process of saving the state of a process and loading the state of another process.
-  1. OS starts running a process.
-  2. Exception occurs.
-  3. OS saves the state of the current process (old registers, program counter, mapping of addresses(**page tables**), etc).
-  4. OS loads the state of another process.
-  5. OS starts running the new process.
+-   **Context Switch**: the process of saving the state of a process and loading the state of another process.
+    1. OS starts running a process.
+    2. Exception occurs.
+    3. OS saves the state of the current process (old registers, program counter, mapping of addresses(**page tables**), etc).
+    4. OS loads the state of another process.
+    5. OS starts running the new process.
 
 | Program A Running (Before)                                    | Program B Running (After)                                     |
 | ------------------------------------------------------------- | ------------------------------------------------------------- |
@@ -365,21 +350,21 @@ Suppose we have two processes, `A` and `B`, and a timer interrupt every `10ms`. 
 
 #### **Process** vs. **Thread**
 
-- **Process**: an instance of a program in execution.
-- **Thread**: a process can have multiple threads of execution. Threads share the same **virtual address space**, but have their own **program registers**, **program counter**, condition codes, etc.
+-   **Process**: an instance of a program in execution.
+-   **Thread**: a process can have multiple threads of execution. Threads share the same **virtual address space**, but have their own **program registers**, **program counter**, condition codes, etc.
 
-  <div style="background-color: white;">
-      <img src="https://static.javatpoint.com/difference/images/process-vs-thread3.png" style="max-height: 70%; max-width: 70%;">
-  </div>
-  <span
-      class="caption"> Threads within the same process share the same virtual address space but have their own program registers, program counter, condition codes, etc. (Source: javapoint, <a href="https://www.javatpoint.com/process-vs-thread">Process Vs. Thread</a>)
-  </span>
+    <div style="background-color: white;">
+        <img src="https://static.javatpoint.com/difference/images/process-vs-thread3.png" style="max-height: 70%; max-width: 70%;">
+    </div>
+    <span
+        class="caption"> Threads within the same process share the same virtual address space but have their own program registers, program counter, condition codes, etc. (Source: javapoint, <a href="https://www.javatpoint.com/process-vs-thread">Process Vs. Thread</a>)
+    </span>
 
 ## **Signals**
 
-- **Signal**: a way to notify a process that an event has occurred.
-- **Signal Handler**: a function that is called when a signal is received.
-  - Ex. `SIGINT` (interrupt from keyboard), `SIGSEGV` (segmentation fault), `SIGKILL` (kill the process).
+-   **Signal**: a way to notify a process that an event has occurred.
+-   **Signal Handler**: a function that is called when a signal is received.
+    -   Ex. `SIGINT` (interrupt from keyboard), `SIGSEGV` (segmentation fault), `SIGKILL` (kill the process).
 
 ### **Signal vs. Exception**
 
@@ -426,19 +411,19 @@ Suppose we have two processes, `A` and `B`, and a timer interrupt every `10ms`. 
 
 ### **Signals Setup**
 
-- **Signal API**
-  - `sigaction()`: set up a signal handler.
-  - `raise(sig)`: send a signal to the _current_ process.
-  - `kill(pid, sig)`: send a signal to a process with a specific PID.
-    - Bash: `kill 1234` sends `SIGTERM` to process with PID `1234`.
-    - C: `kill(1234, SIGTERM)` sends `SIGTERM` to process with PID `1234`.
-    - Bash: `kill -USR1 1234` sends `SIGUSR1` to process with PID `1234`.
-    - C: `kill(1234, SIGUSR1)` sends `SIGUSR1` to process with PID `1234`.
-  - `SA_RESTART`
-    - when included: after signal handler runs, attempt to restart the interrupted operation. (e.g., reading from keyboard)
-    - when not included: after signal handler runs, return `-1` with `errno` set to `EINTR`.
-- `kill()` not always immediate.
-  - Ex. In a multi-core system, the OS records the signal and sends it to the process when it is ready.
+-   **Signal API**
+    -   `sigaction()`: set up a signal handler.
+    -   `raise(sig)`: send a signal to the _current_ process.
+    -   `kill(pid, sig)`: send a signal to a process with a specific PID.
+        -   Bash: `kill 1234` sends `SIGTERM` to process with PID `1234`.
+        -   C: `kill(1234, SIGTERM)` sends `SIGTERM` to process with PID `1234`.
+        -   Bash: `kill -USR1 1234` sends `SIGUSR1` to process with PID `1234`.
+        -   C: `kill(1234, SIGUSR1)` sends `SIGUSR1` to process with PID `1234`.
+    -   `SA_RESTART`
+        -   when included: after signal handler runs, attempt to restart the interrupted operation. (e.g., reading from keyboard)
+        -   when not included: after signal handler runs, return `-1` with `errno` set to `EINTR`.
+-   `kill()` not always immediate.
+    -   Ex. In a multi-core system, the OS records the signal and sends it to the process when it is ready.
 
 ```c
 #include signal.h
@@ -501,22 +486,22 @@ int main() {
 }
 ```
 
-- `write` instead of `printf` in `handler`
-  - `printf` is not async-signal-safe. (not safe to call in a signal handler)
-- `void handler(int signum)`
-  - Signal handler function. `signum` is the signal number.
-- `struct sigaction sa`
-  - Ttructure to specify the action to be taken on a signal.
-- `sa.sa_handler = &handler`
-  - The function pointer to invoke.
-- `sigemptyset(&sa.sa_mask)`
-  - Initializes the signal set to empty. Do not "block" additional signals while signal handler is running.
-- `sa.sa_flags = SA_RESTART`
-  - Restart system calls if interrupted by a signal.
-- `sigaction(SIGINT, &sa, NULL)`
-  - Register the signal handler for `SIGINT`.
-- `raise(SIGINT)`
-  - Raise the `SIGINT` signal to trigger the handler. (simulate `Ctrl+C`)
+-   `write` instead of `printf` in `handler`
+    -   `printf` is not async-signal-safe. (not safe to call in a signal handler)
+-   `void handler(int signum)`
+    -   Signal handler function. `signum` is the signal number.
+-   `struct sigaction sa`
+    -   Ttructure to specify the action to be taken on a signal.
+-   `sa.sa_handler = &handler`
+    -   The function pointer to invoke.
+-   `sigemptyset(&sa.sa_mask)`
+    -   Initializes the signal set to empty. Do not "block" additional signals while signal handler is running.
+-   `sa.sa_flags = SA_RESTART`
+    -   Restart system calls if interrupted by a signal.
+-   `sigaction(SIGINT, &sa, NULL)`
+    -   Register the signal handler for `SIGINT`.
+-   `raise(SIGINT)`
+    -   Raise the `SIGINT` signal to trigger the handler. (simulate `Ctrl+C`)
 
 </details>
 
@@ -557,9 +542,9 @@ Signal handlers should be **async-signal-safe**. This means that the functions c
 
 </blockquote>
 
-- **Async-signal-safe functions**: functions that can be safely called from a signal handler.
-  - `write()`, `exit()` ...
-  - **DO NOT** use `printf()`, `malloc()`, `free()` ...
+-   **Async-signal-safe functions**: functions that can be safely called from a signal handler.
+    -   `write()`, `exit()` ...
+    -   **DO NOT** use `printf()`, `malloc()`, `free()` ...
 
 We can also avoid running the signal handler while it is already running by blocking the signal.
 
@@ -578,17 +563,17 @@ sigprocmask(SIG_BLOCK, &sigint_as_set, NULL);
 sigprocmask(SIG_UNBLOCK, &sigint_as_set, NULL);
 ```
 
-- `sigprocmask()` temporarily disables the signal handler from running. If a signal is sent to a process while it is blocked, then the OS will track that is pending. When the pending signal is unblocked, its signal handler will be run.
-- `sigsuspend()` temporarily unblocks a blocked signal just long enough to run its signal handler.
-- `sigwait()` waits for a signal to be received, blocking until the signal is received. This is used typically _instead of having signal handlers_.
+-   `sigprocmask()` temporarily disables the signal handler from running. If a signal is sent to a process while it is blocked, then the OS will track that is pending. When the pending signal is unblocked, its signal handler will be run.
+-   `sigsuspend()` temporarily unblocks a blocked signal just long enough to run its signal handler.
+-   `sigwait()` waits for a signal to be received, blocking until the signal is received. This is used typically _instead of having signal handlers_.
 
 ## **Processes**
 
 ### **Process Creation**
 
-- `pid_t fork()`: creates a new process by duplicating the calling process.
-  - Returns `0` to the child process, returns the **child process's PID** to the parent process.
-- `pid_t getpid()`: returns the PID of the calling process.
+-   `pid_t fork()`: creates a new process by duplicating the calling process.
+    -   Returns `0` to the child process, returns the **child process's PID** to the parent process.
+-   `pid_t getpid()`: returns the PID of the calling process.
 
 When we create a new process, the child process is a **copy** of the parent process. The child process has its own virtual address space, but it shares the same code, data, and heap as the parent process.
 
@@ -625,8 +610,8 @@ int main() {
 }
 ```
 
-- `pid_t pid`: variable to store the return value of `fork()`.
-- `pid = fork()`: create a new process.
+-   `pid_t pid`: variable to store the return value of `fork()`.
+-   `pid = fork()`: create a new process.
 
 </details>
 
@@ -640,7 +625,7 @@ The parent and child processes may run concurrently, so the order of output may 
 
 ### **Process Management**
 
-- `waitpid()`: wait for a specific child process to exit.
+-   `waitpid()`: wait for a specific child process to exit.
 
 We can use `waitpid()` to wait for a specific child process to **exit**. The function `waitpid()` blocks the parent process until the child process with the specified PID exits.
 
@@ -685,7 +670,7 @@ int main() {
 
 In this example, the parent process waits for the child process to exit using `waitpid(pid, NULL, 0)`. Therefore, the child process will run and print to console before the parent process prints to console.
 
-- `waitpid(pid, NULL, 0)`: wait for the child process with PID `pid` to exit.
+-   `waitpid(pid, NULL, 0)`: wait for the child process with PID `pid` to exit.
 
 </details>
 
@@ -717,32 +702,32 @@ A **file descriptor** is a non-negative integer that serves as the index into th
 
 </blockquote>
 
-- **Standard File Descriptors**:
-  - `0`: standard input (stdin)
-  - `1`: standard output (stdout)
-  - `2`: standard error (stderr)
+-   **Standard File Descriptors**:
+    -   `0`: standard input (stdin)
+    -   `1`: standard output (stdout)
+    -   `2`: standard error (stderr)
 
 **Getting File Descriptors**
 
-- `int open(const char *pathname, int flags)`: open a file and return a file descriptor.
-- `int close(int fd)`: close a file descriptor, returning `0` on success.
-  - `close()` simply deallocates the file descriptor, it does not delete the file, and does not affect other file descriptors.
+-   `int open(const char *pathname, int flags)`: open a file and return a file descriptor.
+-   `int close(int fd)`: close a file descriptor, returning `0` on success.
+    -   `close()` simply deallocates the file descriptor, it does not delete the file, and does not affect other file descriptors.
 
 #### **Redirecting File Descriptors**
 
 We can manually **redirect** file descriptors. For example, we can perform shell redirection like this:
 
-- `./my_program ... < input.txt`
-  - run `my_program` with `stdin` redirected from `input.txt`.
-- `echo foo > output.txt`
-  - run `echo` with `stdout` redirected to `output.txt`.
+-   `./my_program ... < input.txt`
+    -   run `my_program` with `stdin` redirected from `input.txt`.
+-   `echo foo > output.txt`
+    -   run `echo` with `stdout` redirected to `output.txt`.
 
 #### **Dup2**
 
 When we `fork` a process, the child process inherits the parent's file descriptors. However, we can **redirect** the child process's file descriptors using `dup2()`.
 
-- `int dup2(int oldfd, int newfd)`: make `newfd` refer to the same open file as `oldfd`.
-  - Ex. `dup2(fd, STDOUT_FILENO)`: overrwrites what `STDOUT_FILENO` points to with `fd`.
+-   `int dup2(int oldfd, int newfd)`: make `newfd` refer to the same open file as `oldfd`.
+    -   Ex. `dup2(fd, STDOUT_FILENO)`: overrwrites what `STDOUT_FILENO` points to with `fd`.
 
 <details><summary>Dup2 Example</summary>
   
@@ -2568,10 +2553,10 @@ int main() {
 
 Asymmetric encryption uses a pair of keys: a public key for encryption and a private key for decryption. The public key is shared, while the private key is kept secret.
 
-- **Encrypt Function:**
-  - $PE_{\text{public}}(key_{\text{public}}, message) =$ `ciphertext`
-- **Decrypt Function:**
-  - $PD_{\text{private}}(key_{\text{private}}, ciphertext) =$ `message`
+-   **Encrypt Function:**
+    -   $PE_{\text{public}}(key_{\text{public}}, message) =$ `ciphertext`
+-   **Decrypt Function:**
+    -   $PD_{\text{private}}(key_{\text{private}}, ciphertext) =$ `message`
 
 **Using Asymmetric Encryption**
 
@@ -2616,7 +2601,7 @@ In this example, we assumed that `k1` and `k2` are already given. In a real-worl
 
 ### **Authenticity**
 
-- Authenticity ensures the message is actually sent by the claimed sender.
+-   Authenticity ensures the message is actually sent by the claimed sender.
 
 #### **Message Authentication Code (MAC)**
 
@@ -2624,10 +2609,10 @@ MAC is used to verify the integrity and the authenticity of a message. It also e
 
 Supoose we have a funtion `MAC` that is given by the _expert_:
 
-- **MAC Function:**
-  - $MAC(key, message) = tag$
-- **MAC Verification Function:**
-  - $MAC_{\text{verify}}(key, message, tag)$ = `true` or `false`
+-   **MAC Function:**
+    -   $MAC(key, message) = tag$
+-   **MAC Verification Function:**
+    -   $MAC_{\text{verify}}(key, message, tag)$ = `true` or `false`
 
 **Using MAC**
 
@@ -2709,10 +2694,10 @@ int main() {
 
 Digital signatures are used to verify the authenticity of a message and ensure that the message has not been tampered with.
 
-- **Sign Function:**
-  - $S(key_{\text{private}}, message) = signature$
-- **Verify Function:**
-  - $V(key_{\text{public}}, message, signature)$ = `true` or `false`
+-   **Sign Function:**
+    -   $S(key_{\text{private}}, message) = signature$
+-   **Verify Function:**
+    -   $V(key_{\text{public}}, message, signature)$ = `true` or `false`
 
 **Using Digital Signatures**
 
@@ -2725,17 +2710,17 @@ Digital signatures are used to verify the authenticity of a message and ensure t
 
 Replay attacks involve an attacker intercepting a message and replaying it at a later time.
 
-- **Replay Attack Scenario:**
-  - Machine A sends a message to Machine B.
-  - Machine M intercepts the message and sends it to B again.
+-   **Replay Attack Scenario:**
+    -   Machine A sends a message to Machine B.
+    -   Machine M intercepts the message and sends it to B again.
 
 **Nonces** are used to prevent replay attacks.
 
 A nonce is a number used only once in a cryptographic communication. It is used to prevent replay attacks.
 
-- **Example Scenario:**
-  - Machine A sends a message to Machine B.
-  - Machine M intercepts the message and sends it to B again.
+-   **Example Scenario:**
+    -   Machine A sends a message to Machine B.
+    -   Machine M intercepts the message and sends it to B again.
 
 **Using Nonces**
 
@@ -2747,51 +2732,51 @@ A nonce is a number used only once in a cryptographic communication. It is used 
 
 Certificates are used to verify the authenticity of a public key.
 
-- **Certificate Authority (CA):**
-  - A trusted third party that issues certificates.
-- **Certificate:**
-  - Contains the public key and information about the owner.
-- **Certificate Verification:**
-  - Ensures the certificate is valid and issued by a trusted CA.
+-   **Certificate Authority (CA):**
+    -   A trusted third party that issues certificates.
+-   **Certificate:**
+    -   Contains the public key and information about the owner.
+-   **Certificate Verification:**
+    -   Ensures the certificate is valid and issued by a trusted CA.
 
 **Structure of a Certificate**
 
-- **subject:** the entity the certificate is about.
-- **issuer:** the entity that issued the certificate.
-- **public key:** the public key of the subject.
-- **signature:** the signature of the issuer.
+-   **subject:** the entity the certificate is about.
+-   **issuer:** the entity that issued the certificate.
+-   **public key:** the public key of the subject.
+-   **signature:** the signature of the issuer.
 
 **Public Key Infrastructure (PKI)**
 
-- **Certificate Authority (CA):**
-  - Issues certificates.
-- **Registration Authority (RA):**
-  - Verifies the identity of the certificate holder.
-- **Certificate Repository:**
-  - Stores certificates.
+-   **Certificate Authority (CA):**
+    -   Issues certificates.
+-   **Registration Authority (RA):**
+    -   Verifies the identity of the certificate holder.
+-   **Certificate Repository:**
+    -   Stores certificates.
 
 <details><summary>Example Certificate Scenario</summary>
 
-- **Problem**:
+-   **Problem**:
 
-  - Machine A wans to send a message to Machine B.
-  - Machine A does not have Machine B's public key, however, Machine A trusts the CA (A has the CA's public key).
+    -   Machine A wans to send a message to Machine B.
+    -   Machine A does not have Machine B's public key, however, Machine A trusts the CA (A has the CA's public key).
 
-- **Setup**:
+-   **Setup**:
 
-  1. CA can issue a certificate for Machine B:
-     - **subject:** Machine B
-     - **issuer:** CA
-     - **public key:** Machine B's public key
-     - **signature:** CA's signature
-  2. CA sends the certificate to Machine B.
+    1. CA can issue a certificate for Machine B:
+        - **subject:** Machine B
+        - **issuer:** CA
+        - **public key:** Machine B's public key
+        - **signature:** CA's signature
+    2. CA sends the certificate to Machine B.
 
-- **Process**:
+-   **Process**:
 
-  1. Machine A receives Machine B's certificate.
-  2. Machine A verifies the certificate using the CA's public key.
-  3. Machine A extracts Machine B's public key from the certificate.
-  4. Machine A sends the message to Machine B using Machine B's public key.
+    1. Machine A receives Machine B's certificate.
+    2. Machine A verifies the certificate using the CA's public key.
+    3. Machine A extracts Machine B's public key from the certificate.
+    4. Machine A sends the message to Machine B using Machine B's public key.
 
 </details>
 
@@ -2801,11 +2786,11 @@ A pipeline is a technique used to overlap the execution of multiple instructions
 
 ### **Pipeline Stages**
 
-- **Fetch**: fetch the instruction from memory.
-- **Decode**: decode the instruction.
-- **Execute**: execute the instruction.
-- **Memory**: access memory.
-- **Writeback**: write the result back to the register file.
+-   **Fetch**: fetch the instruction from memory.
+-   **Decode**: decode the instruction.
+-   **Execute**: execute the instruction.
+-   **Memory**: access memory.
+-   **Writeback**: write the result back to the register file.
 
 In order to hold the data between stages, we use **pipeline registers**.
 
@@ -2817,8 +2802,8 @@ The pipeline consists of five stages: Fetch, Decode, Execute, Memory, and Writeb
 
 We evaluate the performance of a pipeline using the following metrics:
 
-- **Latency**: the time taken to complete a single instruction.
-- **Throughput**: the number of instructions completed per unit of time.
+-   **Latency**: the time taken to complete a single instruction.
+-   **Throughput**: the number of instructions completed per unit of time.
 
 <blockquote class="equation">
 
@@ -2976,7 +2961,7 @@ Note that at every cycle, the value of a register is only updated **once** from 
 
 </details>
 
-- **Stall + Forwarding**: a combination of stalling and forwarding to resolve data hazards.
+-   **Stall + Forwarding**: a combination of stalling and forwarding to resolve data hazards.
 
 <details><summary>Stall + Forwarding Example</summary>
 
@@ -3029,7 +3014,7 @@ Control hazards occur when the next instruction to execute depends on the result
 
 We can resolve control hazards by **stalling** or **branch prediction**.
 
-- **Stalling**: the process of waiting for the target of a branch instruction to be known before proceeding with the next instruction.
+-   **Stalling**: the process of waiting for the target of a branch instruction to be known before proceeding with the next instruction.
 
 <details open><summary>Control Hazard Stalling Example</summary>
 
@@ -3145,10 +3130,10 @@ In the example above, we know we have speculated incorrectly when we reach the `
 
 We want to correctly predict the target of the jump instruction as much as possible to avoid stalling the pipeline. We can use different **branch prediction algorithms** to predict the target of the jump instruction.
 
-- **Static Prediction**: always predict the same target.
-  - **forward not taken, backward taken**: jumps that go to a future instruction are not taken, and jumps that go to a previous instruction are taken.
-- **Dynamic Prediction**: predict the target based on the history of the branch.
-  - **Branch History Table (BHT)**: a table that stores the history of branches.
+-   **Static Prediction**: always predict the same target.
+    -   **forward not taken, backward taken**: jumps that go to a future instruction are not taken, and jumps that go to a previous instruction are taken.
+-   **Dynamic Prediction**: predict the target based on the history of the branch.
+    -   **Branch History Table (BHT)**: a table that stores the history of branches.
 
 <img src="https://branyang02.github.io/images/branch_prediction.png" alt="Branch History Table" style="display: block; max-height: 70%; max-width: 70%;">
 <span
@@ -3157,11 +3142,11 @@ We want to correctly predict the target of the jump instruction as much as possi
 
 Jump instructions are often used in loops, and they may take some time to resolve. To speed up this process, we can use a **branch target buffer (BTB)** to store the target of the jump instruction.
 
-- **Branch Target Buffer (BTB)**: a cache that stores the target of the jump instruction.
+-   **Branch Target Buffer (BTB)**: a cache that stores the target of the jump instruction.
 
 ### **Beyond Pipelining**
 
-- **Multiple Issue**: executing multiple instructions in parallel.
+-   **Multiple Issue**: executing multiple instructions in parallel.
 
 $$
 
@@ -3178,7 +3163,7 @@ $$
 
 In the example above, we can see that the first two instructions can be executed in parallel since they do not have any data dependencies. This is an example of **multiple issue**. However, **hazard handling** becomes more complex when we have multiple instructions executing in parallel. In this example, we need to forward the result from `execute` of the first AND second instruction to the `decode` of the third instruction. We also need to forward the result from `execute` of the third instruction to the `decode` of the fourth instruction.
 
-- **Out-of-Order Execution**: executing instructions out of order to increase performance.
+-   **Out-of-Order Execution**: executing instructions out of order to increase performance.
 
 We introduce OOO in the next section.
 
@@ -3334,13 +3319,13 @@ We can see that `%r8` uses the new physical register `%x20` in this instruction.
 
 In the OOO pipeline, we have the following stages:
 
-- **Fetch**: fetch the instruction from memory.
-- **Decode**: decode the instruction.
-- **Rename**: rename the registers, and dispatch the instruction to the _instruction queue_.
-- **Issue**: choosing the instructions to execute based on the availability of the execution units, and either read registers from the register file or forward the values from the previous instructions.
-- **Execute**: execute the instruction.
-- **Writeback**: write the result back to the register file.
-- **Commit**: commit the result to the register file, and update the free list of physical registers.
+-   **Fetch**: fetch the instruction from memory.
+-   **Decode**: decode the instruction.
+-   **Rename**: rename the registers, and dispatch the instruction to the _instruction queue_.
+-   **Issue**: choosing the instructions to execute based on the availability of the execution units, and either read registers from the register file or forward the values from the previous instructions.
+-   **Execute**: execute the instruction.
+-   **Writeback**: write the result back to the register file.
+-   **Commit**: commit the result to the register file, and update the free list of physical registers.
 
 The most important stage in the OOO pipeline is `issue`. This is where we decide which instruction(s) to execute based on the **instruction queue**. The `issue` stage also reads the registers from the register file or finds the forwarded values from the previous instructions.
 
@@ -3450,9 +3435,9 @@ Refer to the example above to see when `issue` stages occur for each instruction
 
 This is where the `execute` stage of the pipeline occurs. We can have multiple execution units to execute different types of instructions. For example, we can have:
 
-- **ALU**: for arithmetic and logical operations.
-- **Pipelined ALU**: for multiple arithmetic and logical operations.
-- **Load/Store Unit**: for loading and storing data from memory.
+-   **ALU**: for arithmetic and logical operations.
+-   **Pipelined ALU**: for multiple arithmetic and logical operations.
+-   **Load/Store Unit**: for loading and storing data from memory.
 
 <img src="https://branyang02.github.io/images/execute.png" alt="Execution Units" style="display: block; max-height: 25%; max-width: 25%;">
 
