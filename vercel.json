@@ -5,12 +5,6 @@
       "use": "@vercel/static-build"
     }
   ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/demo-app/$1"
-    }
-  ],
   "rewrites": [
     {
       "source": "/demo-app/(.*)",
