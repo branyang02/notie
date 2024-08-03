@@ -1,20 +1,19 @@
-# NOTIE: Your personal note taking template!
+# **notie**: Your personal note taking template!
 
-NOTIE is a note taking template based on **markdown**.
+**notie** is a note taking template based on **markdown**.
 
 ## Updates
 
-5/13/2024: Updated the list of supported languages for the live coding feature at https://notie-nine.vercel.app/notes/programming.
+8/2/2024: Update 1.0.0: Initial release, published on npm registry [here](https://www.npmjs.com/package/notie-markdown).
 
 ## Table of Contents
 
 - [Features](#features)
-- [Steps to use NOTIE](#steps-to-use-notie)
+- [Getting Started](#getting-started)
+  - [Props](#props)
+  - [Example Usage](#example-usage)
 - [Showcase](#showcase)
-- [Writing notes](#writing-notes)
-  - [What is Markdown?](#what-is-markdown)
-  - [Features and Documentation](#features-and-documentation)
-- [Deploy your notes (Vercel)](#deploy-your-notes-vercel)
+- [Features and Documentation](#features-and-documentation)
 - [Contribution](#contribution)
 - [Acknowledgements](#acknowledgements)
 
@@ -24,27 +23,36 @@ NOTIE is a note taking template based on **markdown**.
 - **TikZ Support**: Use TikZ to draw diagrams in your notes.
 - **Dark Mode**: Toggle between light and dark mode for better readability.
 
-## Steps to use NOTIE
+## Getting Started
 
-1. Clone the repository
-
-```bash
-git clone https://github.com/branyang02/notie.git
-```
-
-2. Install the required dependencies
+**notie** is built as a React component library. To get started, install the package using npm:
 
 ```bash
-cd notie && npm install
+npm install notie-markdown
 ```
 
-3. Start the development server and start taking notes!
+The `Notie` component is used to render Markdown content. It accepts the following props:
 
-```bash
-npm run dev
+### Props
+
+| Prop       | Type                             | Description                                                 |
+| ---------- | -------------------------------- | ----------------------------------------------------------- |
+| `markdown` | `string`                         | The Markdown content to be rendered.                        |
+| `darkMode` | `boolean` (optional)             | A flag to enable or disable dark mode. Defaults to `false`. |
+| `style`    | `React.CSSProperties` (optional) | Inline styles to apply to the component.                    |
+
+### Example Usage
+
+```jsx
+import React from 'react';
+import Notie from 'notie-markdown';
+
+const Example = () => (
+  <Notie markdown="# Hello World\nThis is a Markdown content." darkMode={true} />
+);
 ```
 
-Checkout
+Checkout the full example at the main demo page [https://notie-nine.vercel.app/](https://notie-nine.vercel.app/), or at `/demo-app`.
 
 ## Showcase
 
@@ -55,21 +63,9 @@ Checkout
 ![image](https://github.com/branyang02/notie/assets/107154811/103f8f2c-6621-4e01-9c5c-c2b8d3f5b5b8)
 ![image](https://github.com/branyang02/notie/assets/107154811/935ed296-2cad-4bd1-af7f-3d256a3fc54c)
 
-## Writing notes
+## Features and Documentation
 
-Simply navigate to the `/src/notes` directory, create a new markdown file, and start writing your notes!
-
-### What is Markdown?
-
-Markdown is a lightweight markup language with plain-text-formatting syntax. Check out the [Markdown Guide](https://www.markdownguide.org/) to learn more about markdown.
-
-### Features and Documentation
-
-Checkout the tutorial at the main demo page [https://notie-nine.vercel.app/](https://notie-nine.vercel.app/).
-
-## Deploy your notes (Vercel)
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbranyang02%2Fnotie)
+Checkout the [tutorial](https://notie-nine.vercel.app/tutorial) to learn more about the features and documentation of **notie**.
 
 ## Contribution
 
@@ -109,12 +105,12 @@ This project makes use of several open-source projects and resources. We extend 
 - **Author(s)**: Espen Hovlandsdal
 - **License**: MIT
 
-## [rehype-highlight](https://github.com/rehypejs/rehype-highlight)
+### [rehype-highlight](https://github.com/rehypejs/rehype-highlight)
 
 - **Author(s)**: Titus Wormer
 - **License**: MIT
 
-## [remark-math](https://remark.js.org/)
+### [remark-math](https://remark.js.org/)
 
 - **Author(s)**: Junyoung Choi
 - **License**: MIT
