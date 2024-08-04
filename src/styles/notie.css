@@ -10,9 +10,9 @@
     column-gap: 24px;
     grid-template: min-content 1fr min-content / 20.25rem minmax(0, 1fr);
     grid-template-areas:
-      "siteNotice siteNotice"
-      "columnStart pageContent"
-      "footer footer";
+      'siteNotice siteNotice'
+      'columnStart pageContent'
+      'footer footer';
   }
 }
 
@@ -22,9 +22,9 @@
     column-gap: 24px;
     grid-template: min-content 1fr min-content / minmax(0, 1fr);
     grid-template-areas:
-      "siteNotice"
-      "pageContent"
-      "footer";
+      'siteNotice'
+      'pageContent'
+      'footer';
   }
 }
 
@@ -82,30 +82,11 @@
   font-size: 1.25em;
 }
 
-.blog-content .xsmall-table {
-  /* center  */
-  margin-left: auto;
-  margin-right: auto;
-  width: 20%;
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-
-.blog-content .small-table {
-  /* center  */
-  margin-left: auto;
-  margin-right: auto;
-  width: 50%;
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-
 /* Table Styles */
 .blog-content table {
   border-collapse: collapse;
-  width: 100%;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  max-width: 100%;
+  margin: 20px auto;
 }
 
 .blog-content th,
@@ -119,16 +100,17 @@
   background-color: #f2f2f2;
 }
 
-/* Image Styles */
-.blog-content img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-  margin: 20px auto;
+.blog-content.dark-mode th {
+  background-color: hsla(0, 0%, 93%, 0.2);
 }
 
-.blog-content input[type="checkbox"] {
-  margin-right: 10px;
+/* Image Styles */
+.blog-content img {
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  display: block;
+  margin: auto;
 }
 
 .blog-content a {
@@ -137,6 +119,10 @@
 }
 
 .blog-content a[data-footnote-ref] {
+  text-decoration: none;
+}
+
+.blog-content a[data-footnote-backref] {
   text-decoration: none;
 }
 
@@ -176,23 +162,30 @@
 .blog-content details {
   background-color: #f0f0f0;
   padding: 10px;
-  margin-bottom: 20px;
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
+}
+
+.blog-content summary {
+  cursor: pointer;
+}
+
+.blog-content details[open] summary {
+  margin-bottom: 10px;
 }
 
 .blog-content blockquote {
   margin-block-start: 0;
   margin-inline-start: 0;
   display: block;
-  margin-left: 0;
-  margin-right: 0;
   border-radius: 5px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 3px 10px rgba(0, 0, 0, 0.08);
   padding-left: 0.8rem;
   padding-right: 0.8rem;
   padding-bottom: 0.9em;
+  margin: 20px auto;
 }
 
 .blog-content blockquote p:first-child {
@@ -214,7 +207,7 @@
 /* Definition */
 .blog-content blockquote.definition::before {
   color: #31dd2e;
-  content: "Definition";
+  content: 'Definition';
 }
 
 .blog-content blockquote.definition {
@@ -225,7 +218,7 @@
 /* Proof */
 .blog-content blockquote.proof::before {
   color: #31dd2e;
-  content: "Proof";
+  content: 'Proof';
 }
 
 .blog-content blockquote.proof {
@@ -236,18 +229,19 @@
 /* Equation */
 .blog-content blockquote.equation::before {
   color: #486bd5;
-  content: "Equation";
+  content: 'Equation';
 }
 
 .blog-content blockquote.equation {
   background: rgba(126, 174, 247, 0.2);
   border-left: 5px solid #486bd5;
+  padding-bottom: 0.1em;
 }
 
 /* Theorem */
 .blog-content blockquote.theorem::before {
   color: #486bd5;
-  content: "Theorem";
+  content: 'Theorem';
 }
 
 .blog-content blockquote.theorem {
@@ -258,7 +252,7 @@
 /* Important */
 .blog-content blockquote.important::before {
   color: #dd2e2e;
-  content: "Important";
+  content: 'Important';
 }
 
 .blog-content blockquote.important {
@@ -269,7 +263,7 @@
 /* Example */
 .blog-content blockquote.example::before {
   color: #555555;
-  content: "Example";
+  content: 'Example';
 }
 
 .blog-content blockquote.example {
@@ -279,7 +273,7 @@
 
 .blog-content.dark-mode blockquote.example::before {
   color: #cfcdcd;
-  content: "Example";
+  content: 'Example';
 }
 
 .blog-content.dark-mode blockquote.example {
@@ -311,10 +305,6 @@
 
 .blog-content.dark-mode .caption {
   color: #fff;
-}
-
-.blog-content.dark-mode th {
-  background-color: hsla(0, 0%, 93%, 0.2);
 }
 
 .blog-content code:not([class]):not(.code-blocks code) {

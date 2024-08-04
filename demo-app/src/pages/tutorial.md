@@ -313,28 +313,6 @@ This generates the following:
 | Row 2    | Row 2    | Row 2    |
 | Row 3    | Row 3    | Row 3    |
 
-**notie** offers `small-table` and `xsmall-table` css classes to create smaller tables. For example,
-
-<div class="small-table">
-
-| Header 1 | Header 2 | Header 3 |
-| -------- | -------- | -------- |
-| Row 1    | Row 1    | Row 1    |
-| Row 2    | Row 2    | Row 2    |
-| Row 3    | Row 3    | Row 3    |
-
-</div>
-
-<div class="xsmall-table">
-
-| Header 1 | Header 2 | Header 3 |
-| -------- | -------- | -------- |
-| Row 1    | Row 1    | Row 1    |
-| Row 2    | Row 2    | Row 2    |
-| Row 3    | Row 3    | Row 3    |
-
-</div>
-
 #### Images
 
 You can include images in your markdown file by using the following syntax:
@@ -350,12 +328,16 @@ This generates the following:
 Or you can use raw html to include images with custom sizes:
 
 ```html
-<img src="https://via.placeholder.com/250" alt="Alt text" width="250" height="250" />
+<img
+  src="https://via.placeholder.com/150"
+  alt="Alt text"
+  style="display: block; max-height: 30%; max-width: 30%;"
+/>
 ```
 
 This generates the following:
 
-<img src="https://via.placeholder.com/250" alt="Alt text" width="250" height="250">
+<img src="https://via.placeholder.com/150" alt="Alt text" style="display: block; max-height: 30%; max-width: 30%;"/>
 
 #### Captions
 
