@@ -1,10 +1,11 @@
-# **notie**: Your personal note taking template!
+# **notie**: A Markdown-based Note-taking Component
 
-**notie** is a markdown-based note-taking template that allows you to write, edit, and organize your notes in a clean and intuitive interface. **notie** offers the following unique features:
+**notie** is a markdown-based note-taking React component that allows you to write, edit, and organize your notes in a clean and intuitive interface. **notie** offers the following unique features:
 
 1. **Live/Runnable Code Blocks**: Write and run code snippets in your notes.
 2. **Math Equations**: Write math equations using LaTeX.
 3. **TikZ Diagrams**: Create TikZ diagrams in your notes.
+4. **Dynamic**: Try adjusting the window size to see how the notes dynamically adjust to the screen size.
 
 ## Getting Started
 
@@ -27,6 +28,47 @@ const App = () => {
 
 export default App;
 ```
+
+### Importing markdown files
+
+There are different ways to import markdown files into your React application based on your build framework. For example, in [Vite](https://vitejs.dev/), you can use the [`import.meta.glob`](https://vitejs.dev/guide/features#glob-import) function to import markdown files:
+
+```typescript
+// Vite + React + Typescript
+const modules = import.meta.glob('./path/to/markdown', {
+  query: '?raw',
+  import: 'default',
+});
+
+const App = () => {
+  const [markdownContent, setMarkdownContent] = useState<string>('');
+
+  useEffect(() => {
+    const fetchNote = async () => {
+      for (const path in modules) {
+        const markdown = await modules[path]();
+        const rawMDString = markdown as string;
+        setMarkdownContent(rawMDString);
+        break;
+      }
+    };
+
+    fetchNote();
+  }, []);
+
+  return <Notie markdownContent={markdownContent} />;
+};
+```
+
+Checkout the [`demo-app`](https://github.com/branyang02/notie/tree/main/demo-app) directory for a complete example.
+
+### `Notie` Props
+
+| Prop       | Type                             | Description                                                 |
+| ---------- | -------------------------------- | ----------------------------------------------------------- |
+| `markdown` | `string`                         | The Markdown content to be rendered.                        |
+| `darkMode` | `boolean` (optional)             | A flag to enable or disable dark mode. Defaults to `false`. |
+| `style`    | `React.CSSProperties` (optional) | Inline styles to apply to the component.                    |
 
 ## Showcase
 
