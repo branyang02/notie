@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { ArrowUpIcon, Button, Pane } from "evergreen-ui";
+import { useEffect, useState } from 'react';
+import { ArrowUpIcon, Button, Pane } from 'evergreen-ui';
 
 const ScrollToTopButton = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -20,14 +20,14 @@ const ScrollToTopButton = () => {
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth",
+      behavior: 'smooth',
     });
   };
 
   useEffect(() => {
-    window.addEventListener("scroll", toggleVisibility);
+    window.addEventListener('scroll', toggleVisibility);
     return () => {
-      window.removeEventListener("scroll", toggleVisibility);
+      window.removeEventListener('scroll', toggleVisibility);
     };
   }, [lastScrollTop]);
 

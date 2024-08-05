@@ -132,6 +132,11 @@
   text-decoration: underline;
 }
 
+.blog-content .katex a,
+.blog-content .katex-display a {
+  text-decoration: none;
+}
+
 /* Caption Styles */
 .caption {
   display: block;

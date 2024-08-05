@@ -18,6 +18,20 @@ Date: 5/1/2024 | Author: Brandon Yang
 
 #### **Process** vs. **Thread**
 
+Search by definition $\eqref{1}$ or $\ref{1}$.
+
+$$
+\begin{aligned} \sin 2\theta = 2\sin \theta \cos \theta \\ = \cfrac{2 \tan \theta}{1+\tan^2 \theta} \end{aligned} \label{1}\tag{1}
+$$
+
+Equation 2:
+
+$$
+\begin{aligned} \sin 2\theta = 2\sin \theta \cos \theta \\ = \cfrac{2 \tan \theta}{1+\tan^2 \theta} \end{aligned} \label{2}\tag{2}
+$$
+
+See Equation $\eqref{2}$.
+
 ```bash
 asdf
 ```

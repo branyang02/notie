@@ -1,12 +1,12 @@
-import { Pane } from "evergreen-ui";
-import { useEffect, useRef } from "react";
+import { Pane } from 'evergreen-ui';
+import { useEffect, useRef } from 'react';
 
 function tidyTikzSource(tikzSource: string) {
   // Remove non-breaking space characters, otherwise we get errors
   const remove = /&nbsp;/g;
-  tikzSource = tikzSource.replace(remove, "");
+  tikzSource = tikzSource.replace(remove, '');
 
-  let lines = tikzSource.split("\n");
+  let lines = tikzSource.split('\n');
 
   // Trim whitespace that is inserted when pasting in code, otherwise TikZJax complains
   lines = lines.map((line) => line.trim());
@@ -14,7 +14,7 @@ function tidyTikzSource(tikzSource: string) {
   // Remove empty lines
   lines = lines.filter((line) => line);
 
-  return lines.join("\n");
+  return lines.join('\n');
 }
 
 const TikZ = ({ tikzScript }: { tikzScript: string }) => {
@@ -26,34 +26,34 @@ const TikZ = ({ tikzScript }: { tikzScript: string }) => {
     // Load CSS if not already loaded
     if (!cssLoaded.current) {
       fetch(
-        "https://raw.githubusercontent.com/artisticat1/obsidian-tikzjax/main/styles.css"
+        'https://raw.githubusercontent.com/artisticat1/obsidian-tikzjax/main/styles.css',
       )
         .then((response) => {
           if (response.ok) return response.text();
-          throw new Error("Failed to load CSS");
+          throw new Error('Failed to load CSS');
         })
         .then((cssContent) => {
-          const styleEl = document.createElement("style");
+          const styleEl = document.createElement('style');
           styleEl.textContent = cssContent;
           document.head.appendChild(styleEl);
           cssLoaded.current = true;
         })
-        .catch((error) => console.error("Failed to load CSS", error));
+        .catch((error) => console.error('Failed to load CSS', error));
     }
 
     // Load script if not already loaded
     if (!scriptLoaded.current) {
       fetch(
-        "https://raw.githubusercontent.com/artisticat1/obsidian-tikzjax/main/tikzjax.js"
+        'https://raw.githubusercontent.com/artisticat1/obsidian-tikzjax/main/tikzjax.js',
       )
         .then((response) => response.text())
         .then((scriptContent) => {
-          const scriptEl = document.createElement("script");
+          const scriptEl = document.createElement('script');
           scriptEl.textContent = scriptContent;
           document.body.appendChild(scriptEl);
           scriptLoaded.current = true;
         })
-        .catch((error) => console.error("Failed to load script", error));
+        .catch((error) => console.error('Failed to load script', error));
     }
 
     // Cleanup on component unmount
@@ -61,7 +61,7 @@ const TikZ = ({ tikzScript }: { tikzScript: string }) => {
       if (scriptContainerRef.current) {
         // Remove any existing TikZ scripts when component unmounts
         const existingScripts = scriptContainerRef.current.querySelectorAll(
-          'script[type="text/tikz"]'
+          'script[type="text/tikz"]',
         );
         existingScripts.forEach((script) => script.remove());
       }
@@ -70,17 +70,17 @@ const TikZ = ({ tikzScript }: { tikzScript: string }) => {
 
   useEffect(() => {
     function loadTikZJax() {
-      const scriptEl = document.createElement("script");
-      scriptEl.type = "text/tikz";
+      const scriptEl = document.createElement('script');
+      scriptEl.type = 'text/tikz';
       scriptEl.async = true;
       scriptEl.textContent = tidyTikzSource(tikzScript);
 
-      scriptEl.setAttribute("data-show-console", "true");
+      scriptEl.setAttribute('data-show-console', 'true');
 
       if (scriptContainerRef.current) {
         // Remove any previous TikZ scripts before adding a new one
         const existingScripts = scriptContainerRef.current.querySelectorAll(
-          'script[type="text/tikz"]'
+          'script[type="text/tikz"]',
         );
         existingScripts.forEach((script) => script.remove());
 
