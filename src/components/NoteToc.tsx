@@ -18,7 +18,8 @@ const generateTableOfContents = (markdownContent: string, activeId: string): str
     const id = cleanedTitle
       .replace(/\s+/g, '-')
       .toLowerCase()
-      .replace(/[+.()']/g, '');
+      .replace(/[+.()']/g, '')
+      .replace(/&/g, '');
 
     const formattedTitle = activeId === id ? `**${cleanedTitle}**` : cleanedTitle;
 
