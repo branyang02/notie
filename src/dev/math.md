@@ -257,3 +257,5 @@ $$
 where $\bar{x}^{(K)} = \frac{1}{K}\sum_{k=1}^K x^{(k)}$ is the average of the iterates.
 
 This bound shows that SGD converges to the optimal value at a rate of $O(1/\sqrt{K})$, which is slower than the $O(1/K)$ rate of full gradient descent. However, each iteration of SGD is much cheaper computationally, especially for large datasets, often making it the preferred choice in practice.
+
+I want to reference earlier equations like $\eqref{1.1}$, $\eqref{1.2}$, $\eqref{2.2}$, and $\eqref{2.3}$.
