@@ -31,8 +31,35 @@ type CodeProps = React.HTMLAttributes<HTMLElement> & {
 };
 
 function processMarkdown(markdownContent: string): string {
-  const pattern = /```(\w+)/g;
-  const processedContent = markdownContent.replace(pattern, '```language-$1');
+  // Pattern to replace code blocks
+  const codeBlockPattern = /```(\w+)/g;
+  const contentWithCodeBlocksProcessed = markdownContent.replace(
+    codeBlockPattern,
+    '```language-$1',
+  );
+
+  // Regex pattern to match lines that start with exactly "## " followed by any text
+  const sectionPattern = /^## .+$/gm;
+  const matches = Array.from(contentWithCodeBlocksProcessed.matchAll(sectionPattern));
+  let processedContent = '';
+  let lastIndex = 0;
+
+  matches.forEach((match, index) => {
+    const [sectionTitle] = match;
+    const sectionStart = match.index ?? 0;
+    processedContent += contentWithCodeBlocksProcessed.slice(lastIndex, sectionStart);
+
+    if (index > 0) {
+      processedContent += '</div>\n';
+    }
+    processedContent += `<div className="sections" id="section-${index}">\n\n`;
+    processedContent += `${sectionTitle}\n`;
+    lastIndex = sectionStart + sectionTitle.length;
+  });
+
+  processedContent += contentWithCodeBlocksProcessed.slice(lastIndex);
+
+  processedContent += '</div>\n';
 
   return processedContent;
 }
@@ -81,7 +108,8 @@ const MarkdownRenderer: React.FC<{
       '\\ref': '\\href{###1}{\\text{#1}}',
       '\\label': '\\htmlId{#1}{}',
     },
-    trust: "(context) => ['\\htmlId', '\\href'].includes(context.command)",
+    trust: (context: { command: string }) =>
+      ['\\htmlId', '\\href'].includes(context.command),
   };
 
   return (
@@ -128,6 +156,22 @@ const Notie: React.FC<NotieProps> = ({ markdown, darkMode, style }) => {
     return () => {
       headings.forEach((heading) => observer.unobserve(heading));
     };
+  }, [markdownContent]);
+
+  useEffect(() => {
+    if (!contentRef.current) return;
+    const sections = contentRef.current.getElementsByClassName('sections');
+
+    for (let sectionIndex = 0; sectionIndex < sections.length; sectionIndex++) {
+      const section = sections[sectionIndex];
+      const eqns = section.getElementsByClassName('eqn-num');
+      for (let eqnIndex = 0; eqnIndex < eqns.length; eqnIndex++) {
+        const eqn = eqns[eqnIndex];
+        console.log(eqn);
+        eqn.id = `${sectionIndex + 1}.${eqnIndex + 1}`;
+        eqn.textContent = `(${sectionIndex + 1}.${eqnIndex + 1})`;
+      }
+    }
   }, [markdownContent]);
 
   return (
