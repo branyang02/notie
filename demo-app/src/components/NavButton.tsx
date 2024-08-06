@@ -7,6 +7,8 @@ import {
   Menu,
   Position,
   Text,
+  Avatar,
+  majorScale,
 } from 'evergreen-ui';
 import { useNavigate } from 'react-router-dom';
 
@@ -98,4 +100,42 @@ const NavButton = ({ label, darkMode }: { label: string; darkMode: boolean }) =>
   );
 };
 
-export { NavButton, NavMobileMenu };
+const GitHubButton = ({ darkMode }: { darkMode: boolean }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const buttonStyle: React.CSSProperties = {
+    backgroundColor: darkMode && isHovered ? '#444' : 'transparent',
+    transition: 'background-color 0.3s ease',
+  };
+
+  const defaultStyle: React.CSSProperties = {
+    WebkitFontSmoothing: 'antialiased',
+    appearance: 'none',
+  };
+
+  const handleClick = () => {
+    window.open('https://github.com/branyang02/notie', '_blank');
+  };
+
+  return (
+    <IconButton
+      appearance="minimal"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={handleClick}
+      style={darkMode ? buttonStyle : defaultStyle}
+      icon={
+        <Avatar
+          src={'github-mark.svg'}
+          size={majorScale(3)}
+          style={{
+            filter: darkMode ? 'invert(1)' : 'none',
+            cursor: 'pointer',
+          }}
+        />
+      }
+    />
+  );
+};
+
+export { GitHubButton, NavButton, NavMobileMenu };

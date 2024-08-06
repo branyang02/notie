@@ -1,7 +1,7 @@
 import { Pane, Heading, majorScale, Switch, MoonIcon, LightbulbIcon } from 'evergreen-ui';
 import { useDarkMode } from '../context/DarkModeContext';
 import { useEffect, useState } from 'react';
-import { NavButton, NavMobileMenu } from './NavButton';
+import { GitHubButton, NavButton, NavMobileMenu } from './NavButton';
 import { useNavigate } from 'react-router-dom';
 
 const NavBar = () => {
@@ -74,6 +74,7 @@ const NavBar = () => {
               <NavButton key={label} label={label} darkMode={darkMode} />
             ))
           )}
+          <GitHubButton darkMode={darkMode} />
         </Pane>
       </Pane>
     </Pane>
