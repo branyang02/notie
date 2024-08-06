@@ -79,7 +79,11 @@
 }
 
 .katex {
-  font-size: 1.25em;
+  font-size: 1.2em;
+}
+
+.katex .eqn-num:before {
+  content: ' ';
 }
 
 /* Table Styles */
@@ -247,11 +251,13 @@
 .blog-content blockquote.theorem::before {
   color: #486bd5;
   content: 'Theorem';
+  font-style: normal;
 }
 
 .blog-content blockquote.theorem {
   background: rgba(126, 174, 247, 0.2);
   border-left: 5px solid #486bd5;
+  font-style: italic;
 }
 
 /* Important */

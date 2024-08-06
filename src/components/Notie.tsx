@@ -2,20 +2,11 @@ import 'katex/dist/katex.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/notie.css';
 
-import React, { useRef, useMemo, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Pane } from 'evergreen-ui';
-import ReactMarkdown from 'react-markdown';
-import rehypeHighlight from 'rehype-highlight';
-import rehypeKatex from 'rehype-katex';
-import rehypeRaw from 'rehype-raw';
-import rehypeSlug from 'rehype-slug';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import CodeBlock from './CodeBlock';
-import TikZ from './TikZ';
-import StaticCodeBlock from './StaticCodeBlock';
 import ScrollToTopButton from './ScrollToTopButton';
 import NoteToc from './NoteToc';
+import MarkdownRenderer from './MarkdownRenderer';
 
 export interface NotieProps {
   markdown: string;
@@ -23,82 +14,37 @@ export interface NotieProps {
   style?: React.CSSProperties;
 }
 
-type CodeProps = React.HTMLAttributes<HTMLElement> & {
-  node?: unknown;
-  inline?: boolean;
-  className?: string;
-  children?: React.ReactNode;
-};
-
 function processMarkdown(markdownContent: string): string {
-  const pattern = /```(\w+)/g;
-  const processedContent = markdownContent.replace(pattern, '```language-$1');
+  const codeBlockPattern = /```(\w+)/g;
+  const contentWithCodeBlocksProcessed = markdownContent.replace(
+    codeBlockPattern,
+    '```language-$1',
+  );
+
+  const sectionPattern = /^## .+$/gm;
+  const matches = Array.from(contentWithCodeBlocksProcessed.matchAll(sectionPattern));
+  let processedContent = '';
+  let lastIndex = 0;
+
+  matches.forEach((match, index) => {
+    const [sectionTitle] = match;
+    const sectionStart = match.index ?? 0;
+    processedContent += contentWithCodeBlocksProcessed.slice(lastIndex, sectionStart);
+
+    if (index > 0) {
+      processedContent += '</div>\n';
+    }
+    processedContent += `<div className="sections" id="section-${index}">\n\n`;
+    processedContent += `${sectionTitle}\n`;
+    lastIndex = sectionStart + sectionTitle.length;
+  });
+
+  processedContent += contentWithCodeBlocksProcessed.slice(lastIndex);
+
+  processedContent += '</div>\n';
 
   return processedContent;
 }
-
-const MarkdownRenderer: React.FC<{
-  markdownContent: string;
-  darkMode?: boolean;
-}> = React.memo(({ markdownContent, darkMode }) => {
-  const components = useMemo(
-    () => ({
-      code({ inline, className, children, ...props }: CodeProps) {
-        const match = /\w+/.exec(className || '');
-
-        if (!inline && match) {
-          const language = className?.split('language-').pop() || '';
-          const content = Array.isArray(children) ? children.join('') : children;
-          const code = String(content).replace(/\n$/, '');
-          if (language.includes('execute-')) {
-            return (
-              <CodeBlock
-                initialCode={code}
-                language={language.split('-').pop()}
-                darkMode={darkMode}
-              />
-            );
-          }
-          if (language === 'tikz') {
-            return <TikZ tikzScript={code} />;
-          }
-          return <StaticCodeBlock code={code} language={language} darkMode={darkMode} />;
-        } else {
-          return (
-            <code className={className} {...props}>
-              {children}
-            </code>
-          );
-        }
-      },
-    }),
-    [darkMode],
-  );
-
-  const katexOptions = {
-    macros: {
-      '\\eqref': '\\href{###1}{(\\text{#1})}',
-      '\\ref': '\\href{###1}{\\text{#1}}',
-      '\\label': '\\htmlId{#1}{}',
-    },
-    trust: "(context) => ['\\htmlId', '\\href'].includes(context.command)",
-  };
-
-  return (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm, remarkMath]}
-      rehypePlugins={[
-        [rehypeKatex, katexOptions],
-        rehypeRaw,
-        rehypeHighlight,
-        rehypeSlug,
-      ]}
-      components={components}
-    >
-      {markdownContent}
-    </ReactMarkdown>
-  );
-});
 
 const Notie: React.FC<NotieProps> = ({ markdown, darkMode, style }) => {
   const markdownContent = processMarkdown(markdown);
@@ -128,6 +74,22 @@ const Notie: React.FC<NotieProps> = ({ markdown, darkMode, style }) => {
     return () => {
       headings.forEach((heading) => observer.unobserve(heading));
     };
+  }, [markdownContent]);
+
+  // Effect to auto label equation numbers
+  useEffect(() => {
+    if (!contentRef.current) return;
+    const sections = contentRef.current.getElementsByClassName('sections');
+
+    for (let sectionIndex = 0; sectionIndex < sections.length; sectionIndex++) {
+      const section = sections[sectionIndex];
+      const eqns = section.getElementsByClassName('eqn-num');
+      for (let eqnIndex = 0; eqnIndex < eqns.length; eqnIndex++) {
+        const eqn = eqns[eqnIndex];
+        eqn.id = `${sectionIndex + 1}.${eqnIndex + 1}`;
+        eqn.textContent = `(${sectionIndex + 1}.${eqnIndex + 1})`;
+      }
+    }
   }, [markdownContent]);
 
   return (

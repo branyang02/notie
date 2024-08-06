@@ -4,61 +4,6 @@
 Date: 5/1/2024 | Author: Brandon Yang
 </span>
 
-# Title
-
-## Heading 1
-
-### Heading 2
-
-#### Heading 3
-
-##### Heading 4
-
-###### Heading 5
-
-#### **Process** vs. **Thread**
-
-Search by definition $\eqref{1}$ or $\ref{1}$.
-
-$$
-\begin{aligned} \sin 2\theta = 2\sin \theta \cos \theta \\ = \cfrac{2 \tan \theta}{1+\tan^2 \theta} \end{aligned} \label{1}\tag{1}
-$$
-
-Equation 2:
-
-$$
-\begin{aligned} \sin 2\theta = 2\sin \theta \cos \theta \\ = \cfrac{2 \tan \theta}{1+\tan^2 \theta} \end{aligned} \label{2}\tag{2}
-$$
-
-See Equation $\eqref{2}$.
-
-```bash
-asdf
-```
-
-- **Process**: an instance of a program in execution.
-- **Thread**: a process can have multiple threads of execution. Threads share the same **virtual address space**, but have their own **program registers**, **program counter**, condition codes, etc.
-  - that does not work
-    - that does not work-
-  - ehllo
-- asdf
-
-Suppose in the following table , we know that since the first row is the header row, we can use the `th` tag to define the header cells. The `th` tag is used to define a header cell in an HTML table. An HTML table has two kinds of cells: Header cells - contains header information (created with the `<th>` element). Data cells - contains data (created with the `<td>` element). But sinc the b
-
-| Tables               | Are                                               | Cool  |
-| -------------------- | ------------------------------------------------- | ----- |
-| col 1 is             | left                                              | $1600 |
-| col 2 is             | centeredasdfasdfagiven the fac tthat this inot ok |
-| sdfadsfasasdfasdfsad | $12                                               |
-| col 3 is             | right                                             | $1    |
-
-$$
-\begin{aligned}
-\mathbb{E}[f(\lambda X + (1 - \lambda) Y)] & \leq \mathbb{E}[\lambda f(X) + (1 - \lambda) f(Y)] \\
-f(\mathbb{E}[\lambda X + (1 - \lambda) Y]) & \leq \lambda f(\mathbb{E}[X]) + (1 - \lambda) f(\mathbb{E}[Y])
-\end{aligned}
-$$
-
 ## **Introduction**
 
 These are my notes for Computer Systems and Organization 2 (CSO2) at the University of Virginia in the Spring 2024 semester taught by Charles Reiss. This note contains live code examples and explanations for various topics in the course.
@@ -128,8 +73,6 @@ clean:
 - `PHONY` target: `clean` (not a file)
 
 <details><summary>Practice</summary>
-
-This is a practice question.
 
 ```makefile
 W: X, Y
@@ -298,16 +241,8 @@ extra.o: extra.c extra.h
         <img src="https://www.cs.virginia.edu/~cr4bd/3130/S2024/readings/kernel-layers1.svg" alt="Kernel Layers" style="display: block; max-height: 100%; max-width: 100%;">
     </div>
 </div>
-
-![Alt text](https://www.cs.virginia.edu/~cr4bd/3130/S2024/readings/kernel-layers1.svg)
-
-![adsf](https://branyang02.github.io/images/address_space.png)
-
 <span
-    class="caption">
-
-    We can view the combination of the limited user-mode hardware interface and system calls as collectively defining the interface user mode code sees.
-
+    class="caption">We can view the combination of the limited user-mode hardware interface and system calls as collectively defining the interface user mode code sees.
 </span>
 
 ### **Implementation**
@@ -380,8 +315,7 @@ socket:
   - A process has its own program registers, condition codes, **virtual address space**, etc.
 - **Virtual Address Space**: the memory that a process can access. (illusion of a program having its own memory)
 
-![](https://branyang02.github.io/images/address_space.png)
-
+<img src="https://branyang02.github.io/images/address_space.png" alt="Virtual Address Space" style="display: block; max-height: 70%; max-width: 70%;">
 <span
     class="caption"> The virtual address space is the memory that a process can access. It is an illusion of a program having its own memory.
 </span>
@@ -417,11 +351,11 @@ Suppose we have two processes, `A` and `B`, and a timer interrupt every `10ms`. 
 #### **Process** vs. **Thread**
 
 - **Process**: an instance of a program in execution.
-
 - **Thread**: a process can have multiple threads of execution. Threads share the same **virtual address space**, but have their own **program registers**, **program counter**, condition codes, etc.
 
-  ![](https://static.javatpoint.com/difference/images/process-vs-thread3.png)
-
+  <div style="background-color: white;">
+      <img src="https://static.javatpoint.com/difference/images/process-vs-thread3.png" style="max-height: 70%; max-width: 70%;">
+  </div>
   <span
       class="caption"> Threads within the same process share the same virtual address space but have their own program registers, program counter, condition codes, etc. (Source: javapoint, <a href="https://www.javatpoint.com/process-vs-thread">Process Vs. Thread</a>)
   </span>
@@ -457,7 +391,7 @@ Suppose we have two processes, `A` and `B`, and a timer interrupt every `10ms`. 
 
 ### **Forwarding exceptions to signals**
 
-![](https://branyang02.github.io/images/signals.png)
+<img src="https://branyang02.github.io/images/signals.png" alt="Signals" style="display: block; max-height: 70%; max-width: 70%;">
 <span
       class="caption"> When `SIGINT` is received, the program enters kernel mode and starts running the exception handler for handing keyboard interrupts. The exception handler then forwards the signal to the user mode signal handler. The signal handler then runs in user mode. After the signal handler finishes, the program enters the kernel mode again to clean up and return to user mode.
 </span>
@@ -474,8 +408,6 @@ Suppose we have two processes, `A` and `B`, and a timer interrupt every `10ms`. 
 | `SIGUSR1`, `SIGUSR2` | use for whatever you (app developer) wants                   |
 | `SIGKILL`            | terminates process (**cannot be handled by process!**)       |
 | `SIGSTOP`            | suspends process (**cannot be handled by process!**)         |
-
-Website link: [Signal List](https://man7.org/linux)
 
 ### **Signals Setup**
 
@@ -3409,7 +3341,7 @@ The final `commit` stage is **in order**.
 
 <details open><summary>Example OOO Pipeline Stages</summary>
 
-![](https://branyang02.github.io/images/ooo_pipeline.png)
+<img src="https://branyang02.github.io/images/ooo_pipeline.png" alt="OOO Pipeline" style="display: block; max-height: 70%; max-width: 70%;">
 
 In the example above, we assume we can execute 2 instructions at once. Therefore, we **must** make sure that we are **not** performing more than _2 stages of the same type_ at the same cycle.
 
