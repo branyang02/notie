@@ -1,0 +1,45 @@
+name: Lint and Format
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  lint-format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run lint
+        id: lint
+        run: |
+          npm run lint
+        continue-on-error: false
+
+      - name: Run format check
+        id: format-check
+        if: steps.lint.outcome == 'success'
+        run: |
+          npx prettier --check .
+        continue-on-error: true
+
+      - name: Fail if formatting is needed
+        if: steps.format-check.outcome != 'success'
+        run: |
+          echo "Code needs formatting. Please run 'npm run format' and commit the changes."
+          exit 1

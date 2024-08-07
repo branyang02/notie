@@ -63,6 +63,7 @@ const TikZ = ({ tikzScript }: { tikzScript: string }) => {
             if (scriptContainerRef.current) {
                 // Remove any existing TikZ scripts when component unmounts
                 const existingScripts =
+                    // eslint-disable-next-line react-hooks/exhaustive-deps
                     scriptContainerRef.current.querySelectorAll(
                         'script[type="text/tikz"]',
                     );

@@ -24,6 +24,8 @@ const ScrollToTopButton = () => {
         });
     };
 
+    const unused = 23;
+
     useEffect(() => {
         window.addEventListener("scroll", toggleVisibility);
         return () => {
