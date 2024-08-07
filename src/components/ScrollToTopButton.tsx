@@ -21,16 +21,15 @@ const ScrollToTopButton = () => {
         window.scrollTo({
             top: 0,
             behavior: "smooth",
-        });
+        });                 
     };
-
-    const unused = 23;
 
     useEffect(() => {
         window.addEventListener("scroll", toggleVisibility);
         return () => {
             window.removeEventListener("scroll", toggleVisibility);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lastScrollTop]);
 
     return isVisible ? (
