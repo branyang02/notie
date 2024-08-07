@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState } from "react";
 import {
     Button,
     IconButton,
@@ -9,29 +9,29 @@ import {
     Text,
     Avatar,
     majorScale,
-} from "evergreen-ui"
-import { useNavigate } from "react-router-dom"
+} from "evergreen-ui";
+import { useNavigate } from "react-router-dom";
 
 const NavMobileMenu = ({ tabs }: { tabs: string[] }) => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const handleSelect = (tab: string) => {
-        let path: string
+        let path: string;
 
         switch (tab) {
             case "Home":
-                path = "/"
-                break
+                path = "/";
+                break;
             case "Relevant Coursework":
-                path = "/coursework"
-                break
+                path = "/coursework";
+                break;
             default:
-                path = `/${tab.toLowerCase().replace(/\s+/g, "")}`
-                break
+                path = `/${tab.toLowerCase().replace(/\s+/g, "")}`;
+                break;
         }
 
-        navigate(path)
-    }
+        navigate(path);
+    };
 
     return (
         <Popover
@@ -53,46 +53,46 @@ const NavMobileMenu = ({ tabs }: { tabs: string[] }) => {
         >
             <IconButton icon={MenuIcon} marginRight={16} />
         </Popover>
-    )
-}
+    );
+};
 
 const NavButton = ({
     label,
     darkMode,
 }: {
-    label: string
-    darkMode: boolean
+    label: string;
+    darkMode: boolean;
 }) => {
-    const [isHovered, setIsHovered] = useState(false)
-    const navigate = useNavigate()
+    const [isHovered, setIsHovered] = useState(false);
+    const navigate = useNavigate();
 
     const buttonStyle: React.CSSProperties = {
         backgroundColor: darkMode && isHovered ? "#444" : "transparent",
         transition: "background-color 0.3s ease",
-    }
+    };
 
     const defaultStyle: React.CSSProperties = {
         WebkitFontSmoothing: "antialiased",
         appearance: "none",
-    }
+    };
 
     const handleClick = () => {
-        let path: string
+        let path: string;
 
         switch (label) {
             case "Home":
-                path = "/"
-                break
+                path = "/";
+                break;
             case "Relevant Coursework":
-                path = "/coursework"
-                break
+                path = "/coursework";
+                break;
             default:
-                path = `/${label.toLowerCase().replace(/\s+/g, "")}`
-                break
+                path = `/${label.toLowerCase().replace(/\s+/g, "")}`;
+                break;
         }
 
-        navigate(path)
-    }
+        navigate(path);
+    };
 
     return (
         <Button
@@ -106,25 +106,25 @@ const NavButton = ({
                 {label}
             </Text>
         </Button>
-    )
-}
+    );
+};
 
 const GitHubButton = ({ darkMode }: { darkMode: boolean }) => {
-    const [isHovered, setIsHovered] = useState(false)
+    const [isHovered, setIsHovered] = useState(false);
 
     const buttonStyle: React.CSSProperties = {
         backgroundColor: darkMode && isHovered ? "#444" : "transparent",
         transition: "background-color 0.3s ease",
-    }
+    };
 
     const defaultStyle: React.CSSProperties = {
         WebkitFontSmoothing: "antialiased",
         appearance: "none",
-    }
+    };
 
     const handleClick = () => {
-        window.open("https://github.com/branyang02/notie", "_blank")
-    }
+        window.open("https://github.com/branyang02/notie", "_blank");
+    };
 
     return (
         <IconButton
@@ -144,7 +144,7 @@ const GitHubButton = ({ darkMode }: { darkMode: boolean }) => {
                 />
             }
         />
-    )
-}
+    );
+};
 
-export { GitHubButton, NavButton, NavMobileMenu }
+export { GitHubButton, NavButton, NavMobileMenu };

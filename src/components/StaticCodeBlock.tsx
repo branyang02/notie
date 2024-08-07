@@ -1,14 +1,14 @@
-import { Pane } from "evergreen-ui"
-import { atomOneLight, CodeBlock, CopyBlock, nord } from "react-code-blocks"
+import { Pane } from "evergreen-ui";
+import { atomOneLight, CodeBlock, CopyBlock, nord } from "react-code-blocks";
 
 const StaticCodeBlock = ({
     code,
     language,
     darkMode = false,
 }: {
-    code: string
-    language: string
-    darkMode?: boolean
+    code: string;
+    language: string;
+    darkMode?: boolean;
 }) => {
     return (
         <Pane>
@@ -47,7 +47,7 @@ const StaticCodeBlock = ({
                 )}
             </div>
         </Pane>
-    )
-}
+    );
+};
 
-export default StaticCodeBlock
+export default StaticCodeBlock;

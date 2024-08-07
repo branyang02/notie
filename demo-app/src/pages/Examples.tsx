@@ -1,68 +1,68 @@
-import { Card, Heading, majorScale, Pane, Spinner, Text } from "evergreen-ui"
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { useDarkMode } from "../context/useDarkMode"
+import { Card, Heading, majorScale, Pane, Spinner, Text } from "evergreen-ui";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDarkMode } from "../context/useDarkMode";
 
 const modules = import.meta.glob("../assets/**.md", {
     query: "?raw",
     import: "default",
-})
+});
 
 interface NotesMetaData {
-    title?: string
-    subtitle?: string
-    date?: string
-    link: string
+    title?: string;
+    subtitle?: string;
+    date?: string;
+    link: string;
 }
 
 const Examples = () => {
-    const [notesMetaData, setNotesMetaData] = useState<NotesMetaData[]>([])
-    const [loading, setLoading] = useState(true)
-    const navigate = useNavigate()
-    const { darkMode } = useDarkMode()
+    const [notesMetaData, setNotesMetaData] = useState<NotesMetaData[]>([]);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+    const { darkMode } = useDarkMode();
 
     useEffect(() => {
         async function fetchNotes() {
-            const notesData: NotesMetaData[] = []
+            const notesData: NotesMetaData[] = [];
             for (const path in modules) {
-                const markdown = await modules[path]()
-                const rawMDString = markdown as string
+                const markdown = await modules[path]();
+                const rawMDString = markdown as string;
                 const title = /^#\s(.+)$/m
                     .exec(rawMDString)?.[1]
-                    .replace(/\*/g, "")
-                const fileName = path.split("/").pop()?.replace(/\.md$/, "")
+                    .replace(/\*/g, "");
+                const fileName = path.split("/").pop()?.replace(/\.md$/, "");
                 const subtitle = fileName
                     ?.replace(/-/g, " ")
-                    .replace(/.md$/, "")
+                    .replace(/.md$/, "");
                 const dateFilter =
-                    /\b(Spring|Summer|Fall|Autumn|Winter)\s+\d{4}\b/
-                const date = dateFilter.exec(rawMDString)?.[0]
+                    /\b(Spring|Summer|Fall|Autumn|Winter)\s+\d{4}\b/;
+                const date = dateFilter.exec(rawMDString)?.[0];
 
                 notesData.push({
                     title: title,
                     subtitle: subtitle,
                     link: `/examples/${fileName}`,
                     date: date,
-                })
+                });
             }
-            notesData.sort((b, a) => sortNotesByDate(a.date, b.date))
-            setNotesMetaData(notesData)
-            setLoading(false)
+            notesData.sort((b, a) => sortNotesByDate(a.date, b.date));
+            setNotesMetaData(notesData);
+            setLoading(false);
         }
 
         function sortNotesByDate(
             dateA: string | undefined,
-            dateB: string | undefined
+            dateB: string | undefined,
         ): number {
-            if (!dateA || !dateB) return 0
+            if (!dateA || !dateB) return 0;
 
             type SeasonMonthMap = {
-                Spring: number
-                Summer: number
-                Fall: number
-                Autumn: number
-                Winter: number
-            }
+                Spring: number;
+                Summer: number;
+                Fall: number;
+                Autumn: number;
+                Winter: number;
+            };
 
             const months: SeasonMonthMap = {
                 Spring: 1,
@@ -70,29 +70,29 @@ const Examples = () => {
                 Fall: 9,
                 Autumn: 9,
                 Winter: 12,
-            }
+            };
 
             const parseDate = (date: string): Date => {
-                const [season, year] = date.split(" ")
+                const [season, year] = date.split(" ");
 
-                const month = months[season as keyof SeasonMonthMap]
-                if (!month) throw new Error(`Invalid season: ${season}`)
+                const month = months[season as keyof SeasonMonthMap];
+                if (!month) throw new Error(`Invalid season: ${season}`);
 
-                return new Date(`${year}-${month}-01`)
-            }
+                return new Date(`${year}-${month}-01`);
+            };
 
-            const date1 = parseDate(dateA)
-            const date2 = parseDate(dateB)
+            const date1 = parseDate(dateA);
+            const date2 = parseDate(dateB);
 
-            return date1.getTime() - date2.getTime()
+            return date1.getTime() - date2.getTime();
         }
 
-        fetchNotes()
-    }, [])
+        fetchNotes();
+    }, []);
 
     const handleCardClick = (path: string) => {
-        navigate(path)
-    }
+        navigate(path);
+    };
 
     if (loading) {
         return (
@@ -106,15 +106,15 @@ const Examples = () => {
             >
                 <Spinner />
             </Pane>
-        )
+        );
     }
 
     const exampleNotes = notesMetaData.filter((note) =>
-        note.title?.includes("Example")
-    )
+        note.title?.includes("Example"),
+    );
     const otherNotes = notesMetaData.filter(
-        (note) => !note.title?.includes("Example")
-    )
+        (note) => !note.title?.includes("Example"),
+    );
 
     return (
         <Pane
@@ -216,7 +216,7 @@ const Examples = () => {
                 ))}
             </Pane>
         </Pane>
-    )
-}
+    );
+};
 
-export default Examples
+export default Examples;

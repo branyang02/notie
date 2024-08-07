@@ -5,37 +5,37 @@ import {
     Switch,
     MoonIcon,
     LightbulbIcon,
-} from "evergreen-ui"
-import { useDarkMode } from "../context/useDarkMode"
-import { useEffect, useState } from "react"
-import { GitHubButton, NavButton, NavMobileMenu } from "./NavButton"
-import { useNavigate } from "react-router-dom"
+} from "evergreen-ui";
+import { useDarkMode } from "../context/useDarkMode";
+import { useEffect, useState } from "react";
+import { GitHubButton, NavButton, NavMobileMenu } from "./NavButton";
+import { useNavigate } from "react-router-dom";
 
 const NavBar = () => {
-    const { darkMode, toggleDarkMode } = useDarkMode()
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 1000)
-    const [checked, setChecked] = useState(darkMode)
-    const navigate = useNavigate()
+    const { darkMode, toggleDarkMode } = useDarkMode();
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 1000);
+    const [checked, setChecked] = useState(darkMode);
+    const navigate = useNavigate();
 
-    const NAME = "notie"
-    const TABS = ["Home", "Examples", "Tutorial"]
+    const NAME = "notie";
+    const TABS = ["Home", "Examples", "Tutorial"];
 
     const handleSwitchChange = () => {
-        setChecked(!checked)
-        toggleDarkMode()
-    }
+        setChecked(!checked);
+        toggleDarkMode();
+    };
 
     const handleResize = () => {
-        setIsMobile(window.innerWidth <= 1000)
-    }
+        setIsMobile(window.innerWidth <= 1000);
+    };
 
     useEffect(() => {
-        window.addEventListener("resize", handleResize)
+        window.addEventListener("resize", handleResize);
 
         return () => {
-            window.removeEventListener("resize", handleResize)
-        }
-    }, [])
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
 
     return (
         <Pane
@@ -97,7 +97,7 @@ const NavBar = () => {
                 </Pane>
             </Pane>
         </Pane>
-    )
-}
+    );
+};
 
-export default NavBar
+export default NavBar;

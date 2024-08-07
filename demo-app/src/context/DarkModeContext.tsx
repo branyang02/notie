@@ -1,39 +1,39 @@
-import React, { createContext, ReactNode, useEffect, useState } from "react"
+import React, { createContext, ReactNode, useEffect, useState } from "react";
 
 type DarkModeContextType = {
-    darkMode: boolean
-    toggleDarkMode: () => void
-}
+    darkMode: boolean;
+    toggleDarkMode: () => void;
+};
 
 const DarkModeContext = createContext<DarkModeContextType | undefined>(
-    undefined
-)
+    undefined,
+);
 
 export const DarkModeProvider: React.FC<{ children: ReactNode }> = ({
     children,
 }) => {
     const [darkMode, setDarkMode] = useState<boolean>(() => {
-        const savedMode = localStorage.getItem("darkMode")
+        const savedMode = localStorage.getItem("darkMode");
         if (savedMode === null) {
-            const currentHour = new Date().getHours()
-            return currentHour >= 18 || currentHour < 6
+            const currentHour = new Date().getHours();
+            return currentHour >= 18 || currentHour < 6;
         }
-        return savedMode === "true"
-    })
+        return savedMode === "true";
+    });
 
     useEffect(() => {
-        localStorage.setItem("darkMode", darkMode.toString())
-    }, [darkMode])
+        localStorage.setItem("darkMode", darkMode.toString());
+    }, [darkMode]);
 
     const toggleDarkMode = () => {
-        setDarkMode((prevMode) => !prevMode)
-    }
+        setDarkMode((prevMode) => !prevMode);
+    };
 
     return (
         <DarkModeContext.Provider value={{ darkMode, toggleDarkMode }}>
             {children}
         </DarkModeContext.Provider>
-    )
-}
+    );
+};
 
-export { DarkModeContext }
+export { DarkModeContext };

@@ -1,13 +1,13 @@
-import { cpp } from "@codemirror/lang-cpp"
-import { go } from "@codemirror/lang-go"
-import { java } from "@codemirror/lang-java"
-import { javascript } from "@codemirror/lang-javascript"
-import { python } from "@codemirror/lang-python"
-import { rust } from "@codemirror/lang-rust"
-import { indentUnit } from "@codemirror/language"
-import { duotoneLight } from "@uiw/codemirror-theme-duotone"
-import { tokyoNightStorm } from "@uiw/codemirror-theme-tokyo-night-storm"
-import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror"
+import { cpp } from "@codemirror/lang-cpp";
+import { go } from "@codemirror/lang-go";
+import { java } from "@codemirror/lang-java";
+import { javascript } from "@codemirror/lang-javascript";
+import { python } from "@codemirror/lang-python";
+import { rust } from "@codemirror/lang-rust";
+import { indentUnit } from "@codemirror/language";
+import { duotoneLight } from "@uiw/codemirror-theme-duotone";
+import { tokyoNightStorm } from "@uiw/codemirror-theme-tokyo-night-storm";
+import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import {
     Button,
     Card,
@@ -17,60 +17,60 @@ import {
     PlayIcon,
     ResetIcon,
     Spinner,
-} from "evergreen-ui"
-import { useCallback, useRef, useState } from "react"
+} from "evergreen-ui";
+import { useCallback, useRef, useState } from "react";
 
-import { runCode, RunCodeResponse } from "../service/api"
+import { runCode, RunCodeResponse } from "../service/api";
 
 const CodeBlock = ({
     initialCode,
     language = "python",
     darkMode = false,
 }: {
-    initialCode: string
-    language?: string
-    darkMode?: boolean
+    initialCode: string;
+    language?: string;
+    darkMode?: boolean;
 }) => {
-    const [isLoading, setIsLoading] = useState(false)
-    const [output, setOutput] = useState("")
-    const [error, setError] = useState(false)
-    const [code, setCode] = useState(initialCode)
-    const [image, setImage] = useState("")
-    const editorRef = useRef<ReactCodeMirrorRef>(null)
+    const [isLoading, setIsLoading] = useState(false);
+    const [output, setOutput] = useState("");
+    const [error, setError] = useState(false);
+    const [code, setCode] = useState(initialCode);
+    const [image, setImage] = useState("");
+    const editorRef = useRef<ReactCodeMirrorRef>(null);
 
-    let languageCode
+    let languageCode;
     switch (language) {
         case "c":
         case "cpp":
-            languageCode = cpp()
-            break
+            languageCode = cpp();
+            break;
         case "go":
-            languageCode = go()
-            break
+            languageCode = go();
+            break;
         case "java":
-            languageCode = java()
-            break
+            languageCode = java();
+            break;
         case "rust":
-            languageCode = rust()
-            break
+            languageCode = rust();
+            break;
         case "javascript":
         case "js":
         case "typescript":
-            languageCode = javascript()
-            break
+            languageCode = javascript();
+            break;
 
         default:
-            languageCode = python()
+            languageCode = python();
     }
 
     const onChange = useCallback((value: string) => {
-        setCode(value)
-    }, [])
+        setCode(value);
+    }, []);
 
     const runCodeAsync = async () => {
-        setIsLoading(true)
+        setIsLoading(true);
         try {
-            const data: RunCodeResponse = await runCode(code, language)
+            const data: RunCodeResponse = await runCode(code, language);
             if (
                 data.output.trim().startsWith("Traceback") ||
                 data.output.trim().startsWith("File") ||
@@ -78,40 +78,40 @@ const CodeBlock = ({
                 data.output.toLowerCase().includes("error") ||
                 data.output.toLowerCase().includes("core dumped")
             ) {
-                setError(true)
+                setError(true);
             } else {
-                setError(false)
+                setError(false);
             }
-            setOutput(data.output)
+            setOutput(data.output);
             if (data.image !== "") {
-                setImage(data.image)
+                setImage(data.image);
             }
         } catch (error) {
-            setOutput(`Execution failed: ${error}`)
-            setError(true)
-            setImage("")
+            setOutput(`Execution failed: ${error}`);
+            setError(true);
+            setImage("");
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
-    }
+    };
 
     const clearOutput = () => {
-        setOutput("")
-        setImage("")
-        setError(false)
-        setIsLoading(false)
-    }
+        setOutput("");
+        setImage("");
+        setError(false);
+        setIsLoading(false);
+    };
 
     const resetEditor = () => {
-        setCode(initialCode)
+        setCode(initialCode);
         if (editorRef.current?.view) {
-            const { state } = editorRef.current.view
-            const end = state.doc.length
+            const { state } = editorRef.current.view;
+            const end = state.doc.length;
             editorRef.current.view.dispatch({
                 changes: { from: 0, to: end, insert: initialCode },
-            })
+            });
         }
-    }
+    };
 
     return (
         <Pane>
@@ -226,7 +226,7 @@ const CodeBlock = ({
                 )}
             </Pane>
         </Pane>
-    )
-}
+    );
+};
 
-export default CodeBlock
+export default CodeBlock;

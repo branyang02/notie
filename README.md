@@ -44,15 +44,15 @@ The `Notie` component is used to render Markdown content. It accepts the followi
 ### Example Usage
 
 ```jsx
-import React from "react"
-import Notie from "notie-markdown"
+import React from "react";
+import Notie from "notie-markdown";
 
 const Example = () => (
     <Notie
         markdown="# Hello World\nThis is a Markdown content."
         darkMode={true}
     />
-)
+);
 ```
 
 Checkout the full example at the main demo page [https://notie-nine.vercel.app/](https://notie-nine.vercel.app/), or at `/demo-app`.
