@@ -6,7 +6,7 @@ import {
     MoonIcon,
     LightbulbIcon,
 } from "evergreen-ui"
-import { useDarkMode } from "../context/DarkModeContext"
+import { useDarkMode } from "../context/useDarkMode"
 import { useEffect, useState } from "react"
 import { GitHubButton, NavButton, NavMobileMenu } from "./NavButton"
 import { useNavigate } from "react-router-dom"

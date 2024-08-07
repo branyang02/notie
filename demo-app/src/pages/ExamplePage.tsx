@@ -1,7 +1,7 @@
 import { Notie } from "notie-markdown"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import { useDarkMode } from "../context/DarkModeContext"
+import { useDarkMode } from "../context/useDarkMode"
 
 const modules = import.meta.glob("../assets/**.md", {
     query: "?raw",

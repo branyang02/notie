@@ -1,7 +1,7 @@
 import { Card, Heading, majorScale, Pane, Text } from "evergreen-ui"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { useDarkMode } from "../context/DarkModeContext"
+import { useDarkMode } from "../context/useDarkMode"
 
 const modules = import.meta.glob("../assets/**.md", {
     query: "?raw",

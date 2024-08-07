@@ -1,11 +1,11 @@
 import { Pane, majorScale } from "evergreen-ui"
 import { Notie } from "notie-markdown"
 import NavBar from "./components/NavBar"
-import { useDarkMode } from "./context/DarkModeContext"
 import { Route, Routes } from "react-router-dom"
 import Examples from "./pages/Examples"
 import ExamplePage from "./pages/ExamplePage"
 import { useEffect, useState } from "react"
+import { useDarkMode } from "./context/useDarkMode"
 
 const homeModule = import.meta.glob("./pages/home.md", {
     query: "?raw",
