@@ -1,4 +1,4 @@
-import { Card, Heading, majorScale, Pane, Text } from "evergreen-ui"
+import { Card, Heading, majorScale, Pane, Spinner, Text } from "evergreen-ui"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useDarkMode } from "../context/useDarkMode"
@@ -17,12 +17,13 @@ interface NotesMetaData {
 
 const Examples = () => {
     const [notesMetaData, setNotesMetaData] = useState<NotesMetaData[]>([])
+    const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
     const { darkMode } = useDarkMode()
 
     useEffect(() => {
         async function fetchNotes() {
-            const notesData = []
+            const notesData: NotesMetaData[] = []
             for (const path in modules) {
                 const markdown = await modules[path]()
                 const rawMDString = markdown as string
@@ -46,6 +47,7 @@ const Examples = () => {
             }
             notesData.sort((b, a) => sortNotesByDate(a.date, b.date))
             setNotesMetaData(notesData)
+            setLoading(false)
         }
 
         function sortNotesByDate(
@@ -90,6 +92,21 @@ const Examples = () => {
 
     const handleCardClick = (path: string) => {
         navigate(path)
+    }
+
+    if (loading) {
+        return (
+            <Pane
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                style={{
+                    margin: "0 auto",
+                }}
+            >
+                <Spinner />
+            </Pane>
+        )
     }
 
     const exampleNotes = notesMetaData.filter((note) =>

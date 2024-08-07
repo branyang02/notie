@@ -2,6 +2,7 @@ import { Notie } from "notie-markdown"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { useDarkMode } from "../context/useDarkMode"
+import { Pane, Spinner } from "evergreen-ui"
 
 const modules = import.meta.glob("../assets/**.md", {
     query: "?raw",
@@ -12,6 +13,7 @@ const ExamplePage = () => {
     const [markdownContent, setMarkdownContent] = useState<string>("")
     const { noteId } = useParams()
     const { darkMode } = useDarkMode()
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const fetchNote = async () => {
@@ -25,10 +27,26 @@ const ExamplePage = () => {
                     break
                 }
             }
+            setLoading(false)
         }
 
         fetchNote()
     }, [noteId])
+
+    if (loading) {
+        return (
+            <Pane
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                style={{
+                    margin: "0 auto",
+                }}
+            >
+                <Spinner />
+            </Pane>
+        )
+    }
 
     return <Notie markdown={markdownContent} darkMode={darkMode} />
 }
