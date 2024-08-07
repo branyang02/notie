@@ -135,7 +135,7 @@ const GitHubButton = ({ darkMode }: { darkMode: boolean }) => {
             style={darkMode ? buttonStyle : defaultStyle}
             icon={
                 <Avatar
-                    src={"github-mark.svg"}
+                    src={"/github-mark.svg"}
                     size={majorScale(3)}
                     style={{
                         filter: darkMode ? "invert(1)" : "none",
