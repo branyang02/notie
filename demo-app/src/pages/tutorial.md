@@ -41,16 +41,16 @@ This generates the following:
 You can create ordered and unordered lists using the following syntax:
 
 ```markdown
-- Unordered list item 1
-- Unordered list item 2
-- Unordered list item 3
+-   Unordered list item 1
+-   Unordered list item 2
+-   Unordered list item 3
 ```
 
 This generates the following:
 
-- Unordered list item 1
-- Unordered list item 2
-- Unordered list item 3
+-   Unordered list item 1
+-   Unordered list item 2
+-   Unordered list item 3
 
 ```markdown
 1. Ordered list item 1
@@ -233,11 +233,11 @@ A **definition** is a statement that explains the meaning of a term.
 
 You can use the following classes to create different types of blocks:
 
-- `definition`
-- `proof`
-- `equation`
-- `theorem`
-- `important`
+-   `definition`
+-   `proof`
+-   `equation`
+-   `theorem`
+-   `important`
 
 <blockquote class="proof">
 
@@ -329,9 +329,9 @@ Or you can use raw html to include images with custom sizes:
 
 ```html
 <img
-  src="https://via.placeholder.com/150"
-  alt="Alt text"
-  style="display: block; max-height: 30%; max-width: 30%;"
+    src="https://via.placeholder.com/150"
+    alt="Alt text"
+    style="display: block; max-height: 30%; max-width: 30%;"
 />
 ```
 
@@ -378,8 +378,11 @@ You can cite things using `[^1]` and then define the footnote at the bottom of t
 I am citing something here[^1]. Something else here[^2]. Multiple things here[^3] [^4].
 
 [^1]: This is the footnote.
+
 [^2]: This is another footnote.
+
 [^3]: This is yet another footnote.
+
 [^4]: This is the last footnote.
 
 ## Request for more features

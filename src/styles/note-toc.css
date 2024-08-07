@@ -1,31 +1,31 @@
 .note-toc a {
-  color: #172b41;
-  text-decoration: none;
+    color: #172b41;
+    text-decoration: none;
 }
 
 .note-toc a.active {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .note-toc.dark-mode a {
-  color: #ffffff;
+    color: #ffffff;
 }
 
 .note-toc.dark-mode a:hover,
 .note-toc.dark-mode a:focus {
-  color: #bbb;
+    color: #bbb;
 }
 
 .note-toc a:hover,
 .note-toc a:focus {
-  color: #777777;
-  text-decoration: underline;
+    color: #777777;
+    text-decoration: underline;
 }
 
 .note-toc.dark-mode h1 {
-  color: #ffffff;
+    color: #ffffff;
 }
 
 .note-toc.dark-mode ::marker {
-  color: #ffffff;
+    color: #ffffff;
 }

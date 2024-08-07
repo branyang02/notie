@@ -6,10 +6,10 @@
 
 For example, `Usage` and `Section 2` are both sections. Any command that uses automatic numbering will be numbered correctly within sections. These are the commands that support automatic numbering:
 
-- `\begin{equation} ... \end{equation}`
-- `\begin{align} ... \end{align}`
-- `\begin{alignat} ... \end{alignat}`
-- `\begin{gather} ... \end{gather}`
+-   `\begin{equation} ... \end{equation}`
+-   `\begin{align} ... \end{align}`
+-   `\begin{alignat} ... \end{alignat}`
+-   `\begin{gather} ... \end{gather}`
 
 For further details, checkout Katex's [documentation](https://katex.org/docs/supported.html).
 

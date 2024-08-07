@@ -1,1 +1,1 @@
-export { default as Notie } from './components/Notie';
+export { default as Notie } from "./components/Notie";

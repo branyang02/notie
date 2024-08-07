@@ -46,8 +46,8 @@ $$
 
 where:
 
-- $\mathbb{E}[X]$ is the expected value of $X$.
-- $\mathbb{E}[f(X)]$ is the expected value of $f(X)$.
+-   $\mathbb{E}[X]$ is the expected value of $X$.
+-   $\mathbb{E}[f(X)]$ is the expected value of $f(X)$.
 
 </blockquote>
 

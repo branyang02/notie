@@ -1,11 +1,11 @@
 {
-  "installCommand": "npm install && npm run build && cd demo-app && npm install",
-  "buildCommand": "cd demo-app && npm run build",
-  "outputDirectory": "demo-app/dist",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ]
+    "installCommand": "npm install && npm run build && cd demo-app && npm install",
+    "buildCommand": "cd demo-app && npm run build",
+    "outputDirectory": "demo-app/dist",
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
 }

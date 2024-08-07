@@ -4,8 +4,8 @@ Thank you for your interest in contributing! We're committed to fostering an ope
 
 ## Quick Start
 
-- **Host and Deploy**: We use GitHub for version control and Vercel for deployments.
-- **Contribute**: Simply fork the repository, create your feature branch, and submit a pull request.
+-   **Host and Deploy**: We use GitHub for version control and Vercel for deployments.
+-   **Contribute**: Simply fork the repository, create your feature branch, and submit a pull request.
 
 ## How to Contribute
 
@@ -21,8 +21,8 @@ Submit bugs through [GitHub Issues](https://github.com/branyang02/notie/issues).
 
 ## Coding Style
 
-- Use spaces for indentation and keep your code clean.
-- Ensure your code complies with any linters or style guides specified in the `README.md`.
+-   Use spaces for indentation and keep your code clean.
+-   Ensure your code complies with any linters or style guides specified in the `README.md`.
 
 ## Licensing
 
