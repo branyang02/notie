@@ -1,27 +1,10 @@
-# **notie**: Your personal note taking template!
+# **notie**: Note-taking with Markdown
 
-**notie** is a note taking template based on **markdown**.
+**notie** is a note-taking template based on Markdown. Built with React, it provides a simple and intuitive interface to write and manage notes. The template supports **live, editable code runner**, **TikZ diagrams**, and **math equations** (via [Katex](https://katex.org/)). It is designed to be easy to use and customizable, allowing users to focus on writing and organizing their notes.
 
 ## Updates
 
 8/2/2024: Update 1.0.0: Initial release, published on npm registry [here](https://www.npmjs.com/package/notie-markdown).
-
-## Table of Contents
-
--   [Features](#features)
--   [Getting Started](#getting-started)
-    -   [Props](#props)
-    -   [Example Usage](#example-usage)
--   [Showcase](#showcase)
--   [Features and Documentation](#features-and-documentation)
--   [Contribution](#contribution)
--   [Acknowledgements](#acknowledgements)
-
-## Features
-
--   **Live Coding**: Use the live coding feature write and **RUN** your code snippets in your notes.
--   **TikZ Support**: Use TikZ to draw diagrams in your notes.
--   **Dark Mode**: Toggle between light and dark mode for better readability.
 
 ## Getting Started
 
@@ -29,6 +12,13 @@
 
 ```bash
 npm install notie-markdown
+```
+
+Then, import the `Notie` component in your React application:
+
+```typescript
+import React from "react";
+import { Notie } from "notie-markdown";
 ```
 
 The `Notie` component is used to render Markdown content. It accepts the following props:
@@ -55,7 +45,15 @@ const Example = () => (
 );
 ```
 
-Checkout the full example at the main demo page [https://notie-nine.vercel.app/](https://notie-nine.vercel.app/), or at `/demo-app`.
+Checkout a full example at `/demo-app`, or visit the live website at [https://notie-nine.vercel.app/](https://notie-nine.vercel.app/).
+
+## Features
+
+-   **Live Coding**: Use the live coding feature write and **RUN** your code snippets in your notes.
+-   **TikZ Support**: Use TikZ to draw diagrams in your notes.
+-   **Math Equations**: Write math equations using LaTeX syntax.
+-   **Dark Mode**: Toggle between light and dark mode for better readability.
+-   **Customizable**: Customize the appearance of the notes to suit your preferences.
 
 ## Showcase
 

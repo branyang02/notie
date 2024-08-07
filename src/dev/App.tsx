@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Notie from "../components/Notie";
 import { Pane } from "evergreen-ui";
 
-const modules = import.meta.glob("./cso2.md", {
+const modules = import.meta.glob("./markdown-files/cso2.md", {
     query: "?raw",
     import: "default",
 });
