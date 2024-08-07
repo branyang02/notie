@@ -45,6 +45,9 @@ jobs:
           NEW_VERSION=$(node -p "require('./package.json').version")
           echo "new_version=$NEW_VERSION" >> $GITHUB_ENV
 
+      - name: Update package-lock.json
+        run: npm install
+
       - name: Build the package
         run: npm run build
 
