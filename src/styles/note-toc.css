@@ -29,3 +29,7 @@
 .note-toc.dark-mode ::marker {
     color: #ffffff;
 }
+
+.note-toc.dark-mode hr {
+    color: #ffffff;
+}
