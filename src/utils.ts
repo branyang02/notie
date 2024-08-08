@@ -19,21 +19,31 @@ export function processSection(
     sectionContent: string,
     sectionIndex: number,
 ): string {
+    console.log("Processing section", sectionContent);
     const equationMapping: { [key: string]: string } = {};
     let currentEquationIndex = 1;
 
+    // Extract content wrapped in triple backticks to exclude it from processing
+    const codeBlockPattern = /```[\s\S]*?```/g;
+    const codeBlocks: string[] = [];
+    let modifiedContent = sectionContent;
+
+    // Replace code blocks with placeholders
+    modifiedContent = modifiedContent.replace(codeBlockPattern, (match) => {
+        codeBlocks.push(match);
+        return `CODE_BLOCK_${codeBlocks.length - 1}`;
+    });
+
     // Split the content into individual equations
-    const equations = sectionContent.match(
+    const equations = modifiedContent.match(
         /\$\$\n(?:\s*\\begin\{(equation|align|equation\*|gather\*|align\*|alignat\*)\}[\s\S]*?\n\s*\\end\{\1\}\s*\$\$)/g,
     );
 
     if (equations) {
         for (const equation of equations) {
-            // Check if the equation is in the 'align' environment
             const isAlignEnvironment = equation.includes("\\begin{align}");
             const isLabeledEnvironment = !equation.includes("*");
 
-            // Extract the labels from the equation
             const labels = equation.match(/\\label\{(.*?)\}/g);
 
             if (labels) {
@@ -42,7 +52,7 @@ export function processSection(
 
                     if (labelText) {
                         if (labelText in equationMapping) {
-                            sectionContent = sectionContent.replace(
+                            modifiedContent = modifiedContent.replace(
                                 equation,
                                 `$\\color{red}\\text{KaTeX Error: Duplicate label: ${labelText}}$`,
                             );
@@ -56,7 +66,6 @@ export function processSection(
                     }
                 }
             } else if (isAlignEnvironment) {
-                // no label, increment the index
                 if (isLabeledEnvironment) {
                     currentEquationIndex++;
                 }
@@ -65,7 +74,15 @@ export function processSection(
     }
 
     // Replace the references in the content
-    sectionContent = replaceReferences(sectionContent, equationMapping);
+    modifiedContent = replaceReferences(modifiedContent, equationMapping);
 
-    return sectionContent;
+    // Reinsert the code blocks
+    modifiedContent = modifiedContent.replace(
+        /CODE_BLOCK_(\d+)/g,
+        (_, index) => {
+            return codeBlocks[Number(index)];
+        },
+    );
+
+    return modifiedContent;
 }
