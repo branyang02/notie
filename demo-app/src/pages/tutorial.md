@@ -41,16 +41,16 @@ This generates the following:
 You can create ordered and unordered lists using the following syntax:
 
 ```markdown
--   Unordered list item 1
--   Unordered list item 2
--   Unordered list item 3
+- Unordered list item 1
+- Unordered list item 2
+- Unordered list item 3
 ```
 
 This generates the following:
 
--   Unordered list item 1
--   Unordered list item 2
--   Unordered list item 3
+- Unordered list item 1
+- Unordered list item 2
+- Unordered list item 3
 
 ```markdown
 1. Ordered list item 1
@@ -233,11 +233,11 @@ A **definition** is a statement that explains the meaning of a term.
 
 You can use the following classes to create different types of blocks:
 
--   `definition`
--   `proof`
--   `equation`
--   `theorem`
--   `important`
+- `definition`
+- `proof`
+- `equation`
+- `theorem`
+- `important`
 
 <blockquote class="proof">
 
@@ -329,9 +329,9 @@ Or you can use raw html to include images with custom sizes:
 
 ```html
 <img
-    src="https://via.placeholder.com/150"
-    alt="Alt text"
-    style="display: block; max-height: 30%; max-width: 30%;"
+  src="https://via.placeholder.com/150"
+  alt="Alt text"
+  style="display: block; max-height: 30%; max-width: 30%;"
 />
 ```
 

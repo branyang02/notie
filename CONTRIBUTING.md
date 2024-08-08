@@ -136,24 +136,24 @@ The version number of the `notie-markdown` package is influenced by the commit m
 
 ### Patch Version Bump
 
--   **Trigger:** Commit message starts with `fix`
--   **Example:**
-    -   `fix: correct typo in README`
-    -   `fix: resolve issue with Markdown rendering`
+- **Trigger:** Commit message starts with `fix`
+- **Example:**
+  - `fix: correct typo in README`
+  - `fix: resolve issue with Markdown rendering`
 
 ### Minor Version Bump
 
--   **Trigger:** Commit message starts with `feat`
--   **Example:**
-    -   `feat: add dark mode support`
-    -   `feat: introduce new Markdown parsing feature`
+- **Trigger:** Commit message starts with `feat`
+- **Example:**
+  - `feat: add dark mode support`
+  - `feat: introduce new Markdown parsing feature`
 
 ### Major Version Bump
 
--   **Trigger:** Commit message contains `BREAKING CHANGE`
--   **Example:**
-    -   `feat: update API structure for better performance BREAKING CHANGE`
-    -   `refactor: overhaul configuration handling BREAKING CHANGE`
+- **Trigger:** Commit message contains `BREAKING CHANGE`
+- **Example:**
+  - `feat: update API structure for better performance BREAKING CHANGE`
+  - `refactor: overhaul configuration handling BREAKING CHANGE`
 
 By following these guidelines, you help ensure that versioning remains consistent and meaningful.
 
@@ -165,9 +165,9 @@ By following these guidelines, you help ensure that versioning remains consisten
 
 When reporting an issue, please include the following details:
 
--   **Description:** A clear and concise description of the problem.
--   **Steps to Reproduce:** Detailed steps to reproduce the issue.
--   **Expected Behavior:** What you expected to happen.
--   **Actual Behavior:** What actually happened.
--   **Screenshots/Code:** Include any relevant screenshots or code snippets to help illustrate the issue.
--   **Environment:** Information about your environment, including browser, OS, and Node.js version.
+- **Description:** A clear and concise description of the problem.
+- **Steps to Reproduce:** Detailed steps to reproduce the issue.
+- **Expected Behavior:** What you expected to happen.
+- **Actual Behavior:** What actually happened.
+- **Screenshots/Code:** Include any relevant screenshots or code snippets to help illustrate the issue.
+- **Environment:** Information about your environment, including browser, OS, and Node.js version.
