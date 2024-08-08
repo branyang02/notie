@@ -21,6 +21,27 @@ import {
 import { useCallback, useRef, useState } from "react";
 
 import { runCode, RunCodeResponse } from "../service/api";
+import CodeHeader from "./CodeHeader";
+
+const getLanguageCode = (language: string) => {
+    switch (language) {
+        case "c":
+        case "cpp":
+            return cpp();
+        case "go":
+            return go();
+        case "java":
+            return java();
+        case "rust":
+            return rust();
+        case "javascript":
+        case "js":
+        case "typescript":
+            return javascript();
+        default:
+            return python();
+    }
+};
 
 const CodeBlock = ({
     initialCode,
@@ -38,54 +59,22 @@ const CodeBlock = ({
     const [image, setImage] = useState("");
     const editorRef = useRef<ReactCodeMirrorRef>(null);
 
-    let languageCode;
-    switch (language) {
-        case "c":
-        case "cpp":
-            languageCode = cpp();
-            break;
-        case "go":
-            languageCode = go();
-            break;
-        case "java":
-            languageCode = java();
-            break;
-        case "rust":
-            languageCode = rust();
-            break;
-        case "javascript":
-        case "js":
-        case "typescript":
-            languageCode = javascript();
-            break;
-
-        default:
-            languageCode = python();
-    }
+    const languageCode = getLanguageCode(language);
 
     const onChange = useCallback((value: string) => {
         setCode(value);
     }, []);
 
-    const runCodeAsync = async () => {
+    const runCodeAsync = useCallback(async () => {
         setIsLoading(true);
         try {
             const data: RunCodeResponse = await runCode(code, language);
-            if (
-                data.output.trim().startsWith("Traceback") ||
-                data.output.trim().startsWith("File") ||
-                data.output.trim().startsWith("Exception") ||
+            setError(
                 data.output.toLowerCase().includes("error") ||
-                data.output.toLowerCase().includes("core dumped")
-            ) {
-                setError(true);
-            } else {
-                setError(false);
-            }
+                    data.output.toLowerCase().includes("exception"),
+            );
             setOutput(data.output);
-            if (data.image !== "") {
-                setImage(data.image);
-            }
+            setImage(data.image);
         } catch (error) {
             setOutput(`Execution failed: ${error}`);
             setError(true);
@@ -93,16 +82,16 @@ const CodeBlock = ({
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [code, language]);
 
-    const clearOutput = () => {
+    const clearOutput = useCallback(() => {
         setOutput("");
         setImage("");
         setError(false);
         setIsLoading(false);
-    };
+    }, []);
 
-    const resetEditor = () => {
+    const resetEditor = useCallback(() => {
         setCode(initialCode);
         if (editorRef.current?.view) {
             const { state } = editorRef.current.view;
@@ -111,23 +100,11 @@ const CodeBlock = ({
                 changes: { from: 0, to: end, insert: initialCode },
             });
         }
-    };
+    }, [initialCode]);
 
     return (
         <Pane>
-            <Pane
-                className="language-box"
-                paddingY={1}
-                paddingX={8}
-                style={{
-                    fontSize: "0.8rem",
-                    borderRadius: "10px 10px 0 0",
-                    backgroundColor: "#afb8c133",
-                }}
-            >
-                {""}
-                {language}
-            </Pane>
+            <CodeHeader language={language} code={code} darkMode={darkMode} />
             <Pane>
                 <Pane
                     position="relative"
@@ -139,7 +116,6 @@ const CodeBlock = ({
                         ref={editorRef}
                         value={initialCode}
                         extensions={[languageCode, indentUnit.of("    ")]}
-                        // height="500px"
                         maxHeight="800px"
                         minHeight="100px"
                         theme={darkMode ? tokyoNightStorm : duotoneLight}
@@ -166,67 +142,88 @@ const CodeBlock = ({
                         </Button>
                     </Pane>
                 </Pane>
-                {/* Output box */}
                 {(isLoading || output || image) && (
-                    <Pane
-                        position="relative"
-                        borderRadius={8}
-                        overflow="hidden"
-                        marginBottom={16}
-                    >
-                        <Card
-                            background="gray50"
-                            padding={16}
-                            elevation={1}
-                            borderRadius={8}
-                            style={{
-                                maxHeight: "500px",
-                                overflowY: "auto",
-                            }}
-                        >
-                            <Pane>
-                                <Button
-                                    appearance="minimal"
-                                    intent="danger"
-                                    onClick={clearOutput}
-                                    style={{ float: "right" }}
-                                >
-                                    Clear Output
-                                </Button>
-                            </Pane>
-                            {isLoading ? (
-                                <Spinner />
-                            ) : (
-                                <>
-                                    <Code
-                                        appearance="minimal"
-                                        color={error ? "red" : "black"}
-                                        style={{
-                                            wordBreak: "break-word",
-                                            overflowWrap: "break-word",
-                                            whiteSpace: "pre-wrap",
-                                        }}
-                                    >
-                                        {output}
-                                    </Code>
-                                    {image && (
-                                        <img
-                                            src={`data:image/png;base64,${image}`}
-                                            alt="Output"
-                                            style={{
-                                                maxWidth: "100%",
-                                                marginBottom: "10px",
-                                            }}
-                                        />
-                                    )}
-                                </>
-                            )}
-                        </Card>
-                    </Pane>
+                    <OutputBox
+                        isLoading={isLoading}
+                        output={output}
+                        error={error}
+                        image={image}
+                        clearOutput={clearOutput}
+                    />
                 )}
             </Pane>
         </Pane>
     );
 };
+
+const OutputBox = ({
+    isLoading,
+    output,
+    error,
+    image,
+    clearOutput,
+}: {
+    isLoading: boolean;
+    output: string;
+    error: boolean;
+    image: string | null;
+    clearOutput: () => void;
+}) => (
+    <Pane
+        position="relative"
+        borderRadius={8}
+        overflow="hidden"
+        marginBottom={16}
+    >
+        <Card
+            background="gray50"
+            padding={16}
+            elevation={1}
+            borderRadius={8}
+            style={{
+                maxHeight: "500px",
+                overflowY: "auto",
+            }}
+        >
+            <Pane>
+                <Button
+                    appearance="minimal"
+                    intent="danger"
+                    onClick={clearOutput}
+                    style={{ float: "right" }}
+                >
+                    Clear Output
+                </Button>
+            </Pane>
+            {isLoading ? (
+                <Spinner />
+            ) : (
+                <>
+                    <Code
+                        appearance="minimal"
+                        color={error ? "red" : "black"}
+                        style={{
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                            whiteSpace: "pre-wrap",
+                        }}
+                    >
+                        {output}
+                    </Code>
+                    {image && (
+                        <img
+                            src={`data:image/png;base64,${image}`}
+                            alt="Output"
+                            style={{
+                                maxWidth: "100%",
+                                marginBottom: "10px",
+                            }}
+                        />
+                    )}
+                </>
+            )}
+        </Card>
+    </Pane>
+);
 
 export default CodeBlock;
