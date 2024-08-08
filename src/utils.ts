@@ -19,19 +19,19 @@ export function processSection(
     sectionContent: string,
     sectionIndex: number,
 ): string {
-    console.log("Processing Section:", sectionContent);
     const equationMapping: { [key: string]: string } = {};
     let currentEquationIndex = 1;
 
     // Split the content into individual equations
     const equations = sectionContent.match(
-        /\$\$\n(?:\s*\\begin\{(equation|align)\}[\s\S]*?\n\s*\\end\{\1\}\s*\$\$)/g,
+        /\$\$\n(?:\s*\\begin\{(equation|align|equation\*|gather\*|align\*|alignat\*)\}[\s\S]*?\n\s*\\end\{\1\}\s*\$\$)/g,
     );
 
     if (equations) {
         for (const equation of equations) {
             // Check if the equation is in the 'align' environment
             const isAlignEnvironment = equation.includes("\\begin{align}");
+            const isLabeledEnvironment = !equation.includes("*");
 
             // Extract the labels from the equation
             const labels = equation.match(/\\label\{(.*?)\}/g);
@@ -39,22 +39,30 @@ export function processSection(
             if (labels) {
                 for (const label of labels) {
                     const labelText = label.match(/\\label\{(.*?)\}/)?.[1];
+
                     if (labelText) {
-                        const sectionLabel = `${sectionIndex}.${currentEquationIndex}`;
-                        equationMapping[labelText] = sectionLabel;
-                        currentEquationIndex++;
+                        if (labelText in equationMapping) {
+                            sectionContent = sectionContent.replace(
+                                equation,
+                                `$\\color{red}\\text{KaTeX Error: Duplicate label: ${labelText}}$`,
+                            );
+                        } else {
+                            const sectionLabel = `${sectionIndex}.${currentEquationIndex}`;
+                            equationMapping[labelText] = sectionLabel;
+                            if (isLabeledEnvironment) {
+                                currentEquationIndex++;
+                            }
+                        }
                     }
                 }
-            }
-
-            if (isAlignEnvironment) {
-                // If there's no label, we still need to increment the equation index
-                currentEquationIndex++;
+            } else if (isAlignEnvironment) {
+                // no label, increment the index
+                if (isLabeledEnvironment) {
+                    currentEquationIndex++;
+                }
             }
         }
     }
-
-    console.log("Equation Mapping:", equationMapping);
 
     // Replace the references in the content
     sectionContent = replaceReferences(sectionContent, equationMapping);

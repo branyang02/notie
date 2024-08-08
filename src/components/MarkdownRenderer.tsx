@@ -65,8 +65,8 @@ const MarkdownRenderer: React.FC<{
 
     const katexOptions = {
         macros: {
-            "\\eqref": "\\href{###1}{(\\text{#1})}",
-            "\\ref": "\\href{###1}{\\text{#1}}",
+            "\\eqref": "\\href{\\#eqn-#1}{(#1)}",
+            "\\ref": "\\href{\\#eqn-#1}{#1}",
             "\\label": "\\htmlId{#1}{}",
         },
         trust: (context: { command: string }) =>

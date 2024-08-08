@@ -105,7 +105,7 @@ const Notie: React.FC<NotieProps> = ({ markdown, darkMode, style }) => {
             const eqns = section.getElementsByClassName("eqn-num");
             for (let eqnIndex = 0; eqnIndex < eqns.length; eqnIndex++) {
                 const eqn = eqns[eqnIndex];
-                eqn.id = `${sectionIndex + 1}.${eqnIndex + 1}`;
+                eqn.id = `eqn-${sectionIndex + 1}.${eqnIndex + 1}`;
                 eqn.textContent = `(${sectionIndex + 1}.${eqnIndex + 1})`;
             }
         }
