@@ -14,45 +14,44 @@ export interface NotieProps {
     style?: React.CSSProperties;
 }
 
-function processMarkdown(markdownContent: string): string {
-    const codeBlockPattern = /```(\w+)/g;
-    const contentWithCodeBlocksProcessed = markdownContent.replace(
-        codeBlockPattern,
-        "```language-$1",
-    );
-
-    const sectionPattern = /^## .+$/gm;
-    const matches = Array.from(
-        contentWithCodeBlocksProcessed.matchAll(sectionPattern),
-    );
-    let processedContent = "";
+function preProcessMarkdown(markdownContent: string): string {
+    const pattern = /^(```(\w+)|## .+)$/gm;
+    const parts: string[] = [];
     let lastIndex = 0;
+    let sectionIndex = 0;
 
-    matches.forEach((match, index) => {
-        const [sectionTitle] = match;
-        const sectionStart = match.index ?? 0;
-        processedContent += contentWithCodeBlocksProcessed.slice(
-            lastIndex,
-            sectionStart,
-        );
+    markdownContent.replace(pattern, (match, _p1, p2, offset) => {
+        parts.push(markdownContent.slice(lastIndex, offset));
 
-        if (index > 0) {
-            processedContent += "</div>\n";
+        if (p2) {
+            // Code block
+            parts.push(`\`\`\`language-${p2}`);
+        } else {
+            // Section header
+            if (sectionIndex > 0) {
+                parts.push("</div>\n");
+            }
+            sectionIndex++;
+            parts.push(
+                `<div className="sections" id="section-${sectionIndex}">\n\n${match}\n`,
+            );
         }
-        processedContent += `<div className="sections" id="section-${index}">\n\n`;
-        processedContent += `${sectionTitle}\n`;
-        lastIndex = sectionStart + sectionTitle.length;
+
+        lastIndex = offset + match.length;
+        return match;
     });
 
-    processedContent += contentWithCodeBlocksProcessed.slice(lastIndex);
+    parts.push(markdownContent.slice(lastIndex));
 
-    processedContent += "</div>\n";
+    if (sectionIndex > 0) {
+        parts.push("</div>\n");
+    }
 
-    return processedContent;
+    return parts.join("");
 }
 
 const Notie: React.FC<NotieProps> = ({ markdown, darkMode, style }) => {
-    const markdownContent = processMarkdown(markdown);
+    const markdownContent = preProcessMarkdown(markdown);
     const contentRef = useRef<HTMLDivElement>(null);
     const [activeId, setActiveId] = useState<string>("");
 
