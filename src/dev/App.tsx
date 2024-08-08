@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Notie from "../components/Notie";
-import { Pane } from "evergreen-ui";
+import { Pane, Switch, Heading } from "evergreen-ui";
 
 const modules = import.meta.glob("./markdown-files/cso2.md", {
     query: "?raw",
@@ -9,6 +9,7 @@ const modules = import.meta.glob("./markdown-files/cso2.md", {
 
 const App = () => {
     const [markdownContent, setMarkdownContent] = useState<string>("");
+    const [darkMode, setDarkMode] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchNote = async () => {
@@ -23,6 +24,10 @@ const App = () => {
         fetchNote();
     }, []);
 
+    const toggleDarkMode = () => {
+        setDarkMode((prevMode) => !prevMode);
+    };
+
     return (
         <Pane
             maxWidth={1500}
@@ -31,7 +36,26 @@ const App = () => {
                 margin: "0 auto",
             }}
         >
-            <Notie markdown={markdownContent} darkMode={false} />
+            <Pane
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                marginBottom={20}
+            >
+                <Pane
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                >
+                    <Heading size={700}>Dark Mode Switch</Heading>
+                    <Switch
+                        height={24}
+                        checked={darkMode}
+                        onChange={toggleDarkMode}
+                    />
+                </Pane>
+            </Pane>
+            <Notie markdown={markdownContent} darkMode={darkMode} />
         </Pane>
     );
 };
