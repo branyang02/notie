@@ -21,6 +21,7 @@ import {
 import { useCallback, useRef, useState } from "react";
 
 import { runCode, RunCodeResponse } from "../service/api";
+import CodeHeader from "./CodeHeader";
 
 const CodeBlock = ({
     initialCode,
@@ -115,19 +116,7 @@ const CodeBlock = ({
 
     return (
         <Pane>
-            <Pane
-                className="language-box"
-                paddingY={1}
-                paddingX={8}
-                style={{
-                    fontSize: "0.8rem",
-                    borderRadius: "10px 10px 0 0",
-                    backgroundColor: "#afb8c133",
-                }}
-            >
-                {""}
-                {language}
-            </Pane>
+            <CodeHeader language={language} code={code} darkMode={darkMode} />
             <Pane>
                 <Pane
                     position="relative"
@@ -139,7 +128,6 @@ const CodeBlock = ({
                         ref={editorRef}
                         value={initialCode}
                         extensions={[languageCode, indentUnit.of("    ")]}
-                        // height="500px"
                         maxHeight="800px"
                         minHeight="100px"
                         theme={darkMode ? tokyoNightStorm : duotoneLight}
