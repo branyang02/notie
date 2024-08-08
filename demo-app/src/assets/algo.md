@@ -12,8 +12,8 @@ A graph is a mathematical structure that represents relationships between object
 
 A **graph** $G$ is a pair $(V, E)$, where:
 
--   $V$ is a set of vertices or nodes.
--   $E$ is a set of edges connecting the vertices.
+- $V$ is a set of vertices or nodes.
+- $E$ is a set of edges connecting the vertices.
 
 </blockquote>
 

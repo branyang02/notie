@@ -7,6 +7,7 @@ import { Pane } from "evergreen-ui";
 import ScrollToTopButton from "./ScrollToTopButton";
 import NoteToc from "./NoteToc";
 import MarkdownRenderer from "./MarkdownRenderer";
+import { processSection } from "../utils";
 
 export interface NotieProps {
     markdown: string;
@@ -14,45 +15,52 @@ export interface NotieProps {
     style?: React.CSSProperties;
 }
 
-function processMarkdown(markdownContent: string): string {
-    const codeBlockPattern = /```(\w+)/g;
-    const contentWithCodeBlocksProcessed = markdownContent.replace(
-        codeBlockPattern,
-        "```language-$1",
-    );
-
-    const sectionPattern = /^## .+$/gm;
-    const matches = Array.from(
-        contentWithCodeBlocksProcessed.matchAll(sectionPattern),
-    );
-    let processedContent = "";
+function preProcessMarkdown(markdownContent: string): string {
+    const pattern = /^(```(\w+)|## .+)$/gm;
+    const parts: string[] = [];
     let lastIndex = 0;
+    let sectionIndex = 0;
+    let currentSectionContent = "";
 
-    matches.forEach((match, index) => {
-        const [sectionTitle] = match;
-        const sectionStart = match.index ?? 0;
-        processedContent += contentWithCodeBlocksProcessed.slice(
-            lastIndex,
-            sectionStart,
-        );
-
-        if (index > 0) {
-            processedContent += "</div>\n";
+    markdownContent.replace(pattern, (match, _p1, p2, offset) => {
+        if (sectionIndex > 0) {
+            currentSectionContent += markdownContent.slice(lastIndex, offset);
+        } else {
+            parts.push(markdownContent.slice(lastIndex, offset));
         }
-        processedContent += `<div className="sections" id="section-${index}">\n\n`;
-        processedContent += `${sectionTitle}\n`;
-        lastIndex = sectionStart + sectionTitle.length;
+
+        if (p2) {
+            // Code block
+            currentSectionContent += `\`\`\`language-${p2}`;
+        } else {
+            // Add section dividers
+            if (sectionIndex > 0) {
+                currentSectionContent += `</div>\n`;
+                parts.push(processSection(currentSectionContent, sectionIndex));
+                currentSectionContent = "";
+            }
+            sectionIndex++;
+            currentSectionContent += `<div className="sections" id="section-${sectionIndex}">\n\n${match}\n`;
+        }
+
+        lastIndex = offset + match.length;
+        return match;
     });
 
-    processedContent += contentWithCodeBlocksProcessed.slice(lastIndex);
+    currentSectionContent += markdownContent.slice(lastIndex);
 
-    processedContent += "</div>\n";
+    if (sectionIndex > 0) {
+        currentSectionContent += "</div>\n";
+        parts.push(processSection(currentSectionContent, sectionIndex));
+    } else {
+        parts.push(currentSectionContent);
+    }
 
-    return processedContent;
+    return parts.join("");
 }
 
 const Notie: React.FC<NotieProps> = ({ markdown, darkMode, style }) => {
-    const markdownContent = processMarkdown(markdown);
+    const markdownContent = preProcessMarkdown(markdown);
     const contentRef = useRef<HTMLDivElement>(null);
     const [activeId, setActiveId] = useState<string>("");
 
@@ -97,7 +105,7 @@ const Notie: React.FC<NotieProps> = ({ markdown, darkMode, style }) => {
             const eqns = section.getElementsByClassName("eqn-num");
             for (let eqnIndex = 0; eqnIndex < eqns.length; eqnIndex++) {
                 const eqn = eqns[eqnIndex];
-                eqn.id = `${sectionIndex + 1}.${eqnIndex + 1}`;
+                eqn.id = `eqn-${sectionIndex + 1}.${eqnIndex + 1}`;
                 eqn.textContent = `(${sectionIndex + 1}.${eqnIndex + 1})`;
             }
         }

@@ -38,10 +38,10 @@ import React from "react";
 import Notie from "notie-markdown";
 
 const Example = () => (
-    <Notie
-        markdown="# Hello World\nThis is a Markdown content."
-        darkMode={true}
-    />
+  <Notie
+    markdown="# Hello World\nThis is a Markdown content."
+    darkMode={true}
+  />
 );
 ```
 
@@ -49,11 +49,11 @@ Checkout a full example at `/demo-app`, or visit the live website at [https://no
 
 ## Features
 
--   **Live Coding**: Use the live coding feature write and **RUN** your code snippets in your notes.
--   **TikZ Support**: Use TikZ to draw diagrams in your notes.
--   **Math Equations**: Write math equations using LaTeX syntax.
--   **Dark Mode**: Toggle between light and dark mode for better readability.
--   **Customizable**: Customize the appearance of the notes to suit your preferences.
+- **Live Coding**: Use the live coding feature write and **RUN** your code snippets in your notes.
+- **TikZ Support**: Use TikZ to draw diagrams in your notes.
+- **Math Equations**: Write math equations using LaTeX syntax.
+- **Dark Mode**: Toggle between light and dark mode for better readability.
+- **Customizable**: Customize the appearance of the notes to suit your preferences.
 
 ## Showcase
 
@@ -78,42 +78,42 @@ This project makes use of several open-source projects and resources. We extend 
 
 ### [React CodeMirror](https://uiwjs.github.io/react-codemirror/)
 
--   **Author(s)**: uiw
--   **License**: MIT
+- **Author(s)**: uiw
+- **License**: MIT
 
 ### [Bootstrap](https://getbootstrap.com/)
 
--   **Author(s)**: The Bootstrap Authors
--   **License**: MIT
+- **Author(s)**: The Bootstrap Authors
+- **License**: MIT
 
 ### [Evergreen UI](https://evergreen.segment.com/)
 
--   **Author(s)**: Segment.io, Inc.
--   **License**: MIT
+- **Author(s)**: Segment.io, Inc.
+- **License**: MIT
 
 ### [KaTeX](https://katex.org/)
 
--   **Author(s)**: Khan Academy
--   **License**: MIT
+- **Author(s)**: Khan Academy
+- **License**: MIT
 
 ### [react-code-blocks](https://react-code-blocks-rajinwonderland.vercel.app/?path=/story/code--default)
 
--   **Author(s)**: Raj K Singh
--   **License**: MIT
+- **Author(s)**: Raj K Singh
+- **License**: MIT
 
 ### [react-markdown](https://remarkjs.github.io/react-markdown/)
 
--   **Author(s)**: Espen Hovlandsdal
--   **License**: MIT
+- **Author(s)**: Espen Hovlandsdal
+- **License**: MIT
 
 ### [rehype-highlight](https://github.com/rehypejs/rehype-highlight)
 
--   **Author(s)**: Titus Wormer
--   **License**: MIT
+- **Author(s)**: Titus Wormer
+- **License**: MIT
 
 ### [remark-math](https://remark.js.org/)
 
--   **Author(s)**: Junyoung Choi
--   **License**: MIT
+- **Author(s)**: Junyoung Choi
+- **License**: MIT
 
 We are thankful to all the open-source projects and their contributors for making their resources available, which have greatly facilitated the development of this project.
