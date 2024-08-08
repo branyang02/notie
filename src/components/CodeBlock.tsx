@@ -65,25 +65,16 @@ const CodeBlock = ({
         setCode(value);
     }, []);
 
-    const runCodeAsync = async () => {
+    const runCodeAsync = useCallback(async () => {
         setIsLoading(true);
         try {
             const data: RunCodeResponse = await runCode(code, language);
-            if (
-                data.output.trim().startsWith("Traceback") ||
-                data.output.trim().startsWith("File") ||
-                data.output.trim().startsWith("Exception") ||
+            setError(
                 data.output.toLowerCase().includes("error") ||
-                data.output.toLowerCase().includes("core dumped")
-            ) {
-                setError(true);
-            } else {
-                setError(false);
-            }
+                    data.output.toLowerCase().includes("exception"),
+            );
             setOutput(data.output);
-            if (data.image !== "") {
-                setImage(data.image);
-            }
+            setImage(data.image);
         } catch (error) {
             setOutput(`Execution failed: ${error}`);
             setError(true);
@@ -91,16 +82,16 @@ const CodeBlock = ({
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [code, language]);
 
-    const clearOutput = () => {
+    const clearOutput = useCallback(() => {
         setOutput("");
         setImage("");
         setError(false);
         setIsLoading(false);
-    };
+    }, []);
 
-    const resetEditor = () => {
+    const resetEditor = useCallback(() => {
         setCode(initialCode);
         if (editorRef.current?.view) {
             const { state } = editorRef.current.view;
@@ -109,99 +100,7 @@ const CodeBlock = ({
                 changes: { from: 0, to: end, insert: initialCode },
             });
         }
-    };
-
-    const CodeEditor = (
-        <CodeMirror
-            ref={editorRef}
-            value={initialCode}
-            extensions={[languageCode, indentUnit.of("    ")]}
-            maxHeight="800px"
-            minHeight="100px"
-            theme={darkMode ? tokyoNightStorm : duotoneLight}
-            onChange={onChange}
-        />
-    );
-
-    const ResetButton = (
-        <IconButton
-            size="small"
-            appearance="minimal"
-            icon={ResetIcon}
-            intent="danger"
-            onClick={resetEditor}
-        />
-    );
-
-    const RunButton = (
-        <Button
-            iconAfter={PlayIcon}
-            appearance="primary"
-            intent="success"
-            isLoading={isLoading}
-            onClick={runCodeAsync}
-        >
-            Run Code
-        </Button>
-    );
-
-    const OutputBox = (
-        <Pane
-            position="relative"
-            borderRadius={8}
-            overflow="hidden"
-            marginBottom={16}
-        >
-            <Card
-                background="gray50"
-                padding={16}
-                elevation={1}
-                borderRadius={8}
-                style={{
-                    maxHeight: "500px",
-                    overflowY: "auto",
-                }}
-            >
-                <Pane>
-                    <Button
-                        appearance="minimal"
-                        intent="danger"
-                        onClick={clearOutput}
-                        style={{ float: "right" }}
-                    >
-                        Clear Output
-                    </Button>
-                </Pane>
-                {isLoading ? (
-                    <Spinner />
-                ) : (
-                    <>
-                        <Code
-                            appearance="minimal"
-                            color={error ? "red" : "black"}
-                            style={{
-                                wordBreak: "break-word",
-                                overflowWrap: "break-word",
-                                whiteSpace: "pre-wrap",
-                            }}
-                        >
-                            {output}
-                        </Code>
-                        {image && (
-                            <img
-                                src={`data:image/png;base64,${image}`}
-                                alt="Output"
-                                style={{
-                                    maxWidth: "100%",
-                                    marginBottom: "10px",
-                                }}
-                            />
-                        )}
-                    </>
-                )}
-            </Card>
-        </Pane>
-    );
+    }, [initialCode]);
 
     return (
         <Pane>
@@ -213,18 +112,118 @@ const CodeBlock = ({
                     marginBottom={16}
                     style={{ borderRadius: "0 0 10px 10px" }}
                 >
-                    {CodeEditor}
+                    <CodeMirror
+                        ref={editorRef}
+                        value={initialCode}
+                        extensions={[languageCode, indentUnit.of("    ")]}
+                        maxHeight="800px"
+                        minHeight="100px"
+                        theme={darkMode ? tokyoNightStorm : duotoneLight}
+                        onChange={onChange}
+                    />
                     <Pane position="absolute" top={0} right={0} padding={8}>
-                        {ResetButton}
+                        <IconButton
+                            size="small"
+                            appearance="minimal"
+                            icon={ResetIcon}
+                            intent="danger"
+                            onClick={resetEditor}
+                        />
                     </Pane>
                     <Pane position="absolute" bottom={0} right={0} padding={8}>
-                        {RunButton}
+                        <Button
+                            iconAfter={PlayIcon}
+                            appearance="primary"
+                            intent="success"
+                            isLoading={isLoading}
+                            onClick={runCodeAsync}
+                        >
+                            Run Code
+                        </Button>
                     </Pane>
                 </Pane>
-                {(isLoading || output || image) && OutputBox}
+                {(isLoading || output || image) && (
+                    <OutputBox
+                        isLoading={isLoading}
+                        output={output}
+                        error={error}
+                        image={image}
+                        clearOutput={clearOutput}
+                    />
+                )}
             </Pane>
         </Pane>
     );
 };
+
+const OutputBox = ({
+    isLoading,
+    output,
+    error,
+    image,
+    clearOutput,
+}: {
+    isLoading: boolean;
+    output: string;
+    error: boolean;
+    image: string | null;
+    clearOutput: () => void;
+}) => (
+    <Pane
+        position="relative"
+        borderRadius={8}
+        overflow="hidden"
+        marginBottom={16}
+    >
+        <Card
+            background="gray50"
+            padding={16}
+            elevation={1}
+            borderRadius={8}
+            style={{
+                maxHeight: "500px",
+                overflowY: "auto",
+            }}
+        >
+            <Pane>
+                <Button
+                    appearance="minimal"
+                    intent="danger"
+                    onClick={clearOutput}
+                    style={{ float: "right" }}
+                >
+                    Clear Output
+                </Button>
+            </Pane>
+            {isLoading ? (
+                <Spinner />
+            ) : (
+                <>
+                    <Code
+                        appearance="minimal"
+                        color={error ? "red" : "black"}
+                        style={{
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                            whiteSpace: "pre-wrap",
+                        }}
+                    >
+                        {output}
+                    </Code>
+                    {image && (
+                        <img
+                            src={`data:image/png;base64,${image}`}
+                            alt="Output"
+                            style={{
+                                maxWidth: "100%",
+                                marginBottom: "10px",
+                            }}
+                        />
+                    )}
+                </>
+            )}
+        </Card>
+    </Pane>
+);
 
 export default CodeBlock;
