@@ -7,6 +7,7 @@ import { Pane } from "evergreen-ui";
 import ScrollToTopButton from "./ScrollToTopButton";
 import NoteToc from "./NoteToc";
 import MarkdownRenderer from "./MarkdownRenderer";
+import { processSection } from "../utils";
 
 export interface NotieProps {
     markdown: string;
@@ -19,32 +20,40 @@ function preProcessMarkdown(markdownContent: string): string {
     const parts: string[] = [];
     let lastIndex = 0;
     let sectionIndex = 0;
+    let currentSectionContent = "";
 
     markdownContent.replace(pattern, (match, _p1, p2, offset) => {
-        parts.push(markdownContent.slice(lastIndex, offset));
+        if (sectionIndex > 0) {
+            currentSectionContent += markdownContent.slice(lastIndex, offset);
+        } else {
+            parts.push(markdownContent.slice(lastIndex, offset));
+        }
 
         if (p2) {
             // Code block
-            parts.push(`\`\`\`language-${p2}`);
+            currentSectionContent += `\`\`\`language-${p2}`;
         } else {
-            // Section header
+            // Add section dividers
             if (sectionIndex > 0) {
-                parts.push("</div>\n");
+                currentSectionContent += `</div>\n`;
+                parts.push(processSection(currentSectionContent, sectionIndex));
+                currentSectionContent = "";
             }
             sectionIndex++;
-            parts.push(
-                `<div className="sections" id="section-${sectionIndex}">\n\n${match}\n`,
-            );
+            currentSectionContent += `<div className="sections" id="section-${sectionIndex}">\n\n${match}\n`;
         }
 
         lastIndex = offset + match.length;
         return match;
     });
 
-    parts.push(markdownContent.slice(lastIndex));
+    currentSectionContent += markdownContent.slice(lastIndex);
 
     if (sectionIndex > 0) {
-        parts.push("</div>\n");
+        currentSectionContent += "</div>\n";
+        parts.push(processSection(currentSectionContent, sectionIndex));
+    } else {
+        parts.push(currentSectionContent);
     }
 
     return parts.join("");
