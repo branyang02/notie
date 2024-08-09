@@ -1,14 +1,15 @@
 import { Card, Tooltip } from "evergreen-ui";
 import ReactMarkdown from "react-markdown";
-import rehypeHighlight from "rehype-highlight";
 import rehypeKatex from "rehype-katex";
-import rehypeRaw from "rehype-raw";
-import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { extractEquationInfo, processEquationString } from "../utils";
 
-const EquationReference: React.FC<{
+const EquationReference = ({
+    children,
+    equationMapping,
+    previewEquation,
+}: {
     children: Element;
     equationMapping: {
         [key: string]: {
@@ -17,7 +18,7 @@ const EquationReference: React.FC<{
         };
     };
     previewEquation?: boolean;
-}> = ({ children, equationMapping, previewEquation }) => {
+}) => {
     const { equationNumber, equationString, parenthesesRemoved } =
         extractEquationInfo(children, equationMapping);
 
@@ -63,12 +64,7 @@ const EquationCard = ({ equationString }: { equationString: string }) => {
         <Card>
             <ReactMarkdown
                 remarkPlugins={[remarkGfm, remarkMath]}
-                rehypePlugins={[
-                    [rehypeKatex],
-                    rehypeRaw,
-                    rehypeHighlight,
-                    rehypeSlug,
-                ]}
+                rehypePlugins={[[rehypeKatex]]}
             >
                 {processedEquationString}
             </ReactMarkdown>

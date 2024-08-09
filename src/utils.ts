@@ -1,3 +1,4 @@
+// Used in Notie.tsx
 export function preProcessMarkdown(markdownContent: string) {
     const equationMapping: {
         [key: string]: {
