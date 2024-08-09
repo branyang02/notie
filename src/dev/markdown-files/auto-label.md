@@ -1,4 +1,4 @@
-# Automatic Equation Numbering
+# Example: Automatic Equation Numbering
 
 ## Section 1
 
@@ -73,117 +73,64 @@ $$
 
 Reference equation $\eqref{eq:some-equation}$ in the text.
 
-What if we have duplicate labels within the same section?
-
-$$
-\begin{equation} \label{eq:some-equation}
-E = mc^2
-\end{equation}
-$$
-
 ## Section 2
 
-**notie** checks for duplicate labels within the same section. Let's copy the entire section 1 with the same labels and see what happens. But first, lets add some equations to this section before copying to see if the automatic numbering continues.
-
-### More Equations
-
-$$
-\begin{equation}
-\int_{0}^{1} x^2 dx = \frac{1}{3} \label{eq:integral}
-\end{equation}
-$$
-
-Let's reference equation $\eqref{eq:integral}$ in the text.
-
-$$
-\begin{align}
-\int_{0}^{1} x^2 dx &= \frac{1}{3} \label{eq:integral-align} \\
-\int_{0}^{1} x^3 dx &= \frac{1}{4} \label{eq:integral-align-2}
-\end{align}
-$$
-
-Reference equations $\eqref{eq:integral-align}$ and $\eqref{eq:integral-align-2}$ in the text.
-
-### Copied from Section 1
-
-Let use the `\begin{equation}` environment and label it.
-
-$$
-\begin{equation} \label{eq:quadratic}
-x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
-\end{equation}
-$$
-
-Reference equation $\eqref{eq:quadratic}$ in the text, or $\ref{eq:quadratic}$.
-
-Proof of quadratic formula, and label each step in the `\begin{align}` environment.
-
-$$
-\begin{align}
-ax^2 + bx + c &= 0  \label{eq:quadratic-general} \\
-x^2 + \frac{b}{a}x + \frac{c}{a} &= 0  \label{eq:quadratic-normalized} \\
-x^2 + \frac{b}{a}x &= -\frac{c}{a}  \label{eq:quadratic-half} \\
-x^2 + \frac{b}{a}x + \left(\frac{b}{2a}\right)^2 &= -\frac{c}{a} + \left(\frac{b}{2a}\right)^2  \label{eq:quadratic-complete} \\
-\left(x + \frac{b}{2a}\right)^2 &= \frac{b^2 - 4ac}{4a^2}  \label{eq:quadratic-squared} \\
-x + \frac{b}{2a} &= \pm \sqrt{\frac{b^2 - 4ac}{4a^2}}  \label{eq:quadratic-sqrt} \\
-x &= -\frac{b}{2a} \pm \sqrt{\frac{b^2 - 4ac}{4a^2}}  \label{eq:quadratic-solve} \\
-x &= \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} \label{eq:quadratic-final}
-\end{align}
-$$
-
-Reference equations $\eqref{eq:quadratic-general}$, $\eqref{eq:quadratic-normalized}$, $\eqref{eq:quadratic-half}$, $\eqref{eq:quadratic-complete}$, $\eqref{eq:quadratic-squared}$, $\eqref{eq:quadratic-sqrt}$, $\eqref{eq:quadratic-solve}$, and $\eqref{eq:quadratic-final}$ in the text.
-
-Let's go back to using no automatic numbering with `begin{align*}`.
-
-$$
-\begin{align*}
-ax^2 + bx + c &= 0 \\
-x^2 + \frac{b}{a}x + \frac{c}{a} &= 0 \\
-x^2 + \frac{b}{a}x &= -\frac{c}{a} \\
-x^2 + \frac{b}{a}x + \left(\frac{b}{2a}\right)^2 &= -\frac{c}{a} + \left(\frac{b}{2a}\right)^2 \\
-\left(x + \frac{b}{2a}\right)^2 &= \frac{b^2 - 4ac}{4a^2} \\
-x + \frac{b}{2a} &= \pm \sqrt{\frac{b^2 - 4ac}{4a^2}} \\
-x &= -\frac{b}{2a} \pm \sqrt{\frac{b^2 - 4ac}{4a^2}} \\
-x &= \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
-\end{align*}
-$$
-
-And then use the `align` environment again.
-
-$$
-\begin{align}
-A &= B + C \label{eq:abc} \\
-D &= E + F \label{eq:def}
-\end{align}
-$$
-
-Reference equations $\eqref{eq:abc}$ and $\eqref{eq:def}$ in the text.
-
-What if I use `\begin{equation*}` environment with no automatic numbering?
-
-$$
-\begin{equation*}
-b = \frac{1}{2} \pm \sqrt{\frac{1}{4} - 1}
-\end{equation*}
-$$
-
-And then use `\begin{equation}` environment with automatic numbering.
-
-$$
-\begin{equation} \label{eq:some-equation}
-b = \frac{1}{2} \pm \sqrt{\frac{1}{4} - 1}
-\end{equation}
-$$
-
-Reference equation $\eqref{eq:some-equation}$ in the text.
-
-What if we have duplicate labels within the same section?
+What if we have duplicate labels?
 
 $$
 \begin{equation} \label{eq:some-equation}
 E = mc^2
 \end{equation}
 $$
+
+We can reference all equations in the document:
+
+- $\eqref{eq:quadratic}$
+- $\eqref{eq:quadratic-general}$
+- $\eqref{eq:quadratic-normalized}$
+- $\eqref{eq:quadratic-half}$
+- $\eqref{eq:quadratic-complete}$
+- $\eqref{eq:quadratic-squared}$
+- $\eqref{eq:quadratic-sqrt}$
+- $\eqref{eq:quadratic-solve}$
+- $\eqref{eq:quadratic-final}$
+- $\eqref{eq:abc}$
+- $\eqref{eq:def}$
+- $\eqref{eq:some-equation}$
+
+We don't have to label equations in the `align` environment.
+
+$$
+\begin{align}
+\mathbf{a} \cdot \mathbf{b} &= \sum_{i=1}^{n} a_i b_i \label{eq:dot-product} \\
+\mathbf{A}\mathbf{x} &= \mathbf{b} \\
+\mathbf{C} &= \mathbf{A}\mathbf{B} \quad \text{where} \quad C_{ij} = \sum_{k=1}^{n} A_{ik} B_{kj} \\
+\det(\mathbf{A}) &= a_{11}a_{22} - a_{12}a_{21} \label{eq:2x2-determinant} \\
+\det(\mathbf{A}) &= a_{11}(a_{22}a_{33} - a_{23}a_{32}) - a_{12}(a_{21}a_{33} - a_{23}a_{31}) + a_{13}(a_{21}a_{32} - a_{22}a_{31}) \label{eq:3x3-determinant} \\
+\mathbf{A}^{-1} &= \frac{1}{\det(\mathbf{A})}\begin{pmatrix}
+a_{22} & -a_{12} \\
+-a_{21} & a_{11}
+\end{pmatrix} \label{eq:2x2-inverse} \\
+\mathbf{A}\mathbf{v} &= \lambda\mathbf{v} \label{eq:eigenvalue} \\
+\|\mathbf{x}\|_2 &= \sqrt{\sum_{i=1}^{n} x_i^2} \\
+\text{tr}(\mathbf{A}) &= \sum_{i=1}^{n} a_{ii} \\
+x_i &= \frac{\det(\mathbf{A}_i)}{\det(\mathbf{A})} \label{eq:cramers-rule} \\
+RREF(\mathbf{A}) &= \begin{pmatrix}
+1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 \\
+0 & 0 & 1 & 0
+\end{pmatrix} \label{eq:rref} \\
+A &= \begin{pmatrix}
+a_{11} & a_{12} & a_{13} \\
+a_{21} & a_{22} & a_{23} \\
+a_{31} & a_{32} & a_{33}
+\end{pmatrix} \label{eq:matrix}
+\end{align}
+$$
+
+Let's see if other **notie** functions still work.
+
+Let's reference equations $\eqref{eq:dot-product}$, $\eqref{eq:2x2-determinant}$, $\eqref{eq:3x3-determinant}$, $\eqref{eq:2x2-inverse}$, $\eqref{eq:eigenvalue}$, $\eqref{eq:cramers-rule}$, and $\eqref{eq:rref}$ in the text.
 
 ## More Text to extend scrolling
 
@@ -196,3 +143,11 @@ Vivamus sollicitudin vulputate cursus. Ut pretium nisi at urna tincidunt, nec lo
 Morbi dignissim massa ac erat sagittis accumsan. Pellentesque elementum metus et velit fermentum sodales. Sed faucibus, lacus vitae ornare convallis, purus sapien euismod metus, at tempus ante arcu quis turpis. In sodales elit fermentum sapien hendrerit rhoncus. Duis ultrices sagittis dolor eu consectetur. Proin massa nisl, sagittis vitae turpis in, fringilla mollis neque. Aenean ante elit, eleifend quis nulla ac, sagittis condimentum dui. Suspendisse ac odio at massa viverra sodales. Mauris sollicitudin elit augue, quis scelerisque massa viverra sed. Etiam arcu nulla, rhoncus quis facilisis ac, sollicitudin at odio. Morbi rhoncus tellus vulputate nulla lobortis, vel facilisis odio ultricies. Donec vitae dui nec velit maximus dignissim. Mauris quis egestas neque, eu egestas ligula. Ut efficitur maximus placerat. Donec elementum dapibus pharetra. Nunc augue tortor, dapibus ut tempor nec, imperdiet at mi.
 
 Cras vel massa posuere, maximus lectus eu, commodo mi. Nam eleifend eleifend lacus. Proin id hendrerit nibh, ut elementum dui. Fusce finibus egestas ultricies. Cras ut velit porttitor, porta velit sed, laoreet diam. Donec vitae nibh gravida, malesuada ligula vel, tempor libero. Sed suscipit sollicitudin tempus. Nulla venenatis imperdiet pellentesque. Duis viverra arcu at eros mattis vehicula. Nam pulvinar ornare risus, sed dignissim eros viverra non. Morbi sagittis erat in quam auctor tempor. Phasellus ex purus, sagittis eget luctus id, eleifend eget sem. Quisque fermentum facilisis lacinia.
+
+## Section 4
+
+We can still reference equations in the document:
+
+- $\eqref{eq:quadratic}$
+- $\eqref{eq:quadratic-general}$
+- $\eqref{eq:matrix}$
