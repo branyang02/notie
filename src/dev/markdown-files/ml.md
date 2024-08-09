@@ -406,10 +406,10 @@ where $\hat{y}^{(i)} = \mathbf{\theta}^T \mathbf{x}^{(i)}$ is the predicted valu
 To compute the gradient of the MSE loss function for stochastic gradient descent, we start by expanding the loss function for a single training example:
 
 $$
-\begin{align}
+\begin{aligned}
 \text{MSE}^{(i)}(\mathbf{\theta}) &= \left( \mathbf{\theta}^T \mathbf{x}^{(i)} - y^{(i)} \right)^2 \\
 &= \left( \mathbf{x}^{(i)T} \mathbf{\theta} - y^{(i)} \right)^2.
-\end{align}
+\end{aligned}
 $$
 
 To find the gradient with respect to $\mathbf{\theta}$, we take the derivative of the loss function:
