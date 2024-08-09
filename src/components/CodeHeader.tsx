@@ -10,7 +10,7 @@ import React, { useState } from "react";
 interface LanguageBoxProps {
     language: string;
     code: string;
-    darkMode?: boolean;
+    darkMode: boolean;
 }
 
 const CodeHeader: React.FC<LanguageBoxProps> = ({

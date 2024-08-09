@@ -20,7 +20,7 @@ export interface NotieProps {
 
 const Notie: React.FC<NotieProps> = ({
     markdown,
-    darkMode,
+    darkMode = false,
     previewEquation = true,
     style,
 }) => {

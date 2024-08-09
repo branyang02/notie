@@ -9,7 +9,7 @@ const StaticCodeBlock = ({
 }: {
     code: string;
     language: string;
-    darkMode?: boolean;
+    darkMode: boolean;
 }) => {
     return (
         <Pane>

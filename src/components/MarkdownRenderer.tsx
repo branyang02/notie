@@ -19,7 +19,7 @@ type CodeProps = React.HTMLAttributes<HTMLElement> & {
 
 const MarkdownRenderer: React.FC<{
     markdownContent: string;
-    darkMode?: boolean;
+    darkMode: boolean;
 }> = React.memo(({ markdownContent, darkMode }) => {
     const components = useMemo(
         () => ({
