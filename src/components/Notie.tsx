@@ -7,7 +7,9 @@ import { Pane } from "evergreen-ui";
 import ScrollToTopButton from "./ScrollToTopButton";
 import NoteToc from "./NoteToc";
 import MarkdownRenderer from "./MarkdownRenderer";
-import { processSection } from "../utils";
+import { preProcessMarkdown } from "../utils";
+import EquationReference from "./EquationReference";
+import { createRoot } from "react-dom/client";
 
 export interface NotieProps {
     markdown: string;
@@ -15,66 +17,14 @@ export interface NotieProps {
     style?: React.CSSProperties;
 }
 
-function preProcessMarkdown(markdownContent: string): string {
-    const pattern = /^(```(\w+)|## .+)$/gm;
-    const parts: string[] = [];
-    const equationMapping: { [key: string]: string } = {};
-
-    let lastIndex = 0;
-    let sectionIndex = 0;
-    let currentSectionContent = "";
-
-    markdownContent.replace(pattern, (match, _p1, p2, offset) => {
-        if (sectionIndex > 0) {
-            currentSectionContent += markdownContent.slice(lastIndex, offset);
-        } else {
-            parts.push(markdownContent.slice(lastIndex, offset));
-        }
-
-        if (p2) {
-            // Code block
-            currentSectionContent += `\`\`\`language-${p2}`;
-        } else {
-            // Add section dividers
-            if (sectionIndex > 0) {
-                currentSectionContent += `</div>\n`;
-                parts.push(
-                    processSection(
-                        currentSectionContent,
-                        sectionIndex,
-                        equationMapping,
-                    ),
-                );
-                currentSectionContent = "";
-            }
-            sectionIndex++;
-            currentSectionContent += `<div className="sections" id="section-${sectionIndex}">\n\n${match}\n`;
-        }
-
-        lastIndex = offset + match.length;
-        return match;
-    });
-
-    currentSectionContent += markdownContent.slice(lastIndex);
-
-    if (sectionIndex > 0) {
-        currentSectionContent += "</div>\n";
-        parts.push(
-            processSection(
-                currentSectionContent,
-                sectionIndex,
-                equationMapping,
-            ),
-        );
-    } else {
-        parts.push(currentSectionContent);
-    }
-
-    return parts.join("");
-}
-
 const Notie: React.FC<NotieProps> = ({ markdown, darkMode, style }) => {
-    const markdownContent = preProcessMarkdown(markdown);
+    const equationMapping: {
+        [key: string]: {
+            equationNumber: string;
+            equationString: string;
+        };
+    } = {};
+    const markdownContent = preProcessMarkdown(markdown, equationMapping);
     const contentRef = useRef<HTMLDivElement>(null);
     const [activeId, setActiveId] = useState<string>("");
 
@@ -123,6 +73,24 @@ const Notie: React.FC<NotieProps> = ({ markdown, darkMode, style }) => {
                 eqn.textContent = `(${sectionIndex + 1}.${eqnIndex + 1})`;
             }
         }
+    }, [markdownContent]);
+
+    useEffect(() => {
+        if (!contentRef.current) return;
+
+        const eqnRefs = contentRef.current.querySelectorAll('a[href^="#pre-eqn-"]');
+
+        eqnRefs.forEach((ref) => {
+            const equReference = document.createElement("span");
+            const equReferenceComponent = (
+                <EquationReference
+                    children={ref}
+                    equationMapping={equationMapping}
+                />
+            );
+            createRoot(equReference).render(equReferenceComponent);
+            ref.parentNode?.replaceChild(equReference, ref);
+        });
     }, [markdownContent]);
 
     return (

@@ -1,24 +1,77 @@
-function replaceReferences(
-    sectionContent: string,
-    equationMapping: { [key: string]: string },
+export function preProcessMarkdown(
+    markdownContent: string,
+    equationMapping: {
+        [key: string]: {
+            equationNumber: string;
+            equationString: string;
+        };
+    },
 ): string {
-    const regex = /\\(ref|eqref)\{(eq:[^}]+)\}/g;
+    const pattern = /^(```(\w+)|## .+)$/gm;
+    const parts: string[] = [];
 
-    return sectionContent.replace(regex, (match, p1, p2) => {
-        const newLabel = equationMapping[p2];
+    let lastIndex = 0;
+    let sectionIndex = 0;
+    let currentSectionContent = "";
 
-        if (newLabel) {
-            return `\\${p1}{${newLabel}}`;
+    markdownContent.replace(pattern, (match, _p1, p2, offset) => {
+        if (sectionIndex > 0) {
+            currentSectionContent += markdownContent.slice(lastIndex, offset);
         } else {
-            return match;
+            parts.push(markdownContent.slice(lastIndex, offset));
         }
+
+        if (p2) {
+            // Code block
+            currentSectionContent += `\`\`\`language-${p2}`;
+        } else {
+            // Add section dividers
+            if (sectionIndex > 0) {
+                currentSectionContent += `</div>\n`;
+                parts.push(
+                    processSection(
+                        currentSectionContent,
+                        sectionIndex,
+                        equationMapping,
+                    ),
+                );
+                currentSectionContent = "";
+            }
+            sectionIndex++;
+            currentSectionContent += `<div className="sections" id="section-${sectionIndex}">\n\n${match}\n`;
+        }
+
+        lastIndex = offset + match.length;
+        return match;
     });
+
+    currentSectionContent += markdownContent.slice(lastIndex);
+
+    if (sectionIndex > 0) {
+        currentSectionContent += "</div>\n";
+        parts.push(
+            processSection(
+                currentSectionContent,
+                sectionIndex,
+                equationMapping,
+            ),
+        );
+    } else {
+        parts.push(currentSectionContent);
+    }
+
+    return parts.join("");
 }
 
-export function processSection(
+function processSection(
     sectionContent: string,
     sectionIndex: number,
-    equationMapping: { [key: string]: string },
+    equationMapping: {
+        [key: string]: {
+            equationNumber: string;
+            equationString: string;
+        };
+    },
 ): string {
     let currentEquationIndex = 1;
 
@@ -86,9 +139,6 @@ export function processSection(
         }
     }
 
-    // Replace the references in the content
-    modifiedContent = replaceReferences(modifiedContent, equationMapping);
-
     // Reinsert the code blocks
     modifiedContent = modifiedContent.replace(
         /CODE_BLOCK_(\d+)/g,
@@ -112,7 +162,10 @@ export function processSection(
                     return false; // Error occurred
                 } else {
                     const sectionLabel = `${sectionIndex}.${currentEquationIndex}`;
-                    equationMapping[labelText] = sectionLabel;
+                    equationMapping[labelText] = {
+                        equationNumber: sectionLabel,
+                        equationString: equation,
+                    };
                 }
             }
         }

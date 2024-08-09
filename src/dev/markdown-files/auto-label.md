@@ -132,6 +132,16 @@ Let's see if other **notie** functions still work.
 
 Let's reference equations $\eqref{eq:dot-product}$, $\eqref{eq:2x2-determinant}$, $\eqref{eq:3x3-determinant}$, $\eqref{eq:2x2-inverse}$, $\eqref{eq:eigenvalue}$, $\eqref{eq:cramers-rule}$, and $\eqref{eq:rref}$ in the text.
 
+```python
+for i in range(10):
+    print("Hello World")
+```
+
+```execute-python
+for i in range(10):
+    print("Hello World")
+```
+
 ## More Text to extend scrolling
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ullamcorper sem suscipit euismod condimentum. Etiam ut risus consectetur, tempus est sit amet, hendrerit arcu. Morbi molestie magna sed urna pulvinar viverra. Proin sit amet justo dolor. Cras id augue non massa mattis pretium. Phasellus cursus eu est in ullamcorper. Vivamus eu vulputate turpis. Duis sodales, ante et placerat iaculis, mauris leo viverra elit, et viverra turpis felis ut orci. Maecenas ut dui venenatis turpis dictum aliquam non a nibh. Pellentesque nulla leo, suscipit et ultricies ut, lobortis vel eros. Maecenas eget massa in dolor ornare tincidunt. Sed nec fermentum elit. Praesent ullamcorper enim non lectus lacinia, eu mollis dui maximus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae;
