@@ -18,9 +18,8 @@ function replaceReferences(
 export function processSection(
     sectionContent: string,
     sectionIndex: number,
+    equationMapping: { [key: string]: string },
 ): string {
-    console.log("Processing section", sectionContent);
-    const equationMapping: { [key: string]: string } = {};
     let currentEquationIndex = 1;
 
     // Extract content wrapped in triple backticks to exclude it from processing
@@ -36,38 +35,52 @@ export function processSection(
 
     // Split the content into individual equations
     const equations = modifiedContent.match(
-        /\$\$\n(?:\s*\\begin\{(equation|align|equation\*|gather\*|align\*|alignat\*)\}[\s\S]*?\n\s*\\end\{\1\}\s*\$\$)/g,
+        /\$\$\n(?:\s*\\begin\{(equation|align)\}[\s\S]*?\n\s*\\end\{\1\}\s*\$\$)/g,
     );
 
     if (equations) {
         for (const equation of equations) {
             const isAlignEnvironment = equation.includes("\\begin{align}");
-            const isLabeledEnvironment = !equation.includes("*");
 
-            const labels = equation.match(/\\label\{(.*?)\}/g);
-
-            if (labels) {
-                for (const label of labels) {
-                    const labelText = label.match(/\\label\{(.*?)\}/)?.[1];
-
-                    if (labelText) {
-                        if (labelText in equationMapping) {
-                            modifiedContent = modifiedContent.replace(
-                                equation,
-                                `$\\color{red}\\text{KaTeX Error: Duplicate label: ${labelText}}$`,
-                            );
-                        } else {
-                            const sectionLabel = `${sectionIndex}.${currentEquationIndex}`;
-                            equationMapping[labelText] = sectionLabel;
-                            if (isLabeledEnvironment) {
+            if (isAlignEnvironment) {
+                let insideBlock = false;
+                const beginPattern = /\\begin{[^}]*}/;
+                const endPattern = /\\end{[^}]*}/;
+                for (const line of equation.split("\n")) {
+                    // Skip `$$`, `\begin{align}` and `\end{align}`
+                    if (
+                        line.includes("$$") ||
+                        line.includes("\\begin{align}") ||
+                        line.includes("\\end{align}")
+                    ) {
+                        continue;
+                    }
+                    // Check if the line matches `\begin{anything}`
+                    if (beginPattern.test(line)) {
+                        insideBlock = true; // Set the flag to indicate we are inside a block
+                        continue;
+                    }
+                    // If inside a block, skip lines until we find `\end{anything}`
+                    if (insideBlock) {
+                        if (endPattern.test(line)) {
+                            insideBlock = false;
+                            if (handleLabel(line, equation)) {
                                 currentEquationIndex++;
                             }
                         }
+                        continue;
+                    }
+                    if (handleLabel(line, equation)) {
+                        currentEquationIndex++;
                     }
                 }
-            } else if (isAlignEnvironment) {
-                if (isLabeledEnvironment) {
-                    currentEquationIndex++;
+            } else {
+                // We are in `/begin{equation}` environment, only one label is allowed
+                const label = equation.match(/\\label\{(.*?)\}/g)?.[0];
+                if (label) {
+                    if (handleLabel(label, equation)) {
+                        currentEquationIndex++;
+                    }
                 }
             }
         }
@@ -85,4 +98,24 @@ export function processSection(
     );
 
     return modifiedContent;
+
+    function handleLabel(line: string, equation: string): boolean {
+        if (line.includes("\\label")) {
+            const labelText = line.match(/\\label\{(.*?)\}/)?.[1];
+
+            if (labelText) {
+                if (labelText in equationMapping) {
+                    modifiedContent = modifiedContent.replace(
+                        equation,
+                        `$\\color{red}\\text{KaTeX Error: Duplicate label: ${labelText}}$`,
+                    );
+                    return false; // Error occurred
+                } else {
+                    const sectionLabel = `${sectionIndex}.${currentEquationIndex}`;
+                    equationMapping[labelText] = sectionLabel;
+                }
+            }
+        }
+        return true; // No error occurred
+    }
 }

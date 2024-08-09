@@ -18,6 +18,8 @@ export interface NotieProps {
 function preProcessMarkdown(markdownContent: string): string {
     const pattern = /^(```(\w+)|## .+)$/gm;
     const parts: string[] = [];
+    const equationMapping: { [key: string]: string } = {};
+
     let lastIndex = 0;
     let sectionIndex = 0;
     let currentSectionContent = "";
@@ -36,7 +38,7 @@ function preProcessMarkdown(markdownContent: string): string {
             // Add section dividers
             if (sectionIndex > 0) {
                 currentSectionContent += `</div>\n`;
-                parts.push(processSection(currentSectionContent, sectionIndex));
+                parts.push(processSection(currentSectionContent, sectionIndex, equationMapping));
                 currentSectionContent = "";
             }
             sectionIndex++;
@@ -51,7 +53,7 @@ function preProcessMarkdown(markdownContent: string): string {
 
     if (sectionIndex > 0) {
         currentSectionContent += "</div>\n";
-        parts.push(processSection(currentSectionContent, sectionIndex));
+        parts.push(processSection(currentSectionContent, sectionIndex, equationMapping));
     } else {
         parts.push(currentSectionContent);
     }
