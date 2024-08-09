@@ -24,13 +24,7 @@ const Notie: React.FC<NotieProps> = ({
     previewEquation = true,
     style,
 }) => {
-    const equationMapping: {
-        [key: string]: {
-            equationNumber: string;
-            equationString: string;
-        };
-    } = {};
-    const markdownContent = preProcessMarkdown(markdown, equationMapping);
+    const { markdownContent, equationMapping } = preProcessMarkdown(markdown);
     const contentRef = useRef<HTMLDivElement>(null);
     const [activeId, setActiveId] = useState<string>("");
 
@@ -81,6 +75,7 @@ const Notie: React.FC<NotieProps> = ({
         }
     }, [markdownContent]);
 
+    // Effect to enable Equation Preview
     useEffect(() => {
         if (!contentRef.current) return;
 
@@ -100,7 +95,7 @@ const Notie: React.FC<NotieProps> = ({
             createRoot(equReference).render(equReferenceComponent);
             ref.parentNode?.replaceChild(equReference, ref);
         });
-    }, [markdownContent]);
+    }, [equationMapping, markdownContent, previewEquation]);
 
     return (
         <Pane background={darkMode ? "#333" : "white"} style={style}>

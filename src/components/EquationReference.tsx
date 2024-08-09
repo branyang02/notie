@@ -6,6 +6,7 @@ import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
+import { extractEquationInfo, processEquationString } from "../utils";
 
 const EquationReference: React.FC<{
     children: Element;
@@ -17,21 +18,16 @@ const EquationReference: React.FC<{
     };
     previewEquation?: boolean;
 }> = ({ children, equationMapping, previewEquation }) => {
-    const equationLabel = children.textContent?.replace(/−/g, "-") || "";
-    if (!equationLabel) {
-        return null;
-    }
+    const { equationNumber, equationString, parenthesesRemoved } =
+        extractEquationInfo(children, equationMapping);
 
-    const trimmedLabel = equationLabel.replace(/^\(|\)$/g, "");
-    const parenthesesRemoved = trimmedLabel !== equationLabel;
-
-    if (!(trimmedLabel in equationMapping)) {
-        throw new Error(
-            `Equation label "${trimmedLabel}" not found in equation mapping`,
+    if (equationString == "error") {
+        return (
+            <span className="mord" style={{ color: "red" }}>
+                {parenthesesRemoved ? `(${equationNumber})` : equationNumber}
+            </span>
         );
     }
-
-    const { equationNumber, equationString } = equationMapping[trimmedLabel];
 
     return previewEquation ? (
         <Tooltip
@@ -61,29 +57,7 @@ const EquationReference: React.FC<{
 export default EquationReference;
 
 const EquationCard = ({ equationString }: { equationString: string }) => {
-    // Process `equationString`
-
-    console.log(equationString);
-
-    let processedEquationString = "";
-    if (equationString.includes("\\begin{equation}")) {
-        processedEquationString = equationString
-            .replace(/\\label\{[^}]*\}/g, "")
-            .replace(/\\begin\{align\}/g, "\\begin{aligned}")
-            .replace(/\\begin\{equation\}/g, "")
-            .replace(/\\end\{equation\}/g, "");
-    } else {
-        // We are given a single line from \begin{align}
-        processedEquationString += "$$\n";
-
-        processedEquationString += equationString
-            .replace(/\\label\{[^}]*\}/g, "")
-            .replace(/&/g, "");
-
-        processedEquationString += "\n$$\n";
-    }
-
-    console.log(processedEquationString);
+    const processedEquationString = processEquationString(equationString);
 
     return (
         <Card>

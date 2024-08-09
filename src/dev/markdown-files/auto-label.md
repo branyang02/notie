@@ -124,13 +124,20 @@ A &= \begin{pmatrix}
 a_{11} & a_{12} & a_{13} \\
 a_{21} & a_{22} & a_{23} \\
 a_{31} & a_{32} & a_{33}
-\end{pmatrix} \label{eq:matrix}
+\end{pmatrix} \label{eq:matrix} \\
+\nabla \cdot \mathbf{E} &= \frac{\rho}{\varepsilon_0} \label{eq:gauss-law} \\
+\nabla \times \mathbf{B} &= \mu_0 \left(\mathbf{J} + \varepsilon_0 \frac{\partial \mathbf{E}}{\partial t}\right) \label{eq:ampere-maxwell} \\
+\frac{\partial}{\partial t} \left(\frac{1}{2} \int_V \rho \mathbf{v}^2 dV\right) &= -\oint_S p\mathbf{v} \cdot d\mathbf{A} + \int_V \rho \mathbf{g} \cdot \mathbf{v} dV + \int_V \mathbf{f} \cdot \mathbf{v} dV \label{eq:energy-equation} \\
+\hat{H} \psi(\mathbf{r}, t) &= i\hbar \frac{\partial}{\partial t} \psi(\mathbf{r}, t) \\
+R_{\mu\nu} - \frac{1}{2}Rg_{\mu\nu} + \Lambda g_{\mu\nu} &= \frac{8\pi G}{c^4}T_{\mu\nu} \label{eq:einstein-field}
 \end{align}
 $$
 
 Let's see if other **notie** functions still work.
 
 Let's reference equations $\eqref{eq:dot-product}$, $\eqref{eq:2x2-determinant}$, $\eqref{eq:3x3-determinant}$, $\eqref{eq:2x2-inverse}$, $\eqref{eq:eigenvalue}$, $\eqref{eq:cramers-rule}$, and $\eqref{eq:rref}$ in the text.
+
+Let's also reference $\eqref{eq:gauss-law}$, $\eqref{eq:ampere-maxwell}$, $\eqref{eq:energy-equation}$, $\eqref{eq:schrodinger}$, and $\eqref{eq:einstein-field}$
 
 ```python
 for i in range(10):
