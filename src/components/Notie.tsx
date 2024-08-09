@@ -38,7 +38,13 @@ function preProcessMarkdown(markdownContent: string): string {
             // Add section dividers
             if (sectionIndex > 0) {
                 currentSectionContent += `</div>\n`;
-                parts.push(processSection(currentSectionContent, sectionIndex, equationMapping));
+                parts.push(
+                    processSection(
+                        currentSectionContent,
+                        sectionIndex,
+                        equationMapping,
+                    ),
+                );
                 currentSectionContent = "";
             }
             sectionIndex++;
@@ -53,7 +59,13 @@ function preProcessMarkdown(markdownContent: string): string {
 
     if (sectionIndex > 0) {
         currentSectionContent += "</div>\n";
-        parts.push(processSection(currentSectionContent, sectionIndex, equationMapping));
+        parts.push(
+            processSection(
+                currentSectionContent,
+                sectionIndex,
+                equationMapping,
+            ),
+        );
     } else {
         parts.push(currentSectionContent);
     }

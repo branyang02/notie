@@ -42,10 +42,10 @@ Of course, we can't forget about the data!
 
 In this section we will cover the following topics:
 
--   [Linear Regression](#linear-regression)
--   [Normal Equation](#normal-equation)
--   [Gradient Descent](#gradient-descent)
--   [Stochastic Gradient Descent](#stochastic-gradient-descent)
+- [Linear Regression](#linear-regression)
+- [Normal Equation](#normal-equation)
+- [Gradient Descent](#gradient-descent)
+- [Stochastic Gradient Descent](#stochastic-gradient-descent)
 
 ### Linear Regression
 
@@ -451,10 +451,10 @@ SGD for linear regression is as follows:
 1. Initialize the parameter vector $\mathbf{\theta}$.
 2. Shuffle the training data.
 3. For each training example $(\mathbf{x}^{(i)}, y^{(i)})$:
-    - Compute the predicted value $\hat{y}^{(i)} = \mathbf{\theta}^T \mathbf{x}^{(i)}$.
-    - Compute the loss $L^{(i)} = (\hat{y}^{(i)} - y^{(i)})^2$.
-    - Compute the gradient $\nabla_{\mathbf{\theta}} L^{(i)} = 2 \mathbf{x}^{(i)} (\hat{y}^{(i)} - y^{(i)})$.
-    - Update the parameter vector $\mathbf{\theta} = \mathbf{\theta} - \alpha \nabla_{\mathbf{\theta}} L^{(i)}$.
+   - Compute the predicted value $\hat{y}^{(i)} = \mathbf{\theta}^T \mathbf{x}^{(i)}$.
+   - Compute the loss $L^{(i)} = (\hat{y}^{(i)} - y^{(i)})^2$.
+   - Compute the gradient $\nabla_{\mathbf{\theta}} L^{(i)} = 2 \mathbf{x}^{(i)} (\hat{y}^{(i)} - y^{(i)})$.
+   - Update the parameter vector $\mathbf{\theta} = \mathbf{\theta} - \alpha \nabla_{\mathbf{\theta}} L^{(i)}$.
 4. Repeat steps 2-3 for multiple epochs.
 
 <details><summary>Stochastic Gradient Descent Example</summary>
