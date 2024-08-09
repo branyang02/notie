@@ -14,10 +14,16 @@ import { createRoot } from "react-dom/client";
 export interface NotieProps {
     markdown: string;
     darkMode?: boolean;
+    previewEquation?: boolean;
     style?: React.CSSProperties;
 }
 
-const Notie: React.FC<NotieProps> = ({ markdown, darkMode, style }) => {
+const Notie: React.FC<NotieProps> = ({
+    markdown,
+    darkMode,
+    previewEquation = true,
+    style,
+}) => {
     const equationMapping: {
         [key: string]: {
             equationNumber: string;
@@ -78,7 +84,9 @@ const Notie: React.FC<NotieProps> = ({ markdown, darkMode, style }) => {
     useEffect(() => {
         if (!contentRef.current) return;
 
-        const eqnRefs = contentRef.current.querySelectorAll('a[href^="#pre-eqn-"]');
+        const eqnRefs = contentRef.current.querySelectorAll(
+            'a[href^="#pre-eqn-"]',
+        );
 
         eqnRefs.forEach((ref) => {
             const equReference = document.createElement("span");
@@ -86,6 +94,7 @@ const Notie: React.FC<NotieProps> = ({ markdown, darkMode, style }) => {
                 <EquationReference
                     children={ref}
                     equationMapping={equationMapping}
+                    previewEquation={previewEquation}
                 />
             );
             createRoot(equReference).render(equReferenceComponent);

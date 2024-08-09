@@ -1,4 +1,4 @@
-import { Tooltip } from "evergreen-ui";
+import { Card, Tooltip } from "evergreen-ui";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import rehypeKatex from "rehype-katex";
@@ -15,7 +15,8 @@ const EquationReference: React.FC<{
             equationString: string;
         };
     };
-}> = ({ children, equationMapping }) => {
+    previewEquation?: boolean;
+}> = ({ children, equationMapping, previewEquation }) => {
     const equationLabel = children.textContent?.replace(/−/g, "-") || "";
     if (!equationLabel) {
         return null;
@@ -32,11 +33,13 @@ const EquationReference: React.FC<{
 
     const { equationNumber, equationString } = equationMapping[trimmedLabel];
 
-    return (
+    return previewEquation ? (
         <Tooltip
-            // content={<Paragraph margin={40}>Card appearance</Paragraph>}
             content={<EquationCard equationString={equationString} />}
             appearance="card"
+            statelessProps={{
+                maxWidth: "100%",
+            }}
         >
             <a href={`#eqn-${equationNumber}`}>
                 <span className="mord">
@@ -46,6 +49,12 @@ const EquationReference: React.FC<{
                 </span>
             </a>
         </Tooltip>
+    ) : (
+        <a href={`#eqn-${equationNumber}`}>
+            <span className="mord">
+                {parenthesesRemoved ? `(${equationNumber})` : equationNumber}
+            </span>
+        </a>
     );
 };
 
@@ -53,25 +62,42 @@ export default EquationReference;
 
 const EquationCard = ({ equationString }: { equationString: string }) => {
     // Process `equationString`
-    const processedEquationString = equationString
-        .replace(/\\label\{[^}]*\}/g, "")
-        .replace(/\\begin\{align\}/g, "\\begin{aligned}")
-        .replace(/\\begin\{equation\}/g, "")
-        .replace(/\\end\{equation\}/g, "");
+
+    console.log(equationString);
+
+    let processedEquationString = "";
+    if (equationString.includes("\\begin{equation}")) {
+        processedEquationString = equationString
+            .replace(/\\label\{[^}]*\}/g, "")
+            .replace(/\\begin\{align\}/g, "\\begin{aligned}")
+            .replace(/\\begin\{equation\}/g, "")
+            .replace(/\\end\{equation\}/g, "");
+    } else {
+        // We are given a single line from \begin{align}
+        processedEquationString += "$$\n";
+
+        processedEquationString += equationString
+            .replace(/\\label\{[^}]*\}/g, "")
+            .replace(/&/g, "");
+
+        processedEquationString += "\n$$\n";
+    }
 
     console.log(processedEquationString);
 
     return (
-        <ReactMarkdown
-            remarkPlugins={[remarkGfm, remarkMath]}
-            rehypePlugins={[
-                [rehypeKatex],
-                rehypeRaw,
-                rehypeHighlight,
-                rehypeSlug,
-            ]}
-        >
-            {processedEquationString}
-        </ReactMarkdown>
+        <Card>
+            <ReactMarkdown
+                remarkPlugins={[remarkGfm, remarkMath]}
+                rehypePlugins={[
+                    [rehypeKatex],
+                    rehypeRaw,
+                    rehypeHighlight,
+                    rehypeSlug,
+                ]}
+            >
+                {processedEquationString}
+            </ReactMarkdown>
+        </Card>
     );
 };

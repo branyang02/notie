@@ -97,6 +97,8 @@ function processSection(
 
             if (isAlignEnvironment) {
                 let insideBlock = false;
+                let insideBlockEquation = "";
+
                 const beginPattern = /\\begin{[^}]*}/;
                 const endPattern = /\\end{[^}]*}/;
                 for (const line of equation.split("\n")) {
@@ -111,19 +113,24 @@ function processSection(
                     // Check if the line matches `\begin{anything}`
                     if (beginPattern.test(line)) {
                         insideBlock = true; // Set the flag to indicate we are inside a block
+                        insideBlockEquation += line + "\n";
                         continue;
                     }
                     // If inside a block, skip lines until we find `\end{anything}`
                     if (insideBlock) {
                         if (endPattern.test(line)) {
                             insideBlock = false;
-                            if (handleLabel(line, equation)) {
+                            insideBlockEquation += line;
+                            if (handleLabel(line, insideBlockEquation)) {
                                 currentEquationIndex++;
                             }
+                            insideBlockEquation = "";
+                            continue;
                         }
+                        insideBlockEquation += line + "\n";
                         continue;
                     }
-                    if (handleLabel(line, equation)) {
+                    if (handleLabel(line, line)) {
                         currentEquationIndex++;
                     }
                 }
