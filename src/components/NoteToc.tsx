@@ -40,7 +40,7 @@ const NoteToc = ({
 }: {
     markdownContent: string;
     activeId: string;
-    darkMode?: boolean;
+    darkMode: boolean;
 }) => {
     const toc = useMemo(
         () => generateTableOfContents(markdownContent, activeId),

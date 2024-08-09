@@ -50,7 +50,7 @@ const CodeBlock = ({
 }: {
     initialCode: string;
     language?: string;
-    darkMode?: boolean;
+    darkMode: boolean;
 }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [output, setOutput] = useState("");

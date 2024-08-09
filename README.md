@@ -25,11 +25,12 @@ The `Notie` component is used to render Markdown content. It accepts the followi
 
 ### Props
 
-| Prop       | Type                             | Description                                                 |
-| ---------- | -------------------------------- | ----------------------------------------------------------- |
-| `markdown` | `string`                         | The Markdown content to be rendered.                        |
-| `darkMode` | `boolean` (optional)             | A flag to enable or disable dark mode. Defaults to `false`. |
-| `style`    | `React.CSSProperties` (optional) | Inline styles to apply to the component.                    |
+| Prop              | Type                             | Description                                                       |
+| ----------------- | -------------------------------- | ----------------------------------------------------------------- |
+| `markdown`        | `string`                         | The Markdown content to be rendered.                              |
+| `darkMode`        | `boolean` (optional)             | A flag to enable or disable dark mode. Defaults to `false`.       |
+| `style`           | `React.CSSProperties` (optional) | Inline styles to apply to the component.                          |
+| `previewEquation` | `boolean` (optional)             | A flag to enable or disable equation preview. Defaults to `true`. |
 
 ### Example Usage
 

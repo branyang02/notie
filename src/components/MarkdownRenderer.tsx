@@ -19,7 +19,7 @@ type CodeProps = React.HTMLAttributes<HTMLElement> & {
 
 const MarkdownRenderer: React.FC<{
     markdownContent: string;
-    darkMode?: boolean;
+    darkMode: boolean;
 }> = React.memo(({ markdownContent, darkMode }) => {
     const components = useMemo(
         () => ({
@@ -65,8 +65,8 @@ const MarkdownRenderer: React.FC<{
 
     const katexOptions = {
         macros: {
-            "\\eqref": "\\href{\\#eqn-#1}{(#1)}",
-            "\\ref": "\\href{\\#eqn-#1}{#1}",
+            "\\eqref": "\\href{\\#pre-eqn-#1}{(#1)}",
+            "\\ref": "\\href{\\#pre-eqn-#1}{#1}",
             "\\label": "\\htmlId{#1}{}",
         },
         trust: (context: { command: string }) =>

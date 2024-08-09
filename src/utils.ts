@@ -1,24 +1,80 @@
-function replaceReferences(
-    sectionContent: string,
-    equationMapping: { [key: string]: string },
-): string {
-    const regex = /\\(ref|eqref)\{(eq:[^}]+)\}/g;
+// Used in Notie.tsx
+export function preProcessMarkdown(markdownContent: string) {
+    const equationMapping: {
+        [key: string]: {
+            equationNumber: string;
+            equationString: string;
+        };
+    } = {};
 
-    return sectionContent.replace(regex, (match, p1, p2) => {
-        const newLabel = equationMapping[p2];
+    const pattern = /^(```(\w+)|## .+)$/gm;
+    const parts: string[] = [];
 
-        if (newLabel) {
-            return `\\${p1}{${newLabel}}`;
+    let lastIndex = 0;
+    let sectionIndex = 0;
+    let currentSectionContent = "";
+
+    markdownContent.replace(pattern, (match, _p1, p2, offset) => {
+        if (sectionIndex > 0) {
+            currentSectionContent += markdownContent.slice(lastIndex, offset);
         } else {
-            return match;
+            parts.push(markdownContent.slice(lastIndex, offset));
         }
+
+        if (p2) {
+            // Code block
+            currentSectionContent += `\`\`\`language-${p2}`;
+        } else {
+            // Add section dividers
+            if (sectionIndex > 0) {
+                currentSectionContent += `</div>\n`;
+                parts.push(
+                    processSection(
+                        currentSectionContent,
+                        sectionIndex,
+                        equationMapping,
+                    ),
+                );
+                currentSectionContent = "";
+            }
+            sectionIndex++;
+            currentSectionContent += `<div className="sections" id="section-${sectionIndex}">\n\n${match}\n`;
+        }
+
+        lastIndex = offset + match.length;
+        return match;
     });
+
+    currentSectionContent += markdownContent.slice(lastIndex);
+
+    if (sectionIndex > 0) {
+        currentSectionContent += "</div>\n";
+        parts.push(
+            processSection(
+                currentSectionContent,
+                sectionIndex,
+                equationMapping,
+            ),
+        );
+    } else {
+        parts.push(currentSectionContent);
+    }
+
+    return {
+        markdownContent: parts.join(""),
+        equationMapping: equationMapping,
+    };
 }
 
-export function processSection(
+function processSection(
     sectionContent: string,
     sectionIndex: number,
-    equationMapping: { [key: string]: string },
+    equationMapping: {
+        [key: string]: {
+            equationNumber: string;
+            equationString: string;
+        };
+    },
 ): string {
     let currentEquationIndex = 1;
 
@@ -44,6 +100,8 @@ export function processSection(
 
             if (isAlignEnvironment) {
                 let insideBlock = false;
+                let insideBlockEquation = "";
+
                 const beginPattern = /\\begin{[^}]*}/;
                 const endPattern = /\\end{[^}]*}/;
                 for (const line of equation.split("\n")) {
@@ -58,19 +116,24 @@ export function processSection(
                     // Check if the line matches `\begin{anything}`
                     if (beginPattern.test(line)) {
                         insideBlock = true; // Set the flag to indicate we are inside a block
+                        insideBlockEquation += line + "\n";
                         continue;
                     }
                     // If inside a block, skip lines until we find `\end{anything}`
                     if (insideBlock) {
                         if (endPattern.test(line)) {
                             insideBlock = false;
-                            if (handleLabel(line, equation)) {
+                            insideBlockEquation += line;
+                            if (handleLabel(line, insideBlockEquation)) {
                                 currentEquationIndex++;
                             }
+                            insideBlockEquation = "";
+                            continue;
                         }
+                        insideBlockEquation += line + "\n";
                         continue;
                     }
-                    if (handleLabel(line, equation)) {
+                    if (handleLabel(line, line)) {
                         currentEquationIndex++;
                     }
                 }
@@ -85,9 +148,6 @@ export function processSection(
             }
         }
     }
-
-    // Replace the references in the content
-    modifiedContent = replaceReferences(modifiedContent, equationMapping);
 
     // Reinsert the code blocks
     modifiedContent = modifiedContent.replace(
@@ -112,10 +172,68 @@ export function processSection(
                     return false; // Error occurred
                 } else {
                     const sectionLabel = `${sectionIndex}.${currentEquationIndex}`;
-                    equationMapping[labelText] = sectionLabel;
+                    equationMapping[labelText] = {
+                        equationNumber: sectionLabel,
+                        equationString: equation,
+                    };
                 }
             }
         }
         return true; // No error occurred
     }
+}
+
+// Used in EquationReference.tsx
+export function extractEquationInfo(
+    children: Element,
+    equationMapping: {
+        [key: string]: {
+            equationNumber: string;
+            equationString: string;
+        };
+    },
+) {
+    const equationLabel = children.textContent?.replace(/−/g, "-") || "";
+    if (!equationLabel) {
+        throw new Error("No equation label found");
+    }
+
+    const trimmedLabel = equationLabel.replace(/^\(|\)$/g, "");
+    const parenthesesRemoved = trimmedLabel !== equationLabel;
+
+    if (!(trimmedLabel in equationMapping)) {
+        console.error(
+            `Equation label "${trimmedLabel}" not found in equation mapping`,
+        );
+
+        return {
+            equationNumber: `Error: reference ${trimmedLabel} not labeled`,
+            equationString: "error",
+            parenthesesRemoved: false,
+        };
+    }
+
+    const { equationNumber, equationString } = equationMapping[trimmedLabel];
+
+    return { equationNumber, equationString, parenthesesRemoved };
+}
+
+// Used in EquationReference.tsx
+export function processEquationString(equationString: string): string {
+    let processedEquationString = "";
+    if (equationString.includes("\\begin{equation}")) {
+        processedEquationString = equationString
+            .replace(/\\label\{[^}]*\}/g, "")
+            .replace(/\\begin\{align\}/g, "\\begin{aligned}")
+            .replace(/\\begin\{equation\}/g, "")
+            .replace(/\\end\{equation\}/g, "");
+    } else {
+        // We are given a single line from \begin{align}
+        processedEquationString += "$$\n";
+        processedEquationString += equationString
+            .replace(/\\label\{[^}]*\}/g, "")
+            .replace(/&=/g, "=");
+        processedEquationString += "\n$$\n";
+    }
+    return processedEquationString;
 }

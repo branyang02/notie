@@ -64,11 +64,12 @@ Checkout the [`demo-app`](https://github.com/branyang02/notie/tree/main/demo-app
 
 ### `Notie` Props
 
-| Prop       | Type                             | Description                                                 |
-| ---------- | -------------------------------- | ----------------------------------------------------------- |
-| `markdown` | `string`                         | The Markdown content to be rendered.                        |
-| `darkMode` | `boolean` (optional)             | A flag to enable or disable dark mode. Defaults to `false`. |
-| `style`    | `React.CSSProperties` (optional) | Inline styles to apply to the component.                    |
+| Prop              | Type                             | Description                                                       |
+| ----------------- | -------------------------------- | ----------------------------------------------------------------- |
+| `markdown`        | `string`                         | The Markdown content to be rendered.                              |
+| `darkMode`        | `boolean` (optional)             | A flag to enable or disable dark mode. Defaults to `false`.       |
+| `style`           | `React.CSSProperties` (optional) | Inline styles to apply to the component.                          |
+| `previewEquation` | `boolean` (optional)             | A flag to enable or disable equation preview. Defaults to `true`. |
 
 ## Showcase
 
