@@ -1,80 +1,37 @@
+export interface EquationMapping {
+    [key: string]: {
+        equationNumber: string;
+        equationString: string;
+    };
+}
+
 // Used in Notie.tsx
 export function preProcessMarkdown(markdownContent: string) {
-    const equationMapping: {
-        [key: string]: {
-            equationNumber: string;
-            equationString: string;
-        };
-    } = {};
-
-    const pattern = /^(```(\w+)|## .+)$/gm;
-    const parts: string[] = [];
-
-    let lastIndex = 0;
-    let sectionIndex = 0;
-    let currentSectionContent = "";
-
-    markdownContent.replace(pattern, (match, _p1, p2, offset) => {
-        if (sectionIndex > 0) {
-            currentSectionContent += markdownContent.slice(lastIndex, offset);
-        } else {
-            parts.push(markdownContent.slice(lastIndex, offset));
-        }
-
-        if (p2) {
-            // Code block
-            currentSectionContent += `\`\`\`language-${p2}`;
-        } else {
-            // Add section dividers
-            if (sectionIndex > 0) {
-                currentSectionContent += `</div>\n`;
-                parts.push(
-                    processSection(
-                        currentSectionContent,
-                        sectionIndex,
-                        equationMapping,
-                    ),
-                );
-                currentSectionContent = "";
-            }
-            sectionIndex++;
-            currentSectionContent += `<div className="sections" id="section-${sectionIndex}">\n\n${match}\n`;
-        }
-
-        lastIndex = offset + match.length;
-        return match;
+    const equationMapping: EquationMapping = {};
+    const sections = splitIntoSections(markdownContent);
+    const processedSections = sections.map((section, i) => {
+        section = i === 0 ? section : wrapInDiv(section, i); // Do not process the first section under Title
+        return processSection(section, i, equationMapping);
     });
 
-    currentSectionContent += markdownContent.slice(lastIndex);
-
-    if (sectionIndex > 0) {
-        currentSectionContent += "</div>\n";
-        parts.push(
-            processSection(
-                currentSectionContent,
-                sectionIndex,
-                equationMapping,
-            ),
-        );
-    } else {
-        parts.push(currentSectionContent);
-    }
-
     return {
-        markdownContent: parts.join(""),
+        markdownContent: processedSections.join(""),
         equationMapping: equationMapping,
     };
+}
+
+function splitIntoSections(markdownContent: string): string[] {
+    return markdownContent.split(/(?=^##\s)/gm).filter(Boolean);
+}
+
+function wrapInDiv(content: string, sectionIndex: number): string {
+    return `<div className="sections" id="section-${sectionIndex}">\n\n${content}</div>\n`;
 }
 
 function processSection(
     sectionContent: string,
     sectionIndex: number,
-    equationMapping: {
-        [key: string]: {
-            equationNumber: string;
-            equationString: string;
-        };
-    },
+    equationMapping: EquationMapping,
 ): string {
     let currentEquationIndex = 1;
 
@@ -186,12 +143,7 @@ function processSection(
 // Used in EquationReference.tsx
 export function extractEquationInfo(
     children: Element,
-    equationMapping: {
-        [key: string]: {
-            equationNumber: string;
-            equationString: string;
-        };
-    },
+    equationMapping: EquationMapping,
 ) {
     const equationLabel = children.textContent?.replace(/−/g, "-") || "";
     if (!equationLabel) {
