@@ -112,7 +112,7 @@ $$
 
 Reference equation $\eqref{eq:some-equation}$ in the text.
 
-## Section 5
+## Section 3
 
 We can reference all equations in the document:
 
@@ -192,7 +192,7 @@ Morbi dignissim massa ac erat sagittis accumsan. Pellentesque elementum metus et
 
 Cras vel massa posuere, maximus lectus eu, commodo mi. Nam eleifend eleifend lacus. Proin id hendrerit nibh, ut elementum dui. Fusce finibus egestas ultricies. Cras ut velit porttitor, porta velit sed, laoreet diam. Donec vitae nibh gravida, malesuada ligula vel, tempor libero. Sed suscipit sollicitudin tempus. Nulla venenatis imperdiet pellentesque. Duis viverra arcu at eros mattis vehicula. Nam pulvinar ornare risus, sed dignissim eros viverra non. Morbi sagittis erat in quam auctor tempor. Phasellus ex purus, sagittis eget luctus id, eleifend eget sem. Quisque fermentum facilisis lacinia.
 
-## Section 4
+## Section 5
 
 We can still reference equations in the document:
 

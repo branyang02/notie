@@ -7,16 +7,14 @@ import {
 } from "evergreen-ui";
 import React, { useState } from "react";
 
-interface LanguageBoxProps {
-    language: string;
-    code: string;
-    darkMode: boolean;
-}
-
-const CodeHeader: React.FC<LanguageBoxProps> = ({
+const CodeHeader = ({
     language,
     code,
     darkMode,
+}: {
+    language: string;
+    code: string;
+    darkMode: boolean;
 }) => {
     const [isCopied, setIsCopied] = useState(false);
     const [isHovered, setIsHovered] = useState(false);

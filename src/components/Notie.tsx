@@ -7,7 +7,7 @@ import { Pane } from "evergreen-ui";
 import ScrollToTopButton from "./ScrollToTopButton";
 import NoteToc from "./NoteToc";
 import MarkdownRenderer from "./MarkdownRenderer";
-import { MarkdownProcessor } from "../MarkdownProcessor";
+import { MarkdownProcessor } from "../utils/MarkdownProcessor";
 import EquationReference from "./EquationReference";
 import { createRoot } from "react-dom/client";
 

@@ -7,7 +7,7 @@ import {
     EquationMapping,
     extractEquationInfo,
     processEquationString,
-} from "../utils";
+} from "../utils/utils";
 
 const EquationReference = ({
     children,

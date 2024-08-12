@@ -77,49 +77,56 @@ export class MarkdownProcessor {
         sectionIndex: number,
         currEquationNumber: number,
     ): number {
+        const lines = equation.split("\n");
         let insideBlock = false;
-        let insideBlockEquation = "";
+        let blockContent = "";
 
-        const beginPattern = /\\begin{[^}]*}/;
-        const endPattern = /\\end{[^}]*}/;
-        for (const line of equation.split("\n")) {
-            // Skip `$$`, `\begin{align}` and `\end{align}`
-            if (
-                line.includes("$$") ||
-                line.includes("\\begin{align}") ||
-                line.includes("\\end{align}")
-            ) {
-                continue;
+        for (const line of lines) {
+            if (this.isAlignEnvironmentDelimiter(line)) {
+                continue; // Skip align environment delimiters
             }
-            // Check if the line matches `\begin{anything}`
-            if (beginPattern.test(line)) {
-                insideBlock = true; // Set the flag to indicate we are inside a block
-                insideBlockEquation += line + "\n";
-                continue;
-            }
-            // If inside a block, skip lines until we find `\end{anything}`
-            if (insideBlock) {
-                if (endPattern.test(line)) {
-                    insideBlock = false;
-                    insideBlockEquation += line;
 
+            if (this.isBlockStart(line)) {
+                insideBlock = true;
+                blockContent = line + "\n";
+            } else if (insideBlock) {
+                if (this.isBlockEnd(line)) {
+                    blockContent += line;
                     this.handleLabel(
                         line,
-                        insideBlockEquation,
+                        blockContent,
                         sectionIndex,
                         currEquationNumber,
                     );
                     currEquationNumber++;
-                    insideBlockEquation = "";
-                    continue;
+                    insideBlock = false;
+                    blockContent = "";
+                } else {
+                    blockContent += line + "\n";
                 }
-                insideBlockEquation += line + "\n";
-                continue;
+            } else {
+                this.handleLabel(line, line, sectionIndex, currEquationNumber);
+                currEquationNumber++;
             }
-            this.handleLabel(line, line, sectionIndex, currEquationNumber);
-            currEquationNumber++;
         }
+
         return currEquationNumber;
+    }
+
+    private isAlignEnvironmentDelimiter(line: string): boolean {
+        return (
+            line.includes("$$") ||
+            line.includes("\\begin{align}") ||
+            line.includes("\\end{align}")
+        );
+    }
+
+    private isBlockStart(line: string): boolean {
+        return /\\begin{[^}]*}/.test(line);
+    }
+
+    private isBlockEnd(line: string): boolean {
+        return /\\end{[^}]*}/.test(line);
     }
 
     private processEquationEnvironment(
