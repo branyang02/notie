@@ -1,8 +1,18 @@
 # Example: Automatic Equation Numbering
 
-## Section 1
+The source code for this markdown file can be found in [auto-label.md](https://github.com/branyang02/notie/blob/main/demo-app/src/assets/auto-label.md).
 
-Let use the `\begin{equation}` environment and label it.
+## Introduction
+
+Let use the `\begin{equation}` environment and label it with `\label{}`.
+
+```markdown
+$$
+\begin{equation} \label{eq:quadratic}
+x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+\end{equation}
+$$
+```
 
 $$
 \begin{equation} \label{eq:quadratic}
@@ -10,7 +20,27 @@ x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
 \end{equation}
 $$
 
-Reference equation $\eqref{eq:quadratic}$ in the text, or $\ref{eq:quadratic}$.
+Reference equation $\eqref{eq:quadratic}$ with `\eqref{eq:quadratic}` in the text, or $\ref{eq:quadratic}$ with `\ref{eq:quadratic}`.
+
+We can also have an unlabeled equation.
+
+```markdown
+$$
+\begin{equation}
+y = mx + b
+\end{equation}
+$$
+```
+
+$$
+\begin{equation}
+y = mx + b
+\end{equation}
+$$
+
+We also support the `align` environment with similar logic as the `equation` environment.
+
+## Some proofs
 
 Proof of quadratic formula, and label each step in the `\begin{align}` environment.
 
@@ -44,6 +74,15 @@ x &= \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
 \end{align*}
 $$
 
+Let's also use `align` environment but let's not label any equations.
+
+$$
+\begin{align}
+a &= b + c \\
+d &= e + f
+\end{align}
+$$
+
 And then use the `align` environment again.
 
 $$
@@ -55,7 +94,7 @@ $$
 
 Reference equations $\eqref{eq:abc}$ and $\eqref{eq:def}$ in the text.
 
-What if I use `\begin{equation*}` environment with no automatic numbering?
+What if we use `\begin{equation*}` environment with no automatic numbering?
 
 $$
 \begin{equation*}
@@ -73,15 +112,7 @@ $$
 
 Reference equation $\eqref{eq:some-equation}$ in the text.
 
-## Section 2
-
-What if we have duplicate labels?
-
-$$
-\begin{equation} \label{eq:some-equation}
-E = mc^2
-\end{equation}
-$$
+## Section 5
 
 We can reference all equations in the document:
 
@@ -133,11 +164,11 @@ R_{\mu\nu} - \frac{1}{2}Rg_{\mu\nu} + \Lambda g_{\mu\nu} &= \frac{8\pi G}{c^4}T_
 \end{align}
 $$
 
-Let's see if other **notie** functions still work.
-
 Let's reference equations $\eqref{eq:dot-product}$, $\eqref{eq:2x2-determinant}$, $\eqref{eq:3x3-determinant}$, $\eqref{eq:2x2-inverse}$, $\eqref{eq:eigenvalue}$, $\eqref{eq:cramers-rule}$, and $\eqref{eq:rref}$ in the text.
 
-Let's also reference $\eqref{eq:gauss-law}$, $\eqref{eq:ampere-maxwell}$, $\eqref{eq:energy-equation}$, $\eqref{eq:schrodinger}$, and $\eqref{eq:einstein-field}$
+Let's also reference $\eqref{eq:gauss-law}$, $\eqref{eq:ampere-maxwell}$, $\eqref{eq:energy-equation}$, and $\eqref{eq:einstein-field}$
+
+Let's see if other **notie** functions still work.
 
 ```python
 for i in range(10):
@@ -168,3 +199,42 @@ We can still reference equations in the document:
 - $\eqref{eq:quadratic}$
 - $\eqref{eq:quadratic-general}$
 - $\eqref{eq:matrix}$
+
+Last few equations:
+
+$$
+\begin{equation} \label{eq:least-squares}
+\mathbf{A} \mathbf{x} = \mathbf{b}
+\end{equation}
+$$
+
+$$
+\begin{equation} \label{eq:least-squares-objective}
+\mathbf{A} = \begin{bmatrix}
+a_{11} & a_{12} & \cdots & a_{1n} \\
+a_{21} & a_{22} & \cdots & a_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{m1} & a_{m2} & \cdots & a_{mn}
+\end{bmatrix}, \quad
+\mathbf{x} = \begin{bmatrix}
+x_1 \\
+x_2 \\
+\vdots \\
+x_n
+\end{bmatrix}, \quad
+\mathbf{b} = \begin{bmatrix}
+b_1 \\
+b_2 \\
+\vdots \\
+b_m
+\end{bmatrix}
+\end{equation}
+$$
+
+$$
+\begin{equation} \label{eq:least-squares-objective-function}
+\text{Objective Function:} \quad \mathcal{L}(\mathbf{x}, \lambda) = \sum_{i=1}^m \left( a_{i1} x_1 + a_{i2} x_2 + \cdots + a_{in} x_n - b_i \right)^2 + \lambda \sum_{j=1}^n x_j^2
+\end{equation}
+$$
+
+Reference equations $\eqref{eq:least-squares}$, $\eqref{eq:least-squares-objective}$, and $\eqref{eq:least-squares-objective-function}$ in the text.
