@@ -6,7 +6,7 @@
     "main": "dist/index.umd.js",
     "module": "dist/index.es.js",
     "types": "dist/index.d.ts",
-    "homepage": "https://notie-nine.vercel.app",
+    "homepage": "https://notie-markdown.vercel.app",
     "exports": {
         ".": {
             "import": "./dist/index.es.js",

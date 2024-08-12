@@ -1,3 +1,3 @@
 # Demo App for Notie
 
-https://notie-nine.vercel.app/
+https://notie-markdown.vercel.app/

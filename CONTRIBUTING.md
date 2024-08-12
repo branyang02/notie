@@ -2,7 +2,7 @@
 
 Thank you for your interest in contributing! We're committed to fostering an open and welcoming environment.
 
-The live website for the **notie** library can be found at [https://notie-nine.vercel.app/](https://notie-nine.vercel.app/).
+The live website for the **notie** library can be found at [https://notie-markdown.vercel.app/](https://notie-markdown.vercel.app/).
 
 We also publish the **notie** library on npm. You can find the package at [https://www.npmjs.com/package/notie-markdown](https://www.npmjs.com/package/notie-markdown).
 
@@ -29,7 +29,7 @@ npm run dev
 
 ## Project Structure
 
-The main **notie** project is located in the root directory, while the **demo-app** is located in the `demo-app` directory. The **demo-app** serves as the example application for the **notie** library, and it is deployed at [https://notie-nine.vercel.app/](https://notie-nine.vercel.app/).
+The main **notie** project is located in the root directory, while the **demo-app** is located in the `demo-app` directory. The **demo-app** serves as the example application for the **notie** library, and it is deployed at [https://notie-markdown.vercel.app/](https://notie-markdown.vercel.app/).
 
 ```
 .
@@ -40,6 +40,8 @@ The main **notie** project is located in the root directory, while the **demo-ap
 ├── src
 │   ├── components
 │   │   ├── CodeBlock.tsx
+│   │   ├── CodeHeader.tsx
+│   │   ├── EquationReference.tsx
 │   │   ├── MarkdownRenderer.tsx
 │   │   ├── NoteToc.tsx
 │   │   ├── Notie.tsx
@@ -48,8 +50,7 @@ The main **notie** project is located in the root directory, while the **demo-ap
 │   │   └── TikZ.tsx
 │   ├── dev
 │   │   ├── markdown-files
-│   │   │   ├── cso2.md
-│   │   │   ├── math.md
+│   │   │   ├── **.md
 │   │   ├── App.tsx
 │   │   └── main.tsx
 │   ├── service
@@ -57,6 +58,9 @@ The main **notie** project is located in the root directory, while the **demo-ap
 │   ├── styles
 │   │   └── note-toc.css
 │   │   └── notie.css
+│   ├── utils
+│   │   ├── MarkdownProcessor.ts
+│   │   ├── utils.ts
 │   ├── index.ts
 ```
 

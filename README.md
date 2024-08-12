@@ -48,7 +48,7 @@ const Example = () => (
 );
 ```
 
-Checkout a full example at `/demo-app`, or visit the live website at [https://notie-nine.vercel.app/](https://notie-nine.vercel.app/).
+Checkout a full example at `/demo-app`, or visit the live website at [https://notie-markdown.vercel.app/](https://notie-markdown.vercel.app/).
 
 ## Features
 
@@ -68,7 +68,7 @@ Checkout a full example at `/demo-app`, or visit the live website at [https://no
 
 ## Features and Documentation
 
-Checkout the [tutorial](https://notie-nine.vercel.app/tutorial) to learn more about the features and documentation of **notie**.
+Checkout the [tutorial](https://notie-markdown.vercel.app/tutorial) to learn more about the features and documentation of **notie**.
 
 ## Contribution
 
