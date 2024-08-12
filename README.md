@@ -1,6 +1,8 @@
-# **notie**: Note-taking with Markdown
+# **notie**: React Markdown Note-taking Template
 
 **notie** is a note-taking template based on Markdown. Built with React, it provides a simple and intuitive interface to write and manage notes. The template supports **live, editable code runner**, **TikZ diagrams**, and **math equations** (via [Katex](https://katex.org/)). It is designed to be easy to use and customizable, allowing users to focus on writing and organizing their notes.
+
+**notie** is a versatile note-taking solution built as a simple React component, designed to seamlessly integrate Markdown-based notes into any React application. This lightweight yet powerful tool allows you to create a customized note-taking experience that includes features like **live**, **editable code execution**, **TikZ diagrams**, and **math equations**, all within a single, intuitive interface.
 
 ## Updates
 
@@ -11,7 +13,7 @@
 
 ## Getting Started
 
-**notie** is built as a React component library. To get started, install the package using npm:
+To start using **notie**, install the package via npm:
 
 ```bash
 npm install notie-markdown
@@ -56,6 +58,7 @@ Checkout a full example at `/demo-app`, or visit the live website at [https://no
 - **Live Coding**: Use the live coding feature write and **RUN** your code snippets in your notes.
 - **TikZ Support**: Use TikZ to draw diagrams in your notes.
 - **Math Equations**: Write math equations using LaTeX syntax.
+  - **Automatic Equation Numbering**: Automatically number equations and refer to them in your notes.
 - **Dark Mode**: Toggle between light and dark mode for better readability.
 - **Customizable**: Customize the appearance of the notes to suit your preferences.
 
