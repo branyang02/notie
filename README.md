@@ -19,9 +19,13 @@ npm install notie-markdown
 
 Then, import the `Notie` component in your React application:
 
-```typescript
+```jsx
 import React from "react";
 import { Notie } from "notie-markdown";
+
+const Example = () => (
+  <Notie markdown="# Hello World\nThis is a Markdown content." />
+);
 ```
 
 The `Notie` component is used to render Markdown content. It accepts the following props:
@@ -34,20 +38,6 @@ The `Notie` component is used to render Markdown content. It accepts the followi
 | `darkMode`        | `boolean` (optional)             | A flag to enable or disable dark mode. Defaults to `false`.       |
 | `style`           | `React.CSSProperties` (optional) | Inline styles to apply to the component.                          |
 | `previewEquation` | `boolean` (optional)             | A flag to enable or disable equation preview. Defaults to `true`. |
-
-### Example Usage
-
-```jsx
-import React from "react";
-import Notie from "notie-markdown";
-
-const Example = () => (
-  <Notie
-    markdown="# Hello World\nThis is a Markdown content."
-    darkMode={true}
-  />
-);
-```
 
 Checkout a full example at `/demo-app`, or visit the live website at [https://notie-markdown.vercel.app/](https://notie-markdown.vercel.app/).
 
