@@ -4,6 +4,8 @@
 
 ## Updates
 
+8/12/2024: Version 1.0.21: Fully integrated automatic equation numbering and equation preview.
+
 8/2/2024: Update 1.0.0: Initial release, published on npm registry [here](https://www.npmjs.com/package/notie-markdown).
 
 ## Getting Started
@@ -58,12 +60,11 @@ Checkout a full example at `/demo-app`, or visit the live website at [https://no
 
 ## Showcase
 
-![image](https://github.com/branyang02/notie/assets/107154811/c7d2ac58-2f48-4e1f-af82-bfeec266c1f7)
-![image](https://github.com/branyang02/notie/assets/107154811/17fe3a55-64b7-49a0-b3c1-80a2072b5e1c)
-![image](https://github.com/branyang02/notie/assets/107154811/f0438d26-847b-4859-84f2-9a5ff93420a2)
-![image](https://github.com/branyang02/notie/assets/107154811/b33df6d2-2837-44aa-8648-7b85bdbabdee)
-![image](https://github.com/branyang02/notie/assets/107154811/103f8f2c-6621-4e01-9c5c-c2b8d3f5b5b8)
-![image](https://github.com/branyang02/notie/assets/107154811/935ed296-2cad-4bd1-af7f-3d256a3fc54c)
+<img width="1129" alt="image" src="https://github.com/user-attachments/assets/593799c4-ad23-4a07-8822-08bb98a194ef">
+<img width="1414" alt="image" src="https://github.com/user-attachments/assets/da36f8bd-b631-4b72-bb88-25f017e76609">
+<img width="1069" alt="image" src="https://github.com/user-attachments/assets/d7e22bf0-6920-4107-bea1-567abe8cfc45">
+<img width="1408" alt="image" src="https://github.com/user-attachments/assets/70ad3b21-b5ba-43c5-8bb8-1bf41941e54c">
+<img width="1443" alt="image" src="https://github.com/user-attachments/assets/654be99b-edb0-410c-87ca-703f11b0d163">
 
 ## Features and Documentation
 
