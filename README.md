@@ -107,11 +107,6 @@ This project makes use of several open-source projects and resources. We extend 
 - **Author(s)**: Espen Hovlandsdal
 - **License**: MIT
 
-### [rehype-highlight](https://github.com/rehypejs/rehype-highlight)
-
-- **Author(s)**: Titus Wormer
-- **License**: MIT
-
 ### [remark-math](https://remark.js.org/)
 
 - **Author(s)**: Junyoung Choi

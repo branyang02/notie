@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
-import rehypeHighlight from "rehype-highlight";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
@@ -76,12 +75,7 @@ const MarkdownRenderer: React.FC<{
     return (
         <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkMath]}
-            rehypePlugins={[
-                [rehypeKatex, katexOptions],
-                rehypeRaw,
-                rehypeHighlight,
-                rehypeSlug,
-            ]}
+            rehypePlugins={[[rehypeKatex, katexOptions], rehypeRaw, rehypeSlug]}
             components={components}
         >
             {markdownContent}

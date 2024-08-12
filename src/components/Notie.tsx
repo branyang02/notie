@@ -7,7 +7,7 @@ import { Pane } from "evergreen-ui";
 import ScrollToTopButton from "./ScrollToTopButton";
 import NoteToc from "./NoteToc";
 import MarkdownRenderer from "./MarkdownRenderer";
-import { preProcessMarkdown } from "../utils";
+import { MarkdownProcessor } from "../MarkdownProcessor";
 import EquationReference from "./EquationReference";
 import { createRoot } from "react-dom/client";
 
@@ -24,7 +24,8 @@ const Notie: React.FC<NotieProps> = ({
     previewEquation = true,
     style,
 }) => {
-    const { markdownContent, equationMapping } = preProcessMarkdown(markdown);
+    const mdProcessor = new MarkdownProcessor(markdown);
+    const { markdownContent, equationMapping } = mdProcessor.process();
     const contentRef = useRef<HTMLDivElement>(null);
     const [activeId, setActiveId] = useState<string>("");
 

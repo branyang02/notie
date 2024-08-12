@@ -3,7 +3,11 @@ import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
-import { extractEquationInfo, processEquationString } from "../utils";
+import {
+    EquationMapping,
+    extractEquationInfo,
+    processEquationString,
+} from "../utils";
 
 const EquationReference = ({
     children,
@@ -11,12 +15,7 @@ const EquationReference = ({
     previewEquation,
 }: {
     children: Element;
-    equationMapping: {
-        [key: string]: {
-            equationNumber: string;
-            equationString: string;
-        };
-    };
+    equationMapping: EquationMapping;
     previewEquation?: boolean;
 }) => {
     const { equationNumber, equationString, parenthesesRemoved } =
