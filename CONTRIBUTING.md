@@ -31,37 +31,37 @@ npm run dev
 
 The main **notie** project is located in the root directory, while the **demo-app** is located in the `demo-app` directory. The **demo-app** serves as the example application for the **notie** library, and it is deployed at [https://notie-markdown.vercel.app/](https://notie-markdown.vercel.app/).
 
-```
+```markdown
 .
 ├── index.html
 ├── package-lock.json
 ├── package.json
 ├── demo-app
 ├── src
-│   ├── components
-│   │   ├── CodeBlock.tsx
-│   │   ├── CodeHeader.tsx
-│   │   ├── EquationReference.tsx
-│   │   ├── MarkdownRenderer.tsx
-│   │   ├── NoteToc.tsx
-│   │   ├── Notie.tsx
-│   │   ├── ScrollToTopButton.tsx
-│   │   └── StaticCodeBlock.tsx
-│   │   └── TikZ.tsx
-│   ├── dev
-│   │   ├── markdown-files
-│   │   │   ├── **.md
-│   │   ├── App.tsx
-│   │   └── main.tsx
-│   ├── service
-│   │   └── api.ts
-│   ├── styles
-│   │   └── note-toc.css
-│   │   └── notie.css
-│   ├── utils
-│   │   ├── MarkdownProcessor.ts
-│   │   ├── utils.ts
-│   ├── index.ts
+│ ├── components
+│ │ ├── CodeBlock.tsx
+│ │ ├── CodeHeader.tsx
+│ │ ├── EquationReference.tsx
+│ │ ├── MarkdownRenderer.tsx
+│ │ ├── NoteToc.tsx
+│ │ ├── Notie.tsx
+│ │ ├── ScrollToTopButton.tsx
+│ │ └── StaticCodeBlock.tsx
+│ │ └── TikZ.tsx
+│ ├── dev
+│ │ ├── markdown-files
+│ │ │ ├── \*\*.md
+│ │ ├── App.tsx
+│ │ └── main.tsx
+│ ├── service
+│ │ └── api.ts
+│ ├── styles
+│ │ └── note-toc.css
+│ │ └── notie.css
+│ ├── utils
+│ │ ├── MarkdownProcessor.ts
+│ │ ├── utils.ts
+│ ├── index.ts
 ```
 
 When `npm run dev` is run under the root directory, the application that is served is `src/dev/App.tsx`. This file is the main entry point for the development server. `src/dev/markdown-files` contains the markdown files that are rendered by the application. This is a minimal developing application that is used when developing the **notie** library.
@@ -96,30 +96,30 @@ npm run dev
 
 The `demo-app` directory contains the following structure:
 
-```
+```markdown
 ├── demo-app
-│   ├── index.html
-│   ├── package-lock.json
-│   ├── package.json
-│   ├── public
-│   │   ├── github-mark.svg
-│   │   ├── notes.svg
-|   ├── src
-│   │   ├── assets
-│   │   │   ├── **.md
-│   │   ├── components
-│   │   │   ├── NavBar.tsx
-│   │   │   ├── NavButton.tsx
-│   │   ├── context
-│   │   │   ├── DarkModeContext.tsx
-│   │   │   ├── useDarkMode.ts
-│   │   ├── pages
-│   │   │   ├── ExamplePage.tsx
-│   │   │   ├── Examples.tsx
-│   │   │   ├── home.md
-│   │   │   ├── tutorial.md
-│   │   ├── App.tsx
-│   │   ├── main.tsx
+│ ├── index.html
+│ ├── package-lock.json
+│ ├── package.json
+│ ├── public
+│ │ ├── github-mark.svg
+│ │ ├── notes.svg
+| ├── src
+│ │ ├── assets
+│ │ │ ├── \*\*.md
+│ │ ├── components
+│ │ │ ├── NavBar.tsx
+│ │ │ ├── NavButton.tsx
+│ │ ├── context
+│ │ │ ├── DarkModeContext.tsx
+│ │ │ ├── useDarkMode.ts
+│ │ ├── pages
+│ │ │ ├── ExamplePage.tsx
+│ │ │ ├── Examples.tsx
+│ │ │ ├── home.md
+│ │ │ ├── tutorial.md
+│ │ ├── App.tsx
+│ │ ├── main.tsx
 ```
 
 ## Code Style and Linting
@@ -161,9 +161,11 @@ The version number of the `notie-markdown` package is influenced by the commit m
 
 By following these guidelines, you help ensure that versioning remains consistent and meaningful.
 
-> **⚠️ Important Note:**
->
-> We only publish the package to npm when changes are merged to the `main` branch. GitHub Actions automates this process (`.github/workflows/publish.yml`) and the package is automatically published to npm upon merging. The version number is automatically bumped based on the commit message, as described above.
+<blockquote class="important">
+
+**⚠️ Important Note:**: We only publish the package to npm when changes are merged to the `main` branch. GitHub Actions automates this process (`.github/workflows/publish.yml`) and the package is automatically published to npm upon merging. The version number is automatically bumped based on the commit message, as described above.
+
+</blockquote>
 
 ## Issue Reporting Guidelines
 

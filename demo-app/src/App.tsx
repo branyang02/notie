@@ -7,7 +7,12 @@ import ExamplePage from "./pages/ExamplePage";
 import { useEffect, useState } from "react";
 import { useDarkMode } from "./context/useDarkMode";
 
-const homeModule = import.meta.glob("./pages/home.md", {
+const homeModule = import.meta.glob("../../README.md", {
+    query: "?raw",
+    import: "default",
+});
+
+const contributionModule = import.meta.glob("../../CONTRIBUTING.md", {
     query: "?raw",
     import: "default",
 });
@@ -21,6 +26,7 @@ const App = () => {
     const { darkMode } = useDarkMode();
     const [homeContent, setHomeContent] = useState<string>("");
     const [tutorialContent, setTutorialContent] = useState<string>("");
+    const [contributionContent, setContributionContent] = useState<string>("");
 
     useEffect(() => {
         async function fetchContent() {
@@ -30,9 +36,13 @@ const App = () => {
             const newtutorialContent = (await tutorialModule[
                 Object.keys(tutorialModule)[0]
             ]()) as string;
+            const newcontributionContent = (await contributionModule[
+                Object.keys(contributionModule)[0]
+            ]()) as string;
 
             setHomeContent(newhomeContent);
             setTutorialContent(newtutorialContent);
+            setContributionContent(newcontributionContent);
         }
 
         fetchContent();
@@ -74,6 +84,15 @@ const App = () => {
                             element={
                                 <Notie
                                     markdown={tutorialContent}
+                                    darkMode={darkMode}
+                                />
+                            }
+                        />
+                        <Route
+                            path="/contribute"
+                            element={
+                                <Notie
+                                    markdown={contributionContent}
                                     darkMode={darkMode}
                                 />
                             }

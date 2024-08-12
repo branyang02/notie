@@ -79,37 +79,37 @@ Checkout [CONTRIBUTING.md](https://github.com/branyang02/notie/blob/main/CONTRIB
 
 This project makes use of several open-source projects and resources. We extend our gratitude to the developers and maintainers of these projects. Here is a list of them along with their respective licenses:
 
-### [React CodeMirror](https://uiwjs.github.io/react-codemirror/)
+**[React CodeMirror](https://uiwjs.github.io/react-codemirror/)**
 
 - **Author(s)**: uiw
 - **License**: MIT
 
-### [Bootstrap](https://getbootstrap.com/)
+**[Bootstrap](https://getbootstrap.com/)**
 
 - **Author(s)**: The Bootstrap Authors
 - **License**: MIT
 
-### [Evergreen UI](https://evergreen.segment.com/)
+**[Evergreen UI](https://evergreen.segment.com/)**
 
 - **Author(s)**: Segment.io, Inc.
 - **License**: MIT
 
-### [KaTeX](https://katex.org/)
+**[KaTeX](https://katex.org/)**
 
 - **Author(s)**: Khan Academy
 - **License**: MIT
 
-### [react-code-blocks](https://react-code-blocks-rajinwonderland.vercel.app/?path=/story/code--default)
+**[react-code-blocks](https://react-code-blocks-rajinwonderland.vercel.app/?path=/story/code--default)**
 
 - **Author(s)**: Raj K Singh
 - **License**: MIT
 
-### [react-markdown](https://remarkjs.github.io/react-markdown/)
+**[react-markdown](https://remarkjs.github.io/react-markdown/)**
 
 - **Author(s)**: Espen Hovlandsdal
 - **License**: MIT
 
-### [remark-math](https://remark.js.org/)
+**[remark-math](https://remark.js.org/)**
 
 - **Author(s)**: Junyoung Choi
 - **License**: MIT

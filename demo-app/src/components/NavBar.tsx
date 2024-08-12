@@ -18,7 +18,7 @@ const NavBar = () => {
     const navigate = useNavigate();
 
     const NAME = "notie";
-    const TABS = ["Home", "Examples", "Tutorial"];
+    const TABS = ["Home", "Examples", "Tutorial", "Contribute"];
 
     const handleSwitchChange = () => {
         setChecked(!checked);
