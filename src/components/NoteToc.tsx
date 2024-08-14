@@ -3,12 +3,14 @@ import { Pane } from "evergreen-ui";
 import { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeSlug from "rehype-slug";
+import { NotieConfig } from "../config/NotieConfig";
 
 const generateTableOfContents = (
     markdownContent: string,
     activeId: string,
+    tocTitle?: string,
 ): string => {
-    let res = "# Contents\n---\n";
+    let res = `# ${tocTitle}\n---\n`;
     const pattern = /^#+ (.*)$/gm;
     let match;
 
@@ -37,14 +39,17 @@ const NoteToc = ({
     markdownContent,
     activeId,
     darkMode,
+    config,
 }: {
     markdownContent: string;
     activeId: string;
     darkMode: boolean;
+    config: NotieConfig;
 }) => {
     const toc = useMemo(
-        () => generateTableOfContents(markdownContent, activeId),
-        [markdownContent, activeId],
+        () =>
+            generateTableOfContents(markdownContent, activeId, config.tocTitle),
+        [markdownContent, activeId, config.tocTitle],
     );
 
     return (

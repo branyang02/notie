@@ -10,24 +10,28 @@ import MarkdownRenderer from "./MarkdownRenderer";
 import { MarkdownProcessor } from "../utils/MarkdownProcessor";
 import EquationReference from "./EquationReference";
 import { createRoot } from "react-dom/client";
+import { NotieConfig } from "../config/NotieConfig";
+import { useNotieConfig } from "../utils/useNotieConfig";
 
 export interface NotieProps {
     markdown: string;
     darkMode?: boolean;
     previewEquation?: boolean;
-    style?: React.CSSProperties;
+    config?: NotieConfig;
 }
 
 const Notie: React.FC<NotieProps> = ({
     markdown,
     darkMode = false,
     previewEquation = true,
-    style,
+    config = {},
 }) => {
     const mdProcessor = new MarkdownProcessor(markdown);
     const { markdownContent, equationMapping } = mdProcessor.process();
     const contentRef = useRef<HTMLDivElement>(null);
     const [activeId, setActiveId] = useState<string>("");
+
+    const mergedConfig = useNotieConfig(config);
 
     // Effect to observe headings and update activeId
     useEffect(() => {
@@ -99,15 +103,24 @@ const Notie: React.FC<NotieProps> = ({
     }, [equationMapping, markdownContent, previewEquation]);
 
     return (
-        <Pane background={darkMode ? "#333" : "white"} style={style}>
-            <Pane className="mw-page-container-inner">
-                <Pane className="vector-column-start">
-                    <NoteToc
-                        markdownContent={markdownContent}
-                        darkMode={darkMode}
-                        activeId={activeId}
-                    />
-                </Pane>
+        <Pane background={darkMode ? "#333" : "white"}>
+            <Pane
+                className={
+                    mergedConfig.showTableOfContents
+                        ? "mw-page-container-inner"
+                        : ""
+                }
+            >
+                {mergedConfig.showTableOfContents && (
+                    <Pane className="vector-column-start">
+                        <NoteToc
+                            markdownContent={markdownContent}
+                            darkMode={darkMode}
+                            activeId={activeId}
+                            config={mergedConfig}
+                        />
+                    </Pane>
+                )}
                 <Pane className="mw-content-container">
                     <Pane
                         className={`blog-content ${darkMode ? "dark-mode" : ""}`}

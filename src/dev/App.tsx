@@ -30,7 +30,7 @@ const App = () => {
 
     return (
         <Pane
-            maxWidth={1500}
+            maxWidth={1200}
             padding={20}
             style={{
                 margin: "0 auto",
@@ -55,7 +55,13 @@ const App = () => {
                     />
                 </Pane>
             </Pane>
-            <Notie markdown={markdownContent} darkMode={darkMode} />
+            <Notie
+                markdown={markdownContent}
+                darkMode={darkMode}
+                config={{
+                    showTableOfContents: true,
+                }}
+            />
         </Pane>
     );
 };
