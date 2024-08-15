@@ -7,11 +7,18 @@ export const useNotieConfig = (config?: NotieConfig) => {
     }, [config]);
 
     useEffect(() => {
-        document.documentElement.style.setProperty(
-            "--show-toc",
-            mergedConfig.showTableOfContents ? "20.25rem" : "0",
-        );
-    }, [mergedConfig.showTableOfContents]);
+        const root = document.documentElement;
+
+        if (mergedConfig.fontSize) {
+            root.style.setProperty("--blog-font-size", mergedConfig.fontSize);
+        }
+        if (mergedConfig.fontFamily) {
+            root.style.setProperty(
+                "--blog-font-family",
+                mergedConfig.fontFamily,
+            );
+        }
+    }, [mergedConfig]);
 
     return mergedConfig;
 };

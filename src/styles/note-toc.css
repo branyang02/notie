@@ -1,3 +1,7 @@
+.note-toc {
+    font-family: var(--blog-font-family);
+}
+
 .note-toc a {
     color: #172b41;
     text-decoration: none;

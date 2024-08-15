@@ -54,6 +54,11 @@
     }
 }
 
+.blog-content {
+    font-size: var(--blog-font-size);
+    font-family: var(--blog-font-family);
+}
+
 .blog-content h1 {
     font-size: 2.5em;
 }
