@@ -54,8 +54,7 @@ const CodeBlock = ({
     theme: string;
     copyButtonHoverColor?: string;
 }) => {
-    let selectedTheme: Extension = eval(`themes.${theme}`);
-
+    let selectedTheme = themes[theme as keyof typeof themes] as Extension;
     if (!selectedTheme) {
         console.error(`Invalid theme name: ${theme}, falling back to default.`);
         selectedTheme = themes.duotoneLight; // Default fallback theme

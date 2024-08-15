@@ -14,7 +14,7 @@ const StaticCodeBlock = ({
     theme: string;
     copyButtonHoverColor?: string;
 }) => {
-    let selectedTheme = eval(`themes.${theme}`);
+    let selectedTheme = themes[theme as keyof typeof themes];
     if (!selectedTheme) {
         console.error(`Invalid theme name: ${theme}, falling back to default.`);
         selectedTheme = themes.github; // Default fallback theme
