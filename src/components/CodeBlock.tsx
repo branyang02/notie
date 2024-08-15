@@ -5,8 +5,8 @@ import { javascript } from "@codemirror/lang-javascript";
 import { python } from "@codemirror/lang-python";
 import { rust } from "@codemirror/lang-rust";
 import { indentUnit } from "@codemirror/language";
-import { duotoneLight } from "@uiw/codemirror-theme-duotone";
-import { tokyoNightStorm } from "@uiw/codemirror-theme-tokyo-night-storm";
+import * as themes from "@uiw/codemirror-themes-all";
+import { Extension } from "@codemirror/state";
 import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import {
     Button,
@@ -46,12 +46,19 @@ const getLanguageCode = (language: string) => {
 const CodeBlock = ({
     initialCode,
     language = "python",
-    darkMode = false,
+    theme,
 }: {
     initialCode: string;
     language?: string;
-    darkMode: boolean;
+    theme: string;
 }) => {
+    let selectedTheme: Extension = eval(`themes.${theme}`);
+
+    if (!selectedTheme) {
+        console.error(`Invalid theme name: ${theme}, falling back to default.`);
+        selectedTheme = themes.duotoneLight; // Default fallback theme
+    }
+
     const [isLoading, setIsLoading] = useState(false);
     const [output, setOutput] = useState("");
     const [error, setError] = useState(false);
@@ -104,7 +111,7 @@ const CodeBlock = ({
 
     return (
         <Pane>
-            <CodeHeader language={language} code={code} darkMode={darkMode} />
+            <CodeHeader language={language} code={code} />
             <Pane>
                 <Pane
                     position="relative"
@@ -118,7 +125,7 @@ const CodeBlock = ({
                         extensions={[languageCode, indentUnit.of("    ")]}
                         maxHeight="800px"
                         minHeight="100px"
-                        theme={darkMode ? tokyoNightStorm : duotoneLight}
+                        theme={selectedTheme}
                         onChange={onChange}
                     />
                     <Pane position="absolute" top={0} right={0} padding={8}>

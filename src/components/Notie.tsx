@@ -15,23 +15,23 @@ import { useNotieConfig } from "../utils/useNotieConfig";
 
 export interface NotieProps {
     markdown: string;
-    darkMode?: boolean;
     previewEquation?: boolean;
     config?: NotieConfig;
+    theme?: "Starlit Eclipse" | "default";
 }
 
 const Notie: React.FC<NotieProps> = ({
     markdown,
-    darkMode = false,
     previewEquation = true,
-    config = {},
+    config: userConfig,
+    theme = "default",
 }) => {
     const mdProcessor = new MarkdownProcessor(markdown);
     const { markdownContent, equationMapping } = mdProcessor.process();
     const contentRef = useRef<HTMLDivElement>(null);
     const [activeId, setActiveId] = useState<string>("");
 
-    const mergedConfig = useNotieConfig(config);
+    const config = useNotieConfig(userConfig, theme);
 
     // Effect to observe headings and update activeId
     useEffect(() => {
@@ -103,32 +103,26 @@ const Notie: React.FC<NotieProps> = ({
     }, [equationMapping, markdownContent, previewEquation]);
 
     return (
-        <Pane background={darkMode ? "#333" : "white"}>
+        <Pane className="notie-container">
             <Pane
                 className={
-                    mergedConfig.showTableOfContents
-                        ? "mw-page-container-inner"
-                        : ""
+                    config.showTableOfContents ? "mw-page-container-inner" : ""
                 }
             >
-                {mergedConfig.showTableOfContents && (
+                {config.showTableOfContents && (
                     <Pane className="vector-column-start">
                         <NoteToc
                             markdownContent={markdownContent}
-                            darkMode={darkMode}
                             activeId={activeId}
-                            config={mergedConfig}
+                            config={config}
                         />
                     </Pane>
                 )}
                 <Pane className="mw-content-container">
-                    <Pane
-                        className={`blog-content ${darkMode ? "dark-mode" : ""}`}
-                        ref={contentRef}
-                    >
+                    <Pane className="blog-content" ref={contentRef}>
                         <MarkdownRenderer
                             markdownContent={markdownContent}
-                            darkMode={darkMode}
+                            config={config}
                         />
                         <ScrollToTopButton />
                     </Pane>

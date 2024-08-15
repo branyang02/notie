@@ -1,39 +1,38 @@
+/* Get colors from Config */
 .note-toc {
     font-family: var(--blog-font-family);
+    color: var(--blog-text-color);
 }
 
 .note-toc a {
-    color: #172b41;
-    text-decoration: none;
+    color: var(--note-toc-color);
+    text-decoration: var(--note-toc-underline);
+}
+
+.note-toc a:hover,
+.note-toc a:focus {
+    color: var(--note-toc-hover-color);
+    text-decoration: underline;
+}
+
+.note-toc h1 {
+    color: var(--blog-title-color);
+}
+
+.note-toc hr {
+    color: var(--blog-title-color);
+}
+
+/* CSS Styles */
+
+.note-toc a:focus {
+    text-decoration: underline;
 }
 
 .note-toc a.active {
     font-weight: bold;
 }
 
-.note-toc.dark-mode a {
-    color: #ffffff;
-}
-
-.note-toc.dark-mode a:hover,
-.note-toc.dark-mode a:focus {
-    color: #bbb;
-}
-
-.note-toc a:hover,
 .note-toc a:focus {
-    color: #777777;
     text-decoration: underline;
-}
-
-.note-toc.dark-mode h1 {
-    color: #ffffff;
-}
-
-.note-toc.dark-mode ::marker {
-    color: #ffffff;
-}
-
-.note-toc.dark-mode hr {
-    color: #ffffff;
 }

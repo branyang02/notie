@@ -8,6 +8,7 @@ import remarkMath from "remark-math";
 import CodeBlock from "./CodeBlock";
 import TikZ from "./TikZ";
 import StaticCodeBlock from "./StaticCodeBlock";
+import { FullNotieConfig } from "../config/NotieConfig";
 
 type CodeProps = React.HTMLAttributes<HTMLElement> & {
     node?: unknown;
@@ -18,8 +19,8 @@ type CodeProps = React.HTMLAttributes<HTMLElement> & {
 
 const MarkdownRenderer: React.FC<{
     markdownContent: string;
-    darkMode: boolean;
-}> = React.memo(({ markdownContent, darkMode }) => {
+    config: FullNotieConfig;
+}> = React.memo(({ markdownContent, config }) => {
     const components = useMemo(
         () => ({
             code({ inline, className, children, ...props }: CodeProps) {
@@ -36,7 +37,7 @@ const MarkdownRenderer: React.FC<{
                             <CodeBlock
                                 initialCode={code}
                                 language={language.split("-").pop()}
-                                darkMode={darkMode}
+                                theme={config.theme.liveCodeTheme}
                             />
                         );
                     }
@@ -47,7 +48,7 @@ const MarkdownRenderer: React.FC<{
                         <StaticCodeBlock
                             code={code}
                             language={language}
-                            darkMode={darkMode}
+                            theme={config.theme.staticCodeTheme}
                         />
                     );
                 } else {
@@ -59,7 +60,7 @@ const MarkdownRenderer: React.FC<{
                 }
             },
         }),
-        [darkMode],
+        [config.theme.liveCodeTheme, config.theme.staticCodeTheme],
     );
 
     const katexOptions = {

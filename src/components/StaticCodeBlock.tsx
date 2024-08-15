@@ -1,25 +1,33 @@
 import { Pane } from "evergreen-ui";
-import { atomOneLight, CodeBlock, nord } from "react-code-blocks";
+import * as ReactCodeBlocks from "react-code-blocks";
 import CodeHeader from "./CodeHeader";
 
 const StaticCodeBlock = ({
     code,
     language,
-    darkMode = false,
+    theme,
 }: {
     code: string;
     language: string;
-    darkMode: boolean;
+    theme: string;
 }) => {
+    let selectedTheme;
+
+    try {
+        selectedTheme = ReactCodeBlocks[theme as keyof typeof ReactCodeBlocks];
+    } catch (error) {
+        console.error(`Invalid theme name: ${theme}, falling back to default.`);
+        selectedTheme = ReactCodeBlocks.atomOneLight; // Default fallback theme
+    }
     return (
         <Pane>
-            <CodeHeader language={language} code={code} darkMode={darkMode} />
+            <CodeHeader language={language} code={code} />
             <div className="code-blocks">
-                <CodeBlock
+                <ReactCodeBlocks.CodeBlock
                     text={code}
                     language={language}
                     showLineNumbers={false}
-                    theme={darkMode ? nord : atomOneLight}
+                    theme={selectedTheme}
                     startingLineNumber={0}
                     customStyle={{ borderRadius: "0 0 10px 10px" }}
                 />

@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import Notie from "../components/Notie";
-import { Pane, Switch, Heading } from "evergreen-ui";
+import { Pane, majorScale } from "evergreen-ui";
 
-const modules = import.meta.glob("./markdown-files/auto-label.md", {
+const modules = import.meta.glob("./markdown-files/tutorial.md", {
     query: "?raw",
     import: "default",
 });
 
 const App = () => {
     const [markdownContent, setMarkdownContent] = useState<string>("");
-    const [darkMode, setDarkMode] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchNote = async () => {
@@ -24,44 +23,25 @@ const App = () => {
         fetchNote();
     }, []);
 
-    const toggleDarkMode = () => {
-        setDarkMode((prevMode) => !prevMode);
-    };
-
     return (
-        <Pane
-            maxWidth={1200}
-            padding={20}
-            style={{
-                margin: "0 auto",
-            }}
-        >
+        <Pane background="#333">
             <Pane
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                marginBottom={20}
-            >
-                <Pane
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="space-between"
-                >
-                    <Heading size={700}>Dark Mode Switch</Heading>
-                    <Switch
-                        height={24}
-                        checked={darkMode}
-                        onChange={toggleDarkMode}
-                    />
-                </Pane>
-            </Pane>
-            <Notie
-                markdown={markdownContent}
-                darkMode={darkMode}
-                config={{
-                    showTableOfContents: true,
+                maxWidth={majorScale(180)}
+                padding={20}
+                style={{
+                    margin: "0 auto",
                 }}
-            />
+            >
+                <Notie
+                    markdown={markdownContent}
+                    config={
+                        {
+                            // showTableOfContents: false,
+                        }
+                    }
+                    theme="default"
+                />
+            </Pane>
         </Pane>
     );
 };

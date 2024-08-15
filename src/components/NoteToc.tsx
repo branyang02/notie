@@ -38,12 +38,10 @@ const generateTableOfContents = (
 const NoteToc = ({
     markdownContent,
     activeId,
-    darkMode,
     config,
 }: {
     markdownContent: string;
     activeId: string;
-    darkMode: boolean;
     config: NotieConfig;
 }) => {
     const toc = useMemo(
@@ -58,7 +56,7 @@ const NoteToc = ({
             top={0}
             overflowY="auto"
             maxHeight="100vh"
-            className={`note-toc ${darkMode ? "dark-mode" : ""}`}
+            className={`note-toc`}
         >
             <ReactMarkdown rehypePlugins={[[rehypeSlug, { prefix: "toc-" }]]}>
                 {toc}

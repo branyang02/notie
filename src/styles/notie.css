@@ -1,3 +1,4 @@
+/* Dynamic Screen size Adjustments */
 @media screen and (min-width: 1200px) {
     .mw-page-container-inner {
         grid-template-columns: 15.5rem minmax(0, 1fr);
@@ -54,11 +55,86 @@
     }
 }
 
+/* Get variables from Config */
+.notie-container {
+    background-color: var(--blog-background-color);
+}
+
 .blog-content {
     font-size: var(--blog-font-size);
     font-family: var(--blog-font-family);
+    color: var(--blog-text-color);
 }
 
+/* Heading colors */
+.blog-content h1,
+.blog-content h2,
+.blog-content h3,
+.blog-content h4,
+.blog-content h5,
+.blog-content h6 {
+    color: var(--blog-title-color);
+}
+
+/* link colors */
+.blog-content a {
+    color: var(--blog-link-color);
+}
+
+.blog-content a:hover,
+.blog-content a:focus {
+    color: var(--blog-link-hover-color);
+    text-decoration: underline;
+}
+
+/* inline code colors */
+.blog-content code:not([class]):not(.code-blocks code) {
+    padding: 0.2em 0.4em;
+    margin: 0;
+    font-size: 85%;
+    white-space: break-spaces;
+    background-color: var(--blog-code-background-color);
+    border-radius: 6px;
+    color: var(--blog-code-color);
+}
+
+/* Code Block header color */
+.blog-content .code-header {
+    background-color: var(--blog-code-header-color);
+}
+
+/* Collapse Section colors */
+.blog-content details {
+    background-color: var(--blog-collapse-section-color);
+}
+
+/* Katex Size */
+.katex {
+    font-size: var(--blog-katex-size);
+}
+
+/* Table colors */
+.blog-content th {
+    background-color: var(--blog-table-background-color);
+}
+
+/* caption colors */
+.caption {
+    color: var(--blog-caption-color);
+}
+
+.subtitle {
+    color: var(--blog-subtitle-color);
+}
+
+.blog-content .tikz-drawing svg {
+    -webkit-filter: var(--blog-tikz-style);
+    filter: var(--blog-tikz-style);
+}
+
+/* //////////////////////// */
+
+/* Heading styles */
 .blog-content h1 {
     font-size: 2.5em;
 }
@@ -83,10 +159,7 @@
     font-size: 1.3em;
 }
 
-.katex {
-    font-size: 1.2em;
-}
-
+/* Katex configs */
 .katex .eqn-num:before {
     content: " ";
 }
@@ -100,17 +173,9 @@
 
 .blog-content th,
 .blog-content td {
-    border: 1px solid #ddd;
+    border: 1px solid var(--blog-table-border-color);
     text-align: left;
     padding: 8px;
-}
-
-.blog-content th {
-    background-color: #f2f2f2;
-}
-
-.blog-content.dark-mode th {
-    background-color: hsla(0, 0%, 93%, 0.2);
 }
 
 /* Image Styles */
@@ -122,23 +187,13 @@
     margin: auto;
 }
 
-.blog-content a {
-    color: #172b41;
-    text-decoration: underline;
-}
-
+/* a tag styles for reference and katex */
 .blog-content a[data-footnote-ref] {
     text-decoration: none;
 }
 
 .blog-content a[data-footnote-backref] {
     text-decoration: none;
-}
-
-.blog-content a:hover,
-.blog-content a:focus {
-    color: #777777;
-    text-decoration: underline;
 }
 
 .blog-content .katex a,
@@ -152,29 +207,20 @@
     font-size: smaller;
     text-align: center;
     font-style: italic;
-    color: #555;
     margin: 20px auto;
 }
 
-.caption a {
-    color: #555;
-}
-
-.caption a:hover {
-    color: #8f8f8f;
-}
-
+/* Subtitle Styles */
 .subtitle {
     display: block;
     font-size: smaller;
     text-align: left;
     font-style: italic;
-    color: #555;
     margin: 20px auto;
 }
 
+/* Collapse Section Styles */
 .blog-content details {
-    background-color: #f0f0f0;
     padding: 10px;
     border-radius: 10px;
     overflow: hidden;
@@ -190,6 +236,7 @@
     margin-bottom: 10px;
 }
 
+/* Blockquote Styles */
 .blog-content blockquote {
     margin-block-start: 0;
     margin-inline-start: 0;
@@ -289,69 +336,8 @@
     border-left: 5px solid #555555;
 }
 
-.blog-content.dark-mode blockquote.example::before {
-    color: #cfcdcd;
-    content: "Example";
-}
-
-.blog-content.dark-mode blockquote.example {
-    background: #444;
-    border-left: 5px solid #cfcdcd;
-}
-
-.blog-content.dark-mode {
-    color: #fff;
-}
-
-.blog-content.dark-mode a {
-    color: #fff;
-}
-
-.blog-content.dark-mode a:hover,
-.blog-content.dark-mode a:focus {
-    color: #bbb;
-}
-
-.blog-content.dark-mode details {
-    background-color: #444;
-    color: #fff;
-}
-
-.blog-content.dark-mode .subtitle {
-    color: #fff;
-}
-
-.blog-content.dark-mode .caption {
-    color: #fff;
-}
-
-.blog-content code:not([class]):not(.code-blocks code) {
-    padding: 0.2em 0.4em;
-    margin: 0;
-    font-size: 85%;
-    white-space: break-spaces;
-    background-color: #afb8c133;
-    border-radius: 6px;
-    color: black;
-}
-
-.blog-content.dark-mode code:not([class]):not(.code-blocks code) {
-    padding: 0.2em 0.4em;
-    margin: 0;
-    font-size: 85%;
-    white-space: break-spaces;
-    background-color: #6e768166;
-    border-radius: 6px;
-    color: white;
-}
-
-.blog-content.dark-mode .tikz-drawing svg {
-    -webkit-filter: invert(100%);
-    filter: invert(100%);
-}
-
+/* Tikz Styles */
 .blog-content .tikz-drawing svg {
     max-width: 100%;
-    width: 500px;
     margin: 20px auto;
 }
