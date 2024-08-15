@@ -1,4 +1,4 @@
-# **notie** Turotial
+# **notie** Tutorial
 
 ## Markdown
 
@@ -384,9 +384,11 @@ You can create TikZ diagrams in your markdown file by including `tikz` after the
 \end{document}
 ```
 
-<span class="caption">
-<a href="https://texample.net/tikz/examples/merge-sort-recursion-tree/">Source</a>
-</span>
+<div class="caption">
+
+[Source](https://texample.net/tikz/examples/merge-sort-recursion-tree/)
+
+</div>
 
 Note that this uses an external library which requires an internet connection to render the diagram.
 
@@ -543,16 +545,20 @@ You can also make the images smaller by using HTML attributes:
 ```markdown
 <img src="https://via.placeholder.com/150" alt="placeholder" style="display: block; max-height: 30%; max-width: 30%;">
 
-<span class="caption">
+<div class="caption">
+
 This is a placeholder image.
-</span>
+
+</div>
 ```
 
 <img src="https://via.placeholder.com/150" alt="placeholder" style="display: block; max-height: 30%; max-width: 30%;">
 
-<span class="caption">
+<div class="caption">
+
 This is a placeholder image.
-</span>
+
+</div>
 
 ## Links
 
