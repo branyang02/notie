@@ -1,36 +1,44 @@
 import { Pane } from "evergreen-ui";
-import * as ReactCodeBlocks from "react-code-blocks";
 import CodeHeader from "./CodeHeader";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import * as themes from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 const StaticCodeBlock = ({
     code,
     language,
     theme,
+    copyButtonHoverColor,
 }: {
     code: string;
     language: string;
     theme: string;
+    copyButtonHoverColor?: string;
 }) => {
-    let selectedTheme;
-
-    try {
-        selectedTheme = ReactCodeBlocks[theme as keyof typeof ReactCodeBlocks];
-    } catch (error) {
+    let selectedTheme = eval(`themes.${theme}`);
+    if (!selectedTheme) {
         console.error(`Invalid theme name: ${theme}, falling back to default.`);
-        selectedTheme = ReactCodeBlocks.atomOneLight; // Default fallback theme
+        selectedTheme = themes.github; // Default fallback theme
     }
+
     return (
         <Pane>
-            <CodeHeader language={language} code={code} />
+            <CodeHeader
+                language={language}
+                code={code}
+                copyButtonHoverColor={copyButtonHoverColor}
+            />
             <div className="code-blocks">
-                <ReactCodeBlocks.CodeBlock
-                    text={code}
-                    language={language}
-                    showLineNumbers={false}
-                    theme={selectedTheme}
-                    startingLineNumber={0}
-                    customStyle={{ borderRadius: "0 0 10px 10px" }}
-                />
+                <SyntaxHighlighter
+                    language="language"
+                    style={selectedTheme}
+                    customStyle={{
+                        fontSize: "1em",
+                        borderRadius: "0 0 10px 10px",
+                        marginTop: 0,
+                    }}
+                >
+                    {code}
+                </SyntaxHighlighter>
             </div>
         </Pane>
     );

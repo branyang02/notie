@@ -1,8 +1,8 @@
-import * as themes from "@uiw/codemirror-themes-all";
-import * as ReactCodeBlocks from "react-code-blocks";
+import * as liveThemes from "@uiw/codemirror-themes-all";
+import * as staticThemes from "react-syntax-highlighter/dist/esm/styles/hljs";
 
-type LiveCodeBlockThemeNames = keyof typeof themes;
-type StaticCodeBlockThemeNames = keyof typeof ReactCodeBlocks;
+type LiveCodeBlockThemeNames = keyof typeof liveThemes;
+type StaticCodeBlockThemeNames = keyof typeof staticThemes;
 
 export interface Theme {
     backgroundColor?: CSSStyleDeclaration["backgroundColor"];
@@ -12,12 +12,14 @@ export interface Theme {
     textColor?: CSSStyleDeclaration["color"];
     linkColor?: CSSStyleDeclaration["color"];
     linkHoverColor?: CSSStyleDeclaration["color"];
+    linkUnderline?: boolean;
     tocColor?: CSSStyleDeclaration["color"];
     tocHoverColor?: CSSStyleDeclaration["color"];
     tocUnderline?: boolean;
     codeColor?: CSSStyleDeclaration["color"];
     codeBackgroundColor?: CSSStyleDeclaration["backgroundColor"];
     codeHeaderColor?: CSSStyleDeclaration["backgroundColor"];
+    codeCopyButtonHoverColor?: CSSStyleDeclaration["color"];
     staticCodeTheme?: StaticCodeBlockThemeNames;
     liveCodeTheme?: LiveCodeBlockThemeNames;
     collapseSectionColor?: CSSStyleDeclaration["color"];

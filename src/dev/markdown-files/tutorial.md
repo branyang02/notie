@@ -1,4 +1,4 @@
-# **notie** Turotial
+# **notie** Tutorial
 
 <span class="subtitle">
     Updated Aug 2024

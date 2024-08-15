@@ -24,7 +24,7 @@ const App = () => {
     }, []);
 
     return (
-        <Pane background="#333">
+        <Pane background="#fff">
             <Pane
                 maxWidth={majorScale(180)}
                 padding={20}
@@ -34,12 +34,11 @@ const App = () => {
             >
                 <Notie
                     markdown={markdownContent}
-                    config={
-                        {
-                            // showTableOfContents: false,
-                        }
-                    }
-                    theme="default"
+                    config={{
+                        showTableOfContents: true,
+                    }}
+                    // theme="Starlit Eclipse Light"
+                    theme="default dark"
                 />
             </Pane>
         </Pane>

@@ -47,10 +47,12 @@ const CodeBlock = ({
     initialCode,
     language = "python",
     theme,
+    copyButtonHoverColor,
 }: {
     initialCode: string;
     language?: string;
     theme: string;
+    copyButtonHoverColor?: string;
 }) => {
     let selectedTheme: Extension = eval(`themes.${theme}`);
 
@@ -111,7 +113,11 @@ const CodeBlock = ({
 
     return (
         <Pane>
-            <CodeHeader language={language} code={code} />
+            <CodeHeader
+                language={language}
+                code={code}
+                copyButtonHoverColor={copyButtonHoverColor}
+            />
             <Pane>
                 <Pane
                     position="relative"

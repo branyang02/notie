@@ -78,6 +78,10 @@
 
 /* link colors */
 .blog-content a {
+    text-decoration: var(--blog-link-underline);
+}
+
+.blog-content a {
     color: var(--blog-link-color);
 }
 
@@ -188,6 +192,7 @@
 }
 
 /* a tag styles for reference and katex */
+
 .blog-content a[data-footnote-ref] {
     text-decoration: none;
 }
@@ -340,4 +345,8 @@
 .blog-content .tikz-drawing svg {
     max-width: 100%;
     margin: 20px auto;
+}
+
+.blog-content .code-blocks {
+    font-size: 1em;
 }

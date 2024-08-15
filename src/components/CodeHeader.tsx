@@ -1,7 +1,15 @@
 import { Pane, Button, ClipboardIcon, TickCircleIcon } from "evergreen-ui";
 import React, { useState } from "react";
 
-const CodeHeader = ({ language, code }: { language: string; code: string }) => {
+const CodeHeader = ({
+    language,
+    code,
+    copyButtonHoverColor,
+}: {
+    language: string;
+    code: string;
+    copyButtonHoverColor?: string;
+}) => {
     const [isCopied, setIsCopied] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
@@ -26,16 +34,10 @@ const CodeHeader = ({ language, code }: { language: string; code: string }) => {
         }
     };
 
-    // Button Dark Mode Style
     const buttonStyle: React.CSSProperties = {
-        backgroundColor: isHovered ? "#444" : "transparent",
+        backgroundColor: isHovered ? copyButtonHoverColor : "transparent",
         transition: "background-color 0.3s ease",
     };
-
-    // const defaultStyle: React.CSSProperties = {
-    //     WebkitFontSmoothing: "antialiased",
-    //     appearance: "none",
-    // };
 
     return (
         <Pane

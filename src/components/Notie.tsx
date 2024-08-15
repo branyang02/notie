@@ -17,7 +17,11 @@ export interface NotieProps {
     markdown: string;
     previewEquation?: boolean;
     config?: NotieConfig;
-    theme?: "Starlit Eclipse" | "default";
+    theme?:
+        | "Starlit Eclipse"
+        | "Starlit Eclipse Light"
+        | "default dark"
+        | "default";
 }
 
 const Notie: React.FC<NotieProps> = ({
