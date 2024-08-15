@@ -241,9 +241,11 @@ extra.o: extra.c extra.h
         <img src="https://www.cs.virginia.edu/~cr4bd/3130/S2024/readings/kernel-layers1.svg" alt="Kernel Layers" style="display: block; max-height: 100%; max-width: 100%;">
     </div>
 </div>
-<span
-    class="caption">We can view the combination of the limited user-mode hardware interface and system calls as collectively defining the interface user mode code sees.
-</span>
+<div class="caption">
+
+We can view the combination of the limited user-mode hardware interface and system calls as collectively defining the interface user mode code sees.
+
+</div>
 
 ### **Implementation**
 
@@ -272,9 +274,12 @@ The basic mechanism for any exception to be handled is
   - **Exception Number**: index into the table.
 
 ![](https://branyang02.github.io/images/exception_table.png)
-<span
-    class="caption"> The exception table is a table of pointers to exception handlers. The exception number is used as an index into the table to find the appropriate handler.
-</span>
+
+<div class="caption">
+
+The exception table is a table of pointers to exception handlers. The exception number is used as an index into the table to find the appropriate handler.
+
+</div>
 
 ### **System Calls**
 
@@ -315,10 +320,13 @@ socket:
   - A process has its own program registers, condition codes, **virtual address space**, etc.
 - **Virtual Address Space**: the memory that a process can access. (illusion of a program having its own memory)
 
-<img src="https://branyang02.github.io/images/address_space.png" alt="Virtual Address Space" style="display: block; max-height: 70%; max-width: 70%;">
-<span
-    class="caption"> The virtual address space is the memory that a process can access. It is an illusion of a program having its own memory.
-</span>
+![](https://branyang02.github.io/images/address_space.png)
+
+<div class="caption">
+
+The virtual address space is the memory that a process can access. It is an illusion of a program having its own memory.
+
+</div>
 
 #### **Context Switch**
 
@@ -353,12 +361,13 @@ Suppose we have two processes, `A` and `B`, and a timer interrupt every `10ms`. 
 - **Process**: an instance of a program in execution.
 - **Thread**: a process can have multiple threads of execution. Threads share the same **virtual address space**, but have their own **program registers**, **program counter**, condition codes, etc.
 
-  <div style="background-color: white;">
-      <img src="https://static.javatpoint.com/difference/images/process-vs-thread3.png" style="max-height: 70%; max-width: 70%;">
-  </div>
-  <span
-      class="caption"> Threads within the same process share the same virtual address space but have their own program registers, program counter, condition codes, etc. (Source: javapoint, <a href="https://www.javatpoint.com/process-vs-thread">Process Vs. Thread</a>)
-  </span>
+![](https://static.javatpoint.com/difference/images/process-vs-thread3.png)
+
+<div class="caption">
+
+Threads within the same process share the same virtual address space but have their own program registers, program counter, condition codes, etc. (Source: javapoint, <a href="https://www.javatpoint.com/process-vs-thread">Process Vs. Thread</a>)
+
+</div>
 
 ## **Signals**
 
@@ -374,9 +383,11 @@ Suppose we have two processes, `A` and `B`, and a timer interrupt every `10ms`. 
 | **Kernel code** | **Signal**    | ordinary code | protected instructions |
 | **Hardware**    | via kernel    | Interrupt     | —                      |
 
-<span
-    class="caption"> Signals are roughly the kernel-to-user equivalent of an interrupt. At any time, while executing any line of code, a signal may appear.
-</span>
+<div class="caption">
+
+Signals are roughly the kernel-to-user equivalent of an interrupt. At any time, while executing any line of code, a signal may appear.
+
+</div>
 
 |                        | (hardware) exceptions              | signals                         |
 | ---------------------- | ---------------------------------- | ------------------------------- |
@@ -385,16 +396,21 @@ Suppose we have two processes, `A` and `B`, and a timer interrupt every `10ms`. 
 | **State Saving**       | hardware needs to save PC          | OS needs to save PC + registers |
 | **Instruction Change** | processor next instruction changes | thread next instruction changes |
 
-<span
-    class="caption"> Signals vs. Exceptions
-</span>
+<div class="caption">
+
+Signals vs. Exceptions
+
+</div>
 
 ### **Forwarding exceptions to signals**
 
-<img src="https://branyang02.github.io/images/signals.png" alt="Signals" style="display: block; max-height: 70%; max-width: 70%;">
-<span
-      class="caption"> When `SIGINT` is received, the program enters kernel mode and starts running the exception handler for handing keyboard interrupts. The exception handler then forwards the signal to the user mode signal handler. The signal handler then runs in user mode. After the signal handler finishes, the program enters the kernel mode again to clean up and return to user mode.
-</span>
+![](https://branyang02.github.io/images/signals.png)
+
+<div class="caption">
+
+When `SIGINT` is received, the program enters kernel mode and starts running the exception handler for handing keyboard interrupts. The exception handler then forwards the signal to the user mode signal handler. The signal handler then runs in user mode. After the signal handler finishes, the program enters the kernel mode again to clean up and return to user mode.
+
+</div>
 
 ### **Common Signals**
 
@@ -550,7 +566,7 @@ We can also avoid running the signal handler while it is already running by bloc
 
 ### **Blocking Signals**
 
-<img src="https://branyang02.github.io/images/block_signal.png" alt="Blocking Signals" style="display: block; max-height: 30%; max-width: 30%;">
+![](https://branyang02.github.io/images/block_signal.png)
 
 We can block signals with `sigprocmask()` to prevent the signal handler from running immediately. When the signal is received, it will be _pending_ until it is unblocked, at which point the signal handler will run.
 
@@ -876,7 +892,8 @@ The parent process also waits for the child process to finish without using `wai
 
 Every process has its own **virtual address space** when running a program.
 
-<img src="https://branyang02.github.io/images/address_space.png" alt="Virtual Address Space" style="display: block; max-height: 50%; max-width: 50%;">
+
+![](https://branyang02.github.io/images/address_space.png)
 
 <blockquote class="definition">
 
@@ -1110,7 +1127,7 @@ When a page fault occurs, the OS dynamically loads the page from disk into memor
 
 Suppose we have the following initial page table:
 
-<img src="https://branyang02.github.io/images/allocate_on_demand.png" alt="Page Table" style="display: block; max-height: 30%; max-width: 30%;">
+![](https://branyang02.github.io/images/allocate_on_demand.png)
 
 We have the following code that needs to be executed
 
@@ -1255,7 +1272,7 @@ The OS has predefinied which bits at each memory address are used for the permis
 
 Therefore, to interpret PTE at a given address, we need to extract the bits that correspond to the valid bit and PPN. The overall process can be described in the following diagram:
 
-<img src="https://branyang02.github.io/images/page_table.png" alt="Page Table Memory" style="display: block; max-height: 70%; max-width: 70%;">
+![](https://branyang02.github.io/images/page_table.png)
 
 We can also now formally write a formula that describes the process of translating a virtual address to a physical address:
 
@@ -1319,7 +1336,7 @@ When checking for permission bits, if a PTE is invalid, the OS does **NOT** need
 
 Suppose we have the following memory layout:
 
-<img src="https://branyang02.github.io/images/pt_example.png" alt="Multi-Level Page Table" style="display: block; max-height: 50%; max-width: 50%;">
+![](https://branyang02.github.io/images/pt_example.png)
 
 and the following configuration:
 
@@ -1440,11 +1457,13 @@ The memory hierarchy is a structure that organizes memory into different levels 
 
 Cache can also be shared among multiple cores. One typical configuration can be seen below:
 
-<img src="https://branyang02.github.io/images/cache_sharing.png" alt="Memory Hierarchy" style="display: block; max-height: 50%; max-width: 50%;">
+![](https://branyang02.github.io/images/cache_sharing.png)
 
-<span class="caption">
-  Each core has its own L1 cache (instruction and data), and its own L2 cache. The L3 cache is shared among all cores.
-</span>
+<div class="caption">
+
+Each core has its own L1 cache (instruction and data), and its own L2 cache. The L3 cache is shared among all cores.
+
+</div>
 
 #### **Assumptions**
 
@@ -1463,7 +1482,7 @@ A **cache block** stores a block of data from the main memory. The size of the c
 
 This is an example of a cache block that stores 2 bytes of data:
 
-<img src="https://branyang02.github.io/images/cache_block.png" alt="Cache Block" style="display: block; max-height: 50%; max-width: 50%;">
+![](https://branyang02.github.io/images/cache_block.png)
 
 Multiple cache blocks form the **cache table**. The cache table is essentially a lookup table to quickly retrieve data stored in the cache blocks, if it exists.
 
@@ -1486,7 +1505,7 @@ A **direct-mapped cache** is a type of cache where each block of main memory map
 
 Below is an example of a direct-mapped cache:
 
-<img src="https://branyang02.github.io/images/direct_mapped_cache.png" alt="Direct-Mapped Cache" style="display: block; max-height: 30%; max-width: 30%;">
+![](https://branyang02.github.io/images/direct_mapped_cache.png)
 
 In this example, the cache has 8 sets, and each set contains a valid bit, a tag, and a cache block. The cache block stores 2 bytes of data from the main memory.
 
@@ -1619,11 +1638,12 @@ An **associative cache** is a type of cache where each index in the cache can ma
 
 </blockquote>
 
-<img src="https://branyang02.github.io/images/associative_cache.png" alt="Associative Cache" style="display: block; max-height: 40%; max-width: 40%;">
 
-<span class="caption">
+![](https://branyang02.github.io/images/associative_cache.png)
+
+<div class="caption">
   In this example 2-way set associative cache, each set contains 2 cache blocks.
-</span>
+</div>
 
 When accessing an associative cache, we follow the same steps as a direct-mapped cache, but we need to check for **multiple** tags in the set to check for a cache hit. If we have a **cache miss** meaning that none of the tags from any of the blocks in the set match the tag from the memory address, we need to evict a block from the set to make room for the new block. If there is an empty block in the set, we can simply load the block from the main memory into the cache.
 
@@ -1680,7 +1700,7 @@ If the value is in the cache, we can:
 <details><summary>Exercise: write-allocate + write-back</summary>
 
 
-<img src="https://branyang02.github.io/images/cache_exercise.png" alt="Write Allocate" style="display: block; max-height: 50%; max-width: 50%;">
+![](https://branyang02.github.io/images/cache_exercise.png)
 
 1. First, we need to compute the tag, index, and offset bits for the target memory address `0x04`:
 
@@ -1726,7 +1746,7 @@ Therefore, we need to write teh values in the current block to memory address `0
 
 The final cache table is shown below:
 
-<img src="https://branyang02.github.io/images/cache_exercise_solution.png" alt="Write Allocate Solution" style="display: block; max-height: 50%; max-width: 50%;">
+![](https://branyang02.github.io/images/cache_exercise_solution.png)
 
 </details>
 
@@ -1797,7 +1817,7 @@ In a multi-level page table setup, we use the **entire** VPN to index into the T
 
 We can run multiple threads in a single process to achieve concurrency and parallelism. Threads in the same process share the same **virtual memory space**, but have their own **registers** and **stack**.
 
-<img src="https://branyang02.github.io/images/single_vs_multi_threads.png" alt="Threads" style="display: block; max-height: 50%; max-width: 50%;">
+![](https://branyang02.github.io/images/single_vs_multi_threads.png)
 
 ### **Thread Creation**
 
@@ -1890,12 +1910,13 @@ This is because the main thread could finish before the new thread finishes, cau
 
 From the example above, we see that the output of the program is **non-deterministic**. This is because the two threads are **racing** to print their respective messages. This is known as a **race condition**.
 
-<img src="https://i.ytimg.com/vi/KGnXr62bgHM/maxresdefault.jpg" alt="Race Conditions" style="display: block; max-height: 70%; max-width: 70%;">
 
-<span class="caption">
+![](https://i.ytimg.com/vi/KGnXr62bgHM/maxresdefault.jpg)
+
+<div class="caption">
   Source: <a href="https://dennylesmana.medium.com/what-is-race-condition-d678f87af108">What is race condition?
 </a>
-</span>
+</div>
 
 We can use `pthread_join` to wait for a thread to finish before continuing execution in the main thread. `pthread_join` takes two arguments:
 - `pthread_t thread`: the thread ID of the thread to wait for.
@@ -2237,9 +2258,9 @@ In this example, `thread1` acquires `lock1` first, and then tries to acquire `lo
 
 </div>
 
-<span class="caption">
+<div class="caption">
   We reach a deadlock when thread1 acquires lock1 and thread2 acquires lock2 at the same time.
-</span>
+</div>
 
 A **deadlock** has 4 necessary conditions:
 1. **Mutual Exclusion**: At least one resource must be held in a non-sharable mode.
@@ -2483,11 +2504,12 @@ Secure communication over an insecure channel involves safeguarding the data aga
 - **Active Attacks:**
   - **Machine-in-the-middle Attack:** An attacker intercepts, alters, or injects messages between Machine A and Machine B.
 
-<img src="https://images.shiksha.com/mediadata/ugcDocuments/images/wordpressImages/2023_02_MicrosoftTeams-image-304.jpg" alt="Secure Channels" style="display: block; max-height: 70%; max-width: 70%;">
-<span
+![](https://images.shiksha.com/mediadata/ugcDocuments/images/wordpressImages/2023_02_MicrosoftTeams-image-304.jpg)
+
+<div
     class="caption"> Source: <a href="https://www.shiksha.com/online-courses/articles/difference-between-active-and-passive-attacks/">Difference Between Active and Passive Attacks</a>
 
-</span>
+</div>
 
 ### **Confidentiality**
 
@@ -2794,11 +2816,11 @@ A pipeline is a technique used to overlap the execution of multiple instructions
 
 In order to hold the data between stages, we use **pipeline registers**.
 
-<img src="https://branyang02.github.io/images/pipeline.png" alt="Pipeline" style="display: block; max-height: 70%; max-width: 70%;">
+![](https://i.ytimg.com/vi/KGnXr62bgHM/maxresdefault.jpg)
 
-<span class="caption"> 
+<div class="caption"> 
 The pipeline consists of five stages: Fetch, Decode, Execute, Memory, and Writeback. Each stage has a pipeline register to hold the data between stages.
-</span>
+</div>
 
 We evaluate the performance of a pipeline using the following metrics:
 
@@ -2839,7 +2861,7 @@ where $\text{instr}^n_{end}$ is the cycle number when the last instruction ends,
 
 <details open><summary>Example Pipeline Latency and Throughput</summary>
 
-<img src="https://branyang02.github.io/images/latency.png" alt="Pipeline" style="display: block; max-height: 70%; max-width: 70%;">
+![](https://branyang02.github.io/images/latency.png)
 
 In the example above, suppose _cycle time_ is 500 ps, the **latency** is calculated as follows:
 
@@ -2867,10 +2889,11 @@ $$
 
 We can increase pipeline performance by increasing the number of states. However, we will only see a **diminishing return** as the number of stages increases. This is because that **pipeline registers** often take time to load and store the data.
 
-<img src="https://branyang02.github.io/images/diminishing_return.png" alt="Diminishing Return" style="display: block; max-height: 70%; max-width: 70%;">
-<span
+![](https://branyang02.github.io/images/diminishing_return.png)
+
+<div
     class="caption"> Diminishing Returns: register delays
-</span>
+</div>
 
 Dividing the instruction execution into multiple stages can lead to **pipeline hazards**.
 
@@ -2891,7 +2914,7 @@ Suppose we have the following instructions:
 
 Suppose we run these instructions in the pipeline configuration:
 
-<img src="https://branyang02.github.io/images/data_hazard.png" alt="Data Hazard" style="display: block; max-height: 70%; max-width: 70%;">
+![](https://branyang02.github.io/images/data_hazard.png)
 
 We can see that the second instruction depends on the result of the first instruction. This data dependency causes a **data hazard**.
 
@@ -2946,7 +2969,7 @@ Note that the instruction after a branch instruction (`jne label`) will need to 
 
 Suppose we have the following instructions:
 
-<img src="https://branyang02.github.io/images/forwarding.png" alt="Forwarding" style="display: block; max-height: 70%; max-width: 70%;">
+![](https://branyang02.github.io/images/forwarding.png)
 
 We follow each instruction through the pipeline stages:
 
@@ -3135,10 +3158,11 @@ We want to correctly predict the target of the jump instruction as much as possi
 - **Dynamic Prediction**: predict the target based on the history of the branch.
   - **Branch History Table (BHT)**: a table that stores the history of branches.
 
-<img src="https://branyang02.github.io/images/branch_prediction.png" alt="Branch History Table" style="display: block; max-height: 70%; max-width: 70%;">
-<span
+![](https://branyang02.github.io/images/branch_prediction.png)
+
+<div
     class="caption"> Branch History Table (BHT) stores the history of branches. The table is indexed by the program counter (PC) and stores the history of the branch (taken or not taken).
-</span>
+</div>
 
 Jump instructions are often used in loops, and they may take some time to resolve. To speed up this process, we can use a **branch target buffer (BTB)** to store the target of the jump instruction.
 
@@ -3315,7 +3339,7 @@ We can see that `%r8` uses the new physical register `%x20` in this instruction.
 
 ### **OOO Pipeline Stages**
 
-<img src="https://branyang02.github.io/images/ooo.png" alt="OOO Pipeline" style="display: block; max-height: 70%; max-width: 70%;">
+![](https://branyang02.github.io/images/ooo_pipeline.png)
 
 In the OOO pipeline, we have the following stages:
 
@@ -3341,7 +3365,7 @@ The final `commit` stage is **in order**.
 
 <details open><summary>Example OOO Pipeline Stages</summary>
 
-<img src="https://branyang02.github.io/images/ooo_pipeline.png" alt="OOO Pipeline" style="display: block; max-height: 70%; max-width: 70%;">
+![](https://branyang02.github.io/images/ooo_pipeline.png)
 
 In the example above, we assume we can execute 2 instructions at once. Therefore, we **must** make sure that we are **not** performing more than _2 stages of the same type_ at the same cycle.
 
@@ -3363,7 +3387,7 @@ In the `rename` and `issue` stages, we follow the following steps:
 2. **Dispatch**: dispatch the instruction to the **instruction queue**.
 3. **Issue**: choose instructions from the instruction queue to execute based on the availability of the execution units.
 
-<img src="https://branyang02.github.io/images/rename_issue.png" alt="Instruction Queue" style="display: block; max-height: 25%; max-width: 25%;">
+![](https://branyang02.github.io/images/rename_issue.png)
 
 At the `issue` stage, we need to make sure that we are not issuing more instructions than the number of execution units available. The number of instructions that can be run per cycle is limited by the number of ALU execution units. We can use an **instruction queue** to store the instructions that are ready to be executed.
 
@@ -3385,7 +3409,7 @@ Continuing from the previous example, suppose we have already converted the inst
 | 9   | `cmpq %x04, %x12` $\to$ `%x13.cc` |
 
 </div>
-<span class="caption">Example Instruction Queue</span>
+<div class="caption">Example Instruction Queue</div>
 
 We also have a **scoreboard** that keeps track of the status (ready or pending) of the physical registers.
 
@@ -3408,7 +3432,7 @@ We also have a **scoreboard** that keeps track of the status (ready or pending) 
 | `%x13` | pending |
 
 </div>
-<span class="caption">Example Scoreboard</span>
+<div class="caption">Example Scoreboard</div>
 
 Suppose we have 2 ALU execution units, meaning we could execute **at most** 2 instructions per cycle. We can use the following steps to dispatch the instructions:
 
@@ -3439,7 +3463,7 @@ This is where the `execute` stage of the pipeline occurs. We can have multiple e
 - **Pipelined ALU**: for multiple arithmetic and logical operations.
 - **Load/Store Unit**: for loading and storing data from memory.
 
-<img src="https://branyang02.github.io/images/execute.png" alt="Execution Units" style="display: block; max-height: 25%; max-width: 25%;">
+![](https://branyang02.github.io/images/execute.png)
 
 In the example above, we have `ALU 1` and `ALU 2` that can execute arithmetic and logical operations in 1 cycle. We also have a _pipelined ALU_ that is separated into two parts: `ALU 3 pt1` and `ALU 3 pt2`. This means that a full `ALU 3` operation will take 2 cycles to complete.
 
@@ -3461,9 +3485,11 @@ Reiss, Charles. _CS 3130 Spring 2024_. Licensed under Creative Commons Attributi
 
 The notes taken from the course _CS 3130 Spring 2024_ by Charles Reiss are licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (CC BY-NC-SA 4.0). These notes are intended for non-commercial use and must be shared under the same license terms.
 
-<span class="caption">
+<div class="caption">
+
 Yifan (Brandon) Yang, Released under the CC BY-NC-SA 4.0 License.
-</span>
+
+</div>
 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
     <img src="https://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-sa.png" alt="CC BY-NC-SA 4.0" style="display: block; max-height: 10%; max-width: 10%; margin-top: 0px" >
 </a>
