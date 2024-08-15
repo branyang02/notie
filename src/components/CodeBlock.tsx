@@ -121,18 +121,19 @@ const CodeBlock = ({
                 <Pane
                     position="relative"
                     overflow="hidden"
-                    marginBottom={16}
                     style={{ borderRadius: "0 0 10px 10px" }}
                 >
-                    <CodeMirror
-                        ref={editorRef}
-                        value={initialCode}
-                        extensions={[languageCode, indentUnit.of("    ")]}
-                        maxHeight="800px"
-                        minHeight="100px"
-                        theme={selectedTheme}
-                        onChange={onChange}
-                    />
+                    <div className="code-blocks">
+                        <CodeMirror
+                            ref={editorRef}
+                            value={initialCode}
+                            extensions={[languageCode, indentUnit.of("    ")]}
+                            maxHeight="80vh"
+                            minHeight="100px"
+                            theme={selectedTheme}
+                            onChange={onChange}
+                        />
+                    </div>
                     <Pane position="absolute" top={0} right={0} padding={8}>
                         <IconButton
                             size="small"
@@ -185,7 +186,7 @@ const OutputBox = ({
         position="relative"
         borderRadius={8}
         overflow="hidden"
-        marginBottom={16}
+        marginTop={"1em"}
     >
         <Card
             background="gray50"

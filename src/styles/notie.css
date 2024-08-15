@@ -184,9 +184,9 @@
 
 /* Image Styles */
 .blog-content img {
-    width: 100%;
-    max-width: 800px;
-    height: auto;
+    width: auto;
+    max-height: 80vh;
+    max-width: 100%;
     display: block;
     margin: auto;
 }
@@ -231,6 +231,10 @@
     overflow: hidden;
     box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.1);
     margin: 20px auto;
+}
+
+.blog-content details[open] {
+    padding-bottom: 0;
 }
 
 .blog-content summary {
@@ -349,4 +353,14 @@
 
 .blog-content .code-blocks {
     font-size: 1em;
+}
+
+.blog-content pre:not(.code-blocks pre) {
+    margin: auto;
+    margin-bottom: 1em;
+}
+
+.blog-content .code-blocks pre {
+    margin-bottom: 0rem;
+    overflow: none;
 }

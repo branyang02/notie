@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Notie from "../components/Notie";
 import { Pane, majorScale } from "evergreen-ui";
 
-const modules = import.meta.glob("./markdown-files/tutorial.md", {
+const modules = import.meta.glob("./markdown-files/algo.md", {
     query: "?raw",
     import: "default",
 });
@@ -38,7 +38,7 @@ const App = () => {
                         showTableOfContents: true,
                     }}
                     // theme="Starlit Eclipse Light"
-                    theme="default dark"
+                    theme="default"
                 />
             </Pane>
         </Pane>
