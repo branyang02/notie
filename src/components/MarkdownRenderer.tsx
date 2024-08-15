@@ -66,7 +66,11 @@ const MarkdownRenderer: React.FC<{
                 }
             },
         }),
-        [config.theme.codeCopyButtonHoverColor, config.theme.liveCodeTheme, config.theme.staticCodeTheme],
+        [
+            config.theme.codeCopyButtonHoverColor,
+            config.theme.liveCodeTheme,
+            config.theme.staticCodeTheme,
+        ],
     );
 
     const katexOptions = {

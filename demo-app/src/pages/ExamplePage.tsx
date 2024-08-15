@@ -48,7 +48,12 @@ const ExamplePage = () => {
         );
     }
 
-    return <Notie markdown={markdownContent} darkMode={darkMode} />;
+    return (
+        <Notie
+            markdown={markdownContent}
+            theme={darkMode ? "default dark" : "default"}
+        />
+    );
 };
 
 export default ExamplePage;

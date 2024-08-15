@@ -74,7 +74,9 @@ const App = () => {
                             element={
                                 <Notie
                                     markdown={homeContent}
-                                    darkMode={darkMode}
+                                    theme={
+                                        darkMode ? "default dark" : "default"
+                                    }
                                 />
                             }
                         />
@@ -84,7 +86,9 @@ const App = () => {
                             element={
                                 <Notie
                                     markdown={tutorialContent}
-                                    darkMode={darkMode}
+                                    theme={
+                                        darkMode ? "default dark" : "default"
+                                    }
                                 />
                             }
                         />
@@ -93,7 +97,9 @@ const App = () => {
                             element={
                                 <Notie
                                     markdown={contributionContent}
-                                    darkMode={darkMode}
+                                    theme={
+                                        darkMode ? "default dark" : "default"
+                                    }
                                 />
                             }
                         />
