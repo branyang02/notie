@@ -25,9 +25,11 @@ Peptides and proteins are essential biomolecules composed of amino acids linked 
 \end{document}
 ```
 
-<span class="caption">
+<div class="caption">
+
 Structure of a peptide bond
-</span>
+
+</div>
 
 ## Carbonyl Chemistry
 

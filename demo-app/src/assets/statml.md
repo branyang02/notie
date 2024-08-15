@@ -32,9 +32,11 @@ Jensen's inequality is a fundamental result in convex analysis that provides a l
 \end{document}
 ```
 
-<span class="caption">
+<div class="caption">
+
 You can draw awesome plots with TikZ and PGFPlots.
-</span>
+
+</div>
 
 <blockquote class="theorem">
 

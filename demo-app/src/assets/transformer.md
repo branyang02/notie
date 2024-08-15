@@ -25,10 +25,13 @@ All provided codes in this blog post are available in the [GitHub repository](ht
 
 ## **Architecture Overview**
 
-<img src="https://branyang02.github.io/images/transformer.png" width="50%" height="auto" margin="20px auto" display="block">
-<span id="fig1"
-class="caption">Fig. 1: The transformer architecture
-</span>
+![](https://branyang02.github.io/images/transformer.png)
+
+<div id="fig1" class="caption">
+
+Fig. 1: The transformer architecture
+
+</div>
 
 ## **Input Embeddings**
 
@@ -206,10 +209,13 @@ First we look at the **_scaled dot-product attention_** mechanism, and then we w
 
 ### **Scaled Dot-Product Attention**
 
-<img src="https://branyang02.github.io/images/scaled-dot-product.png" width="30%" height="auto" margin="20px auto" display="block">
-<span id="fig2"
-class="caption">Fig. 2: Scaled Dot-Product Attention
-</span>
+![](https://branyang02.github.io/images/scaled-dot-product.png)
+
+<div id="fig2" class="caption">
+
+Fig. 2: Scaled Dot-Product Attention
+
+</div>
 
 The scaled dot-product attention mechanism is defined as a function $$\text{Attention} : \mathbb{R}^{n \times d_k} \times \mathbb{R}^{n \times d_k} \times \mathbb{R}^{n \times d_v} \rightarrow \mathbb{R}^{n \times d_v}$$
 
@@ -220,9 +226,12 @@ $$
 Note that in [Figure 2](#fig2), we have a optional mask that can be applied to the attention weights. This is used in the decoder layers of the transformer to prevent the model from looking at future tokens in the sequence, therefore creating autoregressive generation of the output sequence. We implment this by masking out (setting to $-\infty$) all values in the input of the softmax which correspond to illegal connections. [Figure 3](#fig3) shows the masked attention mechanism.
 
 ![](https://branyang02.github.io/images/masked-attention.png)
-<span id="fig3"
-class="caption">Fig. 3: Masked Scaled Dot-Product Attention. (Source: Yu Meng, <a href="https://yumeng5.github.io/teaching/2024-spring-cs6501">UVA CS 6501 NLP</a>)
-</span>
+
+<div id="fig3" class="caption">
+
+Fig. 3: Masked Scaled Dot-Product Attention. (Source: Yu Meng, <a href="https://yumeng5.github.io/teaching/2024-spring-cs6501">UVA CS 6501 NLP</a>)
+
+</div>
 
 The following code snippet shows how to implement a simple scaled dot-product attention in PyTorch. We will use smaller sequence length and dimension sizes for demonstration purposes.
 
@@ -299,10 +308,13 @@ It consists of $h$ parallel attention layers, where each layer is called a **hea
 Each head has its own query, key, and value weight matrices, which are learned during training.
 The output of each head is concatenated and linearly transformed to produce the final output.
 
-<img src="https://branyang02.github.io/images/MHA.png" width="30%" height="auto" margin="20px auto" display="block">
-<span id="fig4"
-class="caption">Fig. 4: Multi-Head Attention
-</span>
+![](https://branyang02.github.io/images/MHA.png)
+
+<div id="fig4" class="caption">
+
+Fig. 4: Multi-Head Attention
+
+</div>
 
 Therefore, we need to redefine the query, key, and value weight matrices for each head:
 
@@ -542,10 +554,11 @@ print(f"Output Shape: {output.shape}")
 
 We have now fully covered all components needed to build the Encoder block of the transformer.
 
-<img src="https://branyang02.github.io/images/encoder-only.jpg" width="30%" height="auto" margin="20px auto" display="block">
-<span id="fig5"
-class="caption">Fig. 5: Encoder Block
-</span>
+![](https://branyang02.github.io/images/encoder-only.jpg)
+
+<div id="fig5" class="caption">
+Fig. 5: Encoder Block
+</div>
 
 The encoder block consists of the following components:
 
@@ -892,10 +905,6 @@ After we get output $\textbf{Y}'$ from a single decoder block, we reuse it as th
 ## **Decoder-Only Transformer**
 
 To perform autoregressive generation using a decoder-only transformer, we need to convert the last decoder block output $\textbf{Y}_{\text{N\_dec}}'$ to a probability distribution over the vocabulary. We can do this by applying a linear transformation followed by a softmax activation function to the output $\textbf{Y}_{\text{N\_dec}}'$.
-
-![](https://i.stack.imgur.com/bWnx0.png)
-<span id="fig6"
-class="caption">Fig. 6: Linear transformation followed by a softmax activation function. (Source: <a href="https://ai.stackexchange.com/questions/40179/how-does-the-decoder-only-transformer-architecture-work">Stack Exchange</a>)
 
 This can be done in the following steps:
 
@@ -1285,6 +1294,6 @@ Note that this example is purely for inference and architectural demonstration p
 
 Now, you should be familiar with the transformer architecture and its components! We have covered the input embeddings, positional encoding, attention mechanism, multi-head attention mechanism, add & norm layer, feed-forward network, encoder block, and decoder block. We have also implemented the encoder-only transformer and decoder-only transformer in PyTorch using basic operations.
 
-I hope this blog post has helped you understand the transformer architecture better. If you have any questions or feedback, feel free to reach out to me on [LinkedIn](https://www.linkedin.com/in/byang02/), or my email at [jqm9ba@virginia.edu].
+I hope this blog post has helped you understand the transformer architecture better. If you have any questions or feedback, feel free to reach out to me on [LinkedIn](https://www.linkedin.com/in/byang02/), or my email at [jqm9ba@virginia.edu](mailto:jqm9ba@virginia.edu).
 
 [^1]: Vaswani, A., et al. "Attention is all you need," in Advances in neural information processing systems, vol. 30, 2017.
