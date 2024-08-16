@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import Notie, { NotieThemes } from "../components/Notie";
+import Notie from "../components/Notie";
 import { Button, Pane, majorScale } from "evergreen-ui";
+import { NotieThemes } from "../config/NotieConfig";
 
 const modules = import.meta.glob("./markdown-files/tutorial.md", {
     query: "?raw",

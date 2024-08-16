@@ -13,8 +13,6 @@ import { createRoot } from "react-dom/client";
 import { NotieConfig, NotieThemes } from "../config/NotieConfig";
 import { useNotieConfig } from "../utils/useNotieConfig";
 
-export type { NotieConfig, NotieThemes } from "../config/NotieConfig";
-
 export interface NotieProps {
     markdown: string;
     previewEquation?: boolean;
