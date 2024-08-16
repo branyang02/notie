@@ -34,7 +34,7 @@ interface NotieConfig {
 - The `Theme` interface within `NotieConfig` provides extensive customization options for appearance, colors, and component-specific styles.
 - `NotieThemes` is a string union type that defines the available predefined themes.
 
-<blockquote class="note">
+<blockquote class="important">
 
 `Theme` is the main interface for customizing the appearance of the `Notie` component. `NotieThemes` is a string union type that defines the available predefined themes.
 
@@ -565,7 +565,6 @@ You can use the following classes to create different types of blocks:
 - `equation`
 - `theorem`
 - `important`
-- `note`
 
 ```markdown
 <blockquote class="proof">
@@ -628,20 +627,6 @@ $$
 <blockquote class="important">
 
 **Important.** This is an important note.
-
-</blockquote>
-
-```markdown
-<blockquote class="note">
-
-**Note.** This is a note.
-
-</blockquote>
-```
-
-<blockquote class="note">
-
-**Note.** This is a note.
 
 </blockquote>
 
