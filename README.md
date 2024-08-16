@@ -4,9 +4,9 @@
 
 ## Updates
 
-8/16/2024: Version [1.2.0](): **notie** has migrated to using _themes_ instead of _dark mode_. This allows for more customization options and better user experience.
+8/16/2024: Version [1.2.0](https://github.com/branyang02/notie/tree/030936ad9765931f5f061e369461996719e3fdea): **notie** has migrated to using _themes_ instead of _dark mode_. This allows for more customization options and better user experience.
 
-8/12/2024: Version [1.1.0](https://github.com/branyang02/notie/commit/f5e2539ba395e0e2540809e11ee967af1b170436): Fully integrated automatic equation numbering and equation preview.
+8/12/2024: Version [1.1.0](https://github.com/branyang02/notie/tree/f5e2539ba395e0e2540809e11ee967af1b170436): Fully integrated automatic equation numbering and equation preview.
 ![reference](https://github.com/user-attachments/assets/e9f0042b-0b1b-4db7-a18e-c75525b414b1)
 
 8/2/2024: Version 1.0.0: Initial release, published on npm registry [here](https://www.npmjs.com/package/notie-markdown).
