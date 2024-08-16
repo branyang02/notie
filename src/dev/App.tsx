@@ -47,7 +47,7 @@ const App = () => {
     }, []);
 
     const customComponents = {
-        ToggleThemeButtons: () => <ToggleThemeButtons setTheme={setTheme} />,
+        ToggleThemeButtddons: () => <ToggleThemeButtons setTheme={setTheme} />,
     };
 
     return (
@@ -64,7 +64,7 @@ const App = () => {
                     config={{
                         showTableOfContents: true,
                     }}
-                    theme={theme}
+                    theme={"default dark"}
                     customComponents={customComponents}
                 />
             </Pane>

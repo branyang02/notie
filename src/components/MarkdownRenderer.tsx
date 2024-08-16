@@ -9,7 +9,7 @@ import CodeBlock from "./CodeBlock";
 import TikZ from "./TikZ";
 import StaticCodeBlock from "./StaticCodeBlock";
 import { FullNotieConfig } from "../config/NotieConfig";
-import { Alert } from "evergreen-ui";
+import { InlineAlert } from "evergreen-ui";
 
 type CodeProps = React.HTMLAttributes<HTMLElement> & {
     node?: unknown;
@@ -58,10 +58,10 @@ const MarkdownRenderer: React.FC<{
                     if (language === "component") {
                         if (!customComponents) {
                             return (
-                                <Alert
-                                    intent="danger"
-                                    title="You need to provide custom components to render this markdown."
-                                ></Alert>
+                                <InlineAlert intent="danger">
+                                    You need to pass `customComponents` to
+                                    render component code block.
+                                </InlineAlert>
                             );
                         }
                         const jsonString = code.replace(/(\w+):/g, '"$1":');
@@ -76,10 +76,9 @@ const MarkdownRenderer: React.FC<{
                             return <CustomComponent />;
                         } else {
                             return (
-                                <Alert
-                                    intent="danger"
-                                    title={`We couldn't find your component ${componentConfig.componentName}`}
-                                ></Alert>
+                                <InlineAlert intent="danger">
+                                    {`We couldn't find your component \`${componentConfig.componentName}\`.`}
+                                </InlineAlert>
                             );
                         }
                     }

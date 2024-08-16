@@ -2,6 +2,7 @@ import { useEffect, useMemo } from "react";
 import { FullNotieConfig, FullTheme, NotieConfig } from "../config/NotieConfig";
 
 const starlitEclipse: FullTheme = {
+    appearance: "dark",
     backgroundColor: "rgb(3 7 18)",
     fontFamily: "'Space Grotesk', sans-serif",
     customFontUrl: "https://fonts.googleapis.com/css?family=Space%20Grotesk",
@@ -29,6 +30,7 @@ const starlitEclipse: FullTheme = {
 };
 
 const starlitEclipseLight: FullTheme = {
+    appearance: "light",
     backgroundColor: "rgb(255 255 255)",
     fontFamily: "'Space Grotesk', sans-serif",
     customFontUrl: "https://fonts.googleapis.com/css?family=Space%20Grotesk",
@@ -56,6 +58,7 @@ const starlitEclipseLight: FullTheme = {
 };
 
 const defaultDarkTheme: FullTheme = {
+    appearance: "dark",
     backgroundColor: "#333",
     fontFamily: "",
     customFontUrl: "",
@@ -83,6 +86,7 @@ const defaultDarkTheme: FullTheme = {
 };
 
 const defaultTheme: FullTheme = {
+    appearance: "light",
     backgroundColor: "#fff",
     fontFamily: "",
     customFontUrl: "",

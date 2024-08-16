@@ -5,6 +5,7 @@ type LiveCodeBlockThemeNames = keyof typeof liveThemes;
 type StaticCodeBlockThemeNames = keyof typeof staticThemes;
 
 export interface Theme {
+    appearance?: "light" | "dark";
     backgroundColor?: CSSStyleDeclaration["backgroundColor"];
     fontFamily?: CSSStyleDeclaration["fontFamily"];
     customFontUrl?: string;
