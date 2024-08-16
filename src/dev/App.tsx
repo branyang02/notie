@@ -1,15 +1,37 @@
 import { useEffect, useState } from "react";
 import Notie from "../components/Notie";
-import { Pane, Switch, Heading } from "evergreen-ui";
+import { Button, Pane, majorScale } from "evergreen-ui";
+import { NotieThemes } from "../config/NotieConfig";
 
-const modules = import.meta.glob("./markdown-files/auto-label.md", {
+const modules = import.meta.glob("./markdown-files/tutorial.md", {
     query: "?raw",
     import: "default",
 });
 
+const ToggleThemeButtons = ({
+    setTheme,
+}: {
+    setTheme: (theme: NotieThemes) => void;
+}) => {
+    const themes: NotieThemes[] = [
+        "default",
+        "default dark",
+        "Starlit Eclipse",
+        "Starlit Eclipse Light",
+    ];
+
+    const themeButtons = themes.map((theme) => (
+        <Button key={theme} onClick={() => setTheme(theme)}>
+            {theme}
+        </Button>
+    ));
+
+    return <Pane display="flex">{themeButtons}</Pane>;
+};
+
 const App = () => {
     const [markdownContent, setMarkdownContent] = useState<string>("");
-    const [darkMode, setDarkMode] = useState<boolean>(false);
+    const [theme, setTheme] = useState<NotieThemes>("default");
 
     useEffect(() => {
         const fetchNote = async () => {
@@ -24,38 +46,28 @@ const App = () => {
         fetchNote();
     }, []);
 
-    const toggleDarkMode = () => {
-        setDarkMode((prevMode) => !prevMode);
+    const customComponents = {
+        ToggleThemeButtons: () => <ToggleThemeButtons setTheme={setTheme} />,
     };
 
     return (
-        <Pane
-            maxWidth={1500}
-            padding={20}
-            style={{
-                margin: "0 auto",
-            }}
-        >
+        <Pane background="#fff">
             <Pane
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                marginBottom={20}
+                maxWidth={majorScale(180)}
+                padding={20}
+                style={{
+                    margin: "0 auto",
+                }}
             >
-                <Pane
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="space-between"
-                >
-                    <Heading size={700}>Dark Mode Switch</Heading>
-                    <Switch
-                        height={24}
-                        checked={darkMode}
-                        onChange={toggleDarkMode}
-                    />
-                </Pane>
+                <Notie
+                    markdown={markdownContent}
+                    config={{
+                        showTableOfContents: true,
+                    }}
+                    theme={theme}
+                    customComponents={customComponents}
+                />
             </Pane>
-            <Notie markdown={markdownContent} darkMode={darkMode} />
         </Pane>
     );
 };

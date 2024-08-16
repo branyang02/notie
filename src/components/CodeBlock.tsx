@@ -5,8 +5,8 @@ import { javascript } from "@codemirror/lang-javascript";
 import { python } from "@codemirror/lang-python";
 import { rust } from "@codemirror/lang-rust";
 import { indentUnit } from "@codemirror/language";
-import { duotoneLight } from "@uiw/codemirror-theme-duotone";
-import { tokyoNightStorm } from "@uiw/codemirror-theme-tokyo-night-storm";
+import * as themes from "@uiw/codemirror-themes-all";
+import { Extension } from "@codemirror/state";
 import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import {
     Button,
@@ -46,12 +46,20 @@ const getLanguageCode = (language: string) => {
 const CodeBlock = ({
     initialCode,
     language = "python",
-    darkMode = false,
+    theme,
+    copyButtonHoverColor,
 }: {
     initialCode: string;
     language?: string;
-    darkMode: boolean;
+    theme: string;
+    copyButtonHoverColor?: string;
 }) => {
+    let selectedTheme = themes[theme as keyof typeof themes] as Extension;
+    if (!selectedTheme) {
+        console.error(`Invalid theme name: ${theme}, falling back to default.`);
+        selectedTheme = themes.duotoneLight; // Default fallback theme
+    }
+
     const [isLoading, setIsLoading] = useState(false);
     const [output, setOutput] = useState("");
     const [error, setError] = useState(false);
@@ -104,23 +112,28 @@ const CodeBlock = ({
 
     return (
         <Pane>
-            <CodeHeader language={language} code={code} darkMode={darkMode} />
+            <CodeHeader
+                language={language}
+                code={code}
+                copyButtonHoverColor={copyButtonHoverColor}
+            />
             <Pane>
                 <Pane
                     position="relative"
                     overflow="hidden"
-                    marginBottom={16}
                     style={{ borderRadius: "0 0 10px 10px" }}
                 >
-                    <CodeMirror
-                        ref={editorRef}
-                        value={initialCode}
-                        extensions={[languageCode, indentUnit.of("    ")]}
-                        maxHeight="800px"
-                        minHeight="100px"
-                        theme={darkMode ? tokyoNightStorm : duotoneLight}
-                        onChange={onChange}
-                    />
+                    <div className="code-blocks">
+                        <CodeMirror
+                            ref={editorRef}
+                            value={initialCode}
+                            extensions={[languageCode, indentUnit.of("    ")]}
+                            maxHeight="80vh"
+                            minHeight="100px"
+                            theme={selectedTheme}
+                            onChange={onChange}
+                        />
+                    </div>
                     <Pane position="absolute" top={0} right={0} padding={8}>
                         <IconButton
                             size="small"
@@ -173,7 +186,7 @@ const OutputBox = ({
         position="relative"
         borderRadius={8}
         overflow="hidden"
-        marginBottom={16}
+        marginTop={"1em"}
     >
         <Card
             background="gray50"

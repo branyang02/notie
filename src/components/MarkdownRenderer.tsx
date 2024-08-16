@@ -8,6 +8,8 @@ import remarkMath from "remark-math";
 import CodeBlock from "./CodeBlock";
 import TikZ from "./TikZ";
 import StaticCodeBlock from "./StaticCodeBlock";
+import { FullNotieConfig } from "../config/NotieConfig";
+import { InlineAlert } from "evergreen-ui";
 
 type CodeProps = React.HTMLAttributes<HTMLElement> & {
     node?: unknown;
@@ -16,10 +18,17 @@ type CodeProps = React.HTMLAttributes<HTMLElement> & {
     children?: React.ReactNode;
 };
 
+type CustomComponentFormat = {
+    componentName: string;
+};
+
 const MarkdownRenderer: React.FC<{
     markdownContent: string;
-    darkMode: boolean;
-}> = React.memo(({ markdownContent, darkMode }) => {
+    config: FullNotieConfig;
+    customComponents?: {
+        [key: string]: () => JSX.Element;
+    };
+}> = React.memo(({ markdownContent, config, customComponents }) => {
     const components = useMemo(
         () => ({
             code({ inline, className, children, ...props }: CodeProps) {
@@ -36,18 +45,51 @@ const MarkdownRenderer: React.FC<{
                             <CodeBlock
                                 initialCode={code}
                                 language={language.split("-").pop()}
-                                darkMode={darkMode}
+                                theme={config.theme.liveCodeTheme}
+                                copyButtonHoverColor={
+                                    config.theme.codeCopyButtonHoverColor
+                                }
                             />
                         );
                     }
                     if (language === "tikz") {
                         return <TikZ tikzScript={code} />;
                     }
+                    if (language === "component") {
+                        if (!customComponents) {
+                            return (
+                                <InlineAlert intent="danger">
+                                    You need to pass `customComponents` to
+                                    render component code block.
+                                </InlineAlert>
+                            );
+                        }
+                        const jsonString = code.replace(/(\w+):/g, '"$1":');
+                        const componentConfig = JSON.parse(
+                            jsonString,
+                        ) as CustomComponentFormat;
+
+                        const CustomComponent =
+                            customComponents[componentConfig.componentName];
+
+                        if (CustomComponent) {
+                            return <CustomComponent />;
+                        } else {
+                            return (
+                                <InlineAlert intent="danger">
+                                    {`We couldn't find your component \`${componentConfig.componentName}\`.`}
+                                </InlineAlert>
+                            );
+                        }
+                    }
                     return (
                         <StaticCodeBlock
                             code={code}
                             language={language}
-                            darkMode={darkMode}
+                            theme={config.theme.staticCodeTheme}
+                            copyButtonHoverColor={
+                                config.theme.codeCopyButtonHoverColor
+                            }
                         />
                     );
                 } else {
@@ -59,7 +101,12 @@ const MarkdownRenderer: React.FC<{
                 }
             },
         }),
-        [darkMode],
+        [
+            config.theme.codeCopyButtonHoverColor,
+            config.theme.liveCodeTheme,
+            config.theme.staticCodeTheme,
+            customComponents,
+        ],
     );
 
     const katexOptions = {

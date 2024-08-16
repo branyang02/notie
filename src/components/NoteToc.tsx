@@ -3,12 +3,14 @@ import { Pane } from "evergreen-ui";
 import { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeSlug from "rehype-slug";
+import { NotieConfig } from "../config/NotieConfig";
 
 const generateTableOfContents = (
     markdownContent: string,
     activeId: string,
+    tocTitle?: string,
 ): string => {
-    let res = "# Contents\n---\n";
+    let res = `# ${tocTitle}\n---\n`;
     const pattern = /^#+ (.*)$/gm;
     let match;
 
@@ -21,7 +23,7 @@ const generateTableOfContents = (
         const id = cleanedTitle
             .replace(/\s+/g, "-")
             .toLowerCase()
-            .replace(/[+.()']/g, "")
+            .replace(/[+.()'`]/g, "")
             .replace(/&/g, "");
 
         const formattedTitle =
@@ -36,15 +38,16 @@ const generateTableOfContents = (
 const NoteToc = ({
     markdownContent,
     activeId,
-    darkMode,
+    config,
 }: {
     markdownContent: string;
     activeId: string;
-    darkMode: boolean;
+    config: NotieConfig;
 }) => {
     const toc = useMemo(
-        () => generateTableOfContents(markdownContent, activeId),
-        [markdownContent, activeId],
+        () =>
+            generateTableOfContents(markdownContent, activeId, config.tocTitle),
+        [markdownContent, activeId, config.tocTitle],
     );
 
     return (
@@ -53,7 +56,7 @@ const NoteToc = ({
             top={0}
             overflowY="auto"
             maxHeight="100vh"
-            className={`note-toc ${darkMode ? "dark-mode" : ""}`}
+            className={`note-toc`}
         >
             <ReactMarkdown rehypePlugins={[[rehypeSlug, { prefix: "toc-" }]]}>
                 {toc}

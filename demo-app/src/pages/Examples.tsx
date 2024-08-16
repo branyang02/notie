@@ -1,7 +1,7 @@
 import { Card, Heading, majorScale, Pane, Spinner, Text } from "evergreen-ui";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDarkMode } from "../context/useDarkMode";
+import { useTheme } from "../context/useTheme";
 
 const modules = import.meta.glob("../assets/**.md", {
     query: "?raw",
@@ -19,7 +19,8 @@ const Examples = () => {
     const [notesMetaData, setNotesMetaData] = useState<NotesMetaData[]>([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    const { darkMode } = useDarkMode();
+    const { theme } = useTheme();
+    const darkMode = theme === "default dark" || theme === "Starlit Eclipse";
 
     useEffect(() => {
         async function fetchNotes() {

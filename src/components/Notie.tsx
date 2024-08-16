@@ -10,24 +10,30 @@ import MarkdownRenderer from "./MarkdownRenderer";
 import { MarkdownProcessor } from "../utils/MarkdownProcessor";
 import EquationReference from "./EquationReference";
 import { createRoot } from "react-dom/client";
+import { NotieConfig, NotieThemes } from "../config/NotieConfig";
+import { useNotieConfig } from "../utils/useNotieConfig";
 
 export interface NotieProps {
     markdown: string;
-    darkMode?: boolean;
-    previewEquation?: boolean;
-    style?: React.CSSProperties;
+    config?: NotieConfig;
+    theme?: NotieThemes;
+    customComponents?: {
+        [key: string]: () => JSX.Element;
+    };
 }
 
 const Notie: React.FC<NotieProps> = ({
     markdown,
-    darkMode = false,
-    previewEquation = true,
-    style,
+    config: userConfig,
+    theme = "default",
+    customComponents,
 }) => {
     const mdProcessor = new MarkdownProcessor(markdown);
     const { markdownContent, equationMapping } = mdProcessor.process();
     const contentRef = useRef<HTMLDivElement>(null);
     const [activeId, setActiveId] = useState<string>("");
+
+    const config = useNotieConfig(userConfig, theme);
 
     // Effect to observe headings and update activeId
     useEffect(() => {
@@ -90,32 +96,36 @@ const Notie: React.FC<NotieProps> = ({
                 <EquationReference
                     children={ref}
                     equationMapping={equationMapping}
-                    previewEquation={previewEquation}
+                    previewEquation={config.previewEquations}
                 />
             );
             createRoot(equReference).render(equReferenceComponent);
             ref.parentNode?.replaceChild(equReference, ref);
         });
-    }, [equationMapping, markdownContent, previewEquation]);
+    }, [config.previewEquations, equationMapping, markdownContent]);
 
     return (
-        <Pane background={darkMode ? "#333" : "white"} style={style}>
-            <Pane className="mw-page-container-inner">
-                <Pane className="vector-column-start">
-                    <NoteToc
-                        markdownContent={markdownContent}
-                        darkMode={darkMode}
-                        activeId={activeId}
-                    />
-                </Pane>
+        <Pane className="notie-container">
+            <Pane
+                className={
+                    config.showTableOfContents ? "mw-page-container-inner" : ""
+                }
+            >
+                {config.showTableOfContents && (
+                    <Pane className="vector-column-start">
+                        <NoteToc
+                            markdownContent={markdownContent}
+                            activeId={activeId}
+                            config={config}
+                        />
+                    </Pane>
+                )}
                 <Pane className="mw-content-container">
-                    <Pane
-                        className={`blog-content ${darkMode ? "dark-mode" : ""}`}
-                        ref={contentRef}
-                    >
+                    <Pane className="blog-content" ref={contentRef}>
                         <MarkdownRenderer
                             markdownContent={markdownContent}
-                            darkMode={darkMode}
+                            config={config}
+                            customComponents={customComponents}
                         />
                         <ScrollToTopButton />
                     </Pane>
