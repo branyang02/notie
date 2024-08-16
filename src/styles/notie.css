@@ -188,7 +188,7 @@
     max-height: 80vh;
     max-width: 100%;
     display: block;
-    margin: auto;
+    margin: 20px auto;
 }
 
 /* a tag styles for reference and katex */
