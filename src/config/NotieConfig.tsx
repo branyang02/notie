@@ -36,6 +36,7 @@ export interface Theme {
 // NotieConfig Type with all optional properties
 export interface NotieConfig {
     showTableOfContents?: boolean;
+    previewEquations?: boolean;
     tocTitle?: string;
     fontSize?: CSSStyleDeclaration["fontSize"];
     theme?: Theme;

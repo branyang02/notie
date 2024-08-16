@@ -15,7 +15,6 @@ import { useNotieConfig } from "../utils/useNotieConfig";
 
 export interface NotieProps {
     markdown: string;
-    previewEquation?: boolean;
     config?: NotieConfig;
     theme?: NotieThemes;
     customComponents?: {
@@ -25,7 +24,6 @@ export interface NotieProps {
 
 const Notie: React.FC<NotieProps> = ({
     markdown,
-    previewEquation = true,
     config: userConfig,
     theme = "default",
     customComponents,
@@ -98,13 +96,13 @@ const Notie: React.FC<NotieProps> = ({
                 <EquationReference
                     children={ref}
                     equationMapping={equationMapping}
-                    previewEquation={previewEquation}
+                    previewEquation={config.previewEquations}
                 />
             );
             createRoot(equReference).render(equReferenceComponent);
             ref.parentNode?.replaceChild(equReference, ref);
         });
-    }, [equationMapping, markdownContent, previewEquation]);
+    }, [config.previewEquations, equationMapping, markdownContent]);
 
     return (
         <Pane className="notie-container">

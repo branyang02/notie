@@ -120,6 +120,7 @@ const defaultTheme: FullTheme = {
 
 const defaultNotieConfig: FullNotieConfig = {
     showTableOfContents: true,
+    previewEquations: true,
     tocTitle: "Contents",
     fontSize: "1rem",
     theme: defaultTheme,
