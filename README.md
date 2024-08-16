@@ -56,8 +56,9 @@ Check out the [tutorial](https://notie-markdown.vercel.app/tutorial) for more de
 <img width="1129" alt="image" src="https://github.com/user-attachments/assets/593799c4-ad23-4a07-8822-08bb98a194ef">
 <img width="1414" alt="image" src="https://github.com/user-attachments/assets/da36f8bd-b631-4b72-bb88-25f017e76609">
 <img width="1069" alt="image" src="https://github.com/user-attachments/assets/d7e22bf0-6920-4107-bea1-567abe8cfc45">
-<img width="1408" alt="image" src="https://github.com/user-attachments/assets/70ad3b21-b5ba-43c5-8bb8-1bf41941e54c">
-<img width="1443" alt="image" src="https://github.com/user-attachments/assets/654be99b-edb0-410c-87ca-703f11b0d163">
+<img width="1405" alt="image" src="https://github.com/user-attachments/assets/27127d15-a019-4f26-ad29-8eba881d7bbb">
+<img width="1441" alt="image" src="https://github.com/user-attachments/assets/90ea496d-2196-4a31-8556-c819399a0932">
+
 
 ## Features and Documentation
 
