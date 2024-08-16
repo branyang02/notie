@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import Notie from "../components/Notie";
+import Notie, { NotieThemes } from "../components/Notie";
 import { Button, Pane, majorScale } from "evergreen-ui";
-import { NotieThemes } from "../utils/useNotieConfig";
 
 const modules = import.meta.glob("./markdown-files/tutorial.md", {
     query: "?raw",
@@ -47,7 +46,7 @@ const App = () => {
     }, []);
 
     const customComponents = {
-        ToggleThemeButtddons: () => <ToggleThemeButtons setTheme={setTheme} />,
+        ToggleThemeButtons: () => <ToggleThemeButtons setTheme={setTheme} />,
     };
 
     return (

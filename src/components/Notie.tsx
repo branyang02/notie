@@ -10,8 +10,10 @@ import MarkdownRenderer from "./MarkdownRenderer";
 import { MarkdownProcessor } from "../utils/MarkdownProcessor";
 import EquationReference from "./EquationReference";
 import { createRoot } from "react-dom/client";
-import { NotieConfig } from "../config/NotieConfig";
-import { NotieThemes, useNotieConfig } from "../utils/useNotieConfig";
+import { NotieConfig, NotieThemes } from "../config/NotieConfig";
+import { useNotieConfig } from "../utils/useNotieConfig";
+
+export type { NotieConfig, NotieThemes } from "../config/NotieConfig";
 
 export interface NotieProps {
     markdown: string;

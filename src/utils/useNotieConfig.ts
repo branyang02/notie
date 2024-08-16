@@ -1,5 +1,10 @@
 import { useEffect, useMemo } from "react";
-import { FullNotieConfig, FullTheme, NotieConfig } from "../config/NotieConfig";
+import {
+    FullNotieConfig,
+    FullTheme,
+    NotieConfig,
+    NotieThemes,
+} from "../config/NotieConfig";
 
 const starlitEclipse: FullTheme = {
     appearance: "dark",
@@ -119,12 +124,6 @@ const defaultNotieConfig: FullNotieConfig = {
     fontSize: "1rem",
     theme: defaultTheme,
 };
-
-export type NotieThemes =
-    | "default"
-    | "default dark"
-    | "Starlit Eclipse"
-    | "Starlit Eclipse Light";
 
 export function useNotieConfig(
     userConfig?: NotieConfig,
