@@ -345,17 +345,6 @@
     border-left: 5px solid #555555;
 }
 
-/* Note */
-.blog-content blockquote.note::before {
-    color: #cddd2e;
-    content: "Note";
-}
-
-.blog-content blockquote.note {
-    background: #fcfcd2;
-    border-left: 5px solid #cddd2e;
-}
-
 /* Tikz Styles */
 .blog-content .tikz-drawing svg {
     max-width: 100%;
