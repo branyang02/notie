@@ -1,5 +1,23 @@
 # **notie** Tutorial
 
+## Using the `Notie` Component
+
+The `Notie` component has the following props:
+
+| Prop               | Type                                              | Description                                                                                                |
+| ------------------ | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `markdown`         | `string`                                          | The Markdown content to be rendered.                                                                       |
+| `previewEquation`  | `boolean` (optional)                              | A flag to enable or disable equation preview. Defaults to `true`.                                          |
+| `config`           | `NotieConfig` (optional)                          | Configuration options for Notie, including table of contents settings, font size, and theme customization. |
+| `theme`            | `NotieThemes` (optional)                          | Predefined theme option. Can be "default", "default dark", "Starlit Eclipse", or "Starlit Eclipse Light".  |
+| `customComponents` | `{ [key: string]: () => JSX.Element }` (optional) | Custom React components to be used for rendering specific elements in the markdown.                        |
+
+Additional notes:
+
+- The `NotieConfig` interface allows for fine-grained control over various styling aspects, including colors, fonts, and component-specific styles.
+- The `Theme` interface within `NotieConfig` provides extensive customization options for appearance, colors, and component-specific styles.
+- `NotieThemes` is a string union type that defines the available predefined themes.
+
 ## Markdown
 
 **notie** supports most native markdown syntax. This tutorial provides an overview of the markdown syntax supported by **notie**.
@@ -289,25 +307,6 @@ x &= \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} \label{eq:quadratic-final}
 $$
 
 Reference equations $\eqref{eq:quadratic-general}$, $\eqref{eq:quadratic-normalized}$, $\eqref{eq:quadratic-half}$, $\eqref{eq:quadratic-complete}$, $\eqref{eq:quadratic-squared}$, $\eqref{eq:quadratic-sqrt}$, $\eqref{eq:quadratic-solve}$, and $\eqref{eq:quadratic-final}$ in the text.
-
-## Config and Themes
-
-**notie** takes a `config` object as a prop to customize the appearance of the rendered markdown. Alternatively, you can use the `theme` prop to apply _pre-defined_ themes to the rendered markdown. We currently support the following themes,
-
-- `default`
-- `default dark`
-- `Starlit Eclipse`
-- `Starlit Eclipse Light`
-
-Click the buttons below to toggle them, which might take a few seconds to load:
-
-```component
-
-{
-  componentName: "ToggleThemeButtons"
-}
-
-```
 
 ## TikZ diagrams
 

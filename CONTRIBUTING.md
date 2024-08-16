@@ -31,39 +31,6 @@ npm run dev
 
 The main **notie** project is located in the root directory, while the **demo-app** is located in the `demo-app` directory. The **demo-app** serves as the example application for the **notie** library, and it is deployed at [https://notie-markdown.vercel.app/](https://notie-markdown.vercel.app/).
 
-```markdown
-.
-├── index.html
-├── package-lock.json
-├── package.json
-├── demo-app
-├── src
-│ ├── components
-│ │ ├── CodeBlock.tsx
-│ │ ├── CodeHeader.tsx
-│ │ ├── EquationReference.tsx
-│ │ ├── MarkdownRenderer.tsx
-│ │ ├── NoteToc.tsx
-│ │ ├── Notie.tsx
-│ │ ├── ScrollToTopButton.tsx
-│ │ └── StaticCodeBlock.tsx
-│ │ └── TikZ.tsx
-│ ├── dev
-│ │ ├── markdown-files
-│ │ │ ├── \*\*.md
-│ │ ├── App.tsx
-│ │ └── main.tsx
-│ ├── service
-│ │ └── api.ts
-│ ├── styles
-│ │ └── note-toc.css
-│ │ └── notie.css
-│ ├── utils
-│ │ ├── MarkdownProcessor.ts
-│ │ ├── utils.ts
-│ ├── index.ts
-```
-
 When `npm run dev` is run under the root directory, the application that is served is `src/dev/App.tsx`. This file is the main entry point for the development server. `src/dev/markdown-files` contains the markdown files that are rendered by the application. This is a minimal developing application that is used when developing the **notie** library.
 
 When testing the **notie** library in a real-world application, you can use the `demo-app` directory. First, build the **notie** library under the root directory:
@@ -92,34 +59,6 @@ Run the application:
 ```bash
 # ./demo-app
 npm run dev
-```
-
-The `demo-app` directory contains the following structure:
-
-```markdown
-├── demo-app
-│ ├── index.html
-│ ├── package-lock.json
-│ ├── package.json
-│ ├── public
-│ │ ├── github-mark.svg
-│ │ ├── notes.svg
-| ├── src
-│ │ ├── assets
-│ │ │ ├── \*\*.md
-│ │ ├── components
-│ │ │ ├── NavBar.tsx
-│ │ │ ├── NavButton.tsx
-│ │ ├── context
-│ │ │ ├── DarkModeContext.tsx
-│ │ │ ├── useDarkMode.ts
-│ │ ├── pages
-│ │ │ ├── ExamplePage.tsx
-│ │ │ ├── Examples.tsx
-│ │ │ ├── home.md
-│ │ │ ├── tutorial.md
-│ │ ├── App.tsx
-│ │ ├── main.tsx
 ```
 
 ## Code Style and Linting

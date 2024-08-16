@@ -4,6 +4,8 @@
 
 ## Updates
 
+8/16/2024: Version [1.2.0](): **notie** has migrated to using _themes_ instead of _dark mode_. This allows for more customization options and better user experience.
+
 8/12/2024: Version [1.1.0](https://github.com/branyang02/notie/commit/f5e2539ba395e0e2540809e11ee967af1b170436): Fully integrated automatic equation numbering and equation preview.
 ![reference](https://github.com/user-attachments/assets/e9f0042b-0b1b-4db7-a18e-c75525b414b1)
 
@@ -32,12 +34,19 @@ The `Notie` component is used to render Markdown content. It accepts the followi
 
 ### Props
 
-| Prop              | Type                             | Description                                                       |
-| ----------------- | -------------------------------- | ----------------------------------------------------------------- |
-| `markdown`        | `string`                         | The Markdown content to be rendered.                              |
-| `darkMode`        | `boolean` (optional)             | A flag to enable or disable dark mode. Defaults to `false`.       |
-| `style`           | `React.CSSProperties` (optional) | Inline styles to apply to the component.                          |
-| `previewEquation` | `boolean` (optional)             | A flag to enable or disable equation preview. Defaults to `true`. |
+| Prop               | Type                                              | Description                                                                                                |
+| ------------------ | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `markdown`         | `string`                                          | The Markdown content to be rendered.                                                                       |
+| `previewEquation`  | `boolean` (optional)                              | A flag to enable or disable equation preview. Defaults to `true`.                                          |
+| `config`           | `NotieConfig` (optional)                          | Configuration options for Notie, including table of contents settings, font size, and theme customization. |
+| `theme`            | `NotieThemes` (optional)                          | Predefined theme option. Can be "default", "default dark", "Starlit Eclipse", or "Starlit Eclipse Light".  |
+| `customComponents` | `{ [key: string]: () => JSX.Element }` (optional) | Custom React components to be used for rendering specific elements in the markdown.                        |
+
+Additional notes:
+
+- The `NotieConfig` interface allows for fine-grained control over various styling aspects, including colors, fonts, and component-specific styles.
+- The `Theme` interface within `NotieConfig` provides extensive customization options for appearance, colors, and component-specific styles.
+- `NotieThemes` is a string union type that defines the available predefined themes.
 
 Checkout a full example at `/demo-app`, or visit the live website at [https://notie-markdown.vercel.app/](https://notie-markdown.vercel.app/).
 
@@ -47,8 +56,7 @@ Checkout a full example at `/demo-app`, or visit the live website at [https://no
 - **TikZ Support**: Use TikZ to draw diagrams in your notes.
 - **Math Equations**: Write math equations using LaTeX syntax.
   - **Automatic Equation Numbering**: Automatically number equations and refer to them in your notes.
-- **Dark Mode**: Toggle between light and dark mode for better readability.
-- **Customizable**: Customize the appearance of the notes to suit your preferences.
+- **Customizable Themes**: Customize the appearance of your notes with different themes.
 
 ## Showcase
 
