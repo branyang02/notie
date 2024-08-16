@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
 import Notie from "../components/Notie";
 import { Button, Pane, majorScale } from "evergreen-ui";
+import { NotieThemes } from "../utils/useNotieConfig";
 
 const modules = import.meta.glob("./markdown-files/tutorial.md", {
     query: "?raw",
     import: "default",
 });
 
-interface ToggleThemeButtonsProps {
-    setTheme: (theme: string) => void;
-}
-
-const ToggleThemeButtons = ({ setTheme }: ToggleThemeButtonsProps) => {
-    const themes = [
+const ToggleThemeButtons = ({
+    setTheme,
+}: {
+    setTheme: (theme: NotieThemes) => void;
+}) => {
+    const themes: NotieThemes[] = [
         "default",
         "default dark",
         "Starlit Eclipse",
@@ -25,16 +26,12 @@ const ToggleThemeButtons = ({ setTheme }: ToggleThemeButtonsProps) => {
         </Button>
     ));
 
-    return (
-        <Pane display="flex" justifyContent="space-around">
-            {themeButtons}
-        </Pane>
-    );
+    return <Pane display="flex">{themeButtons}</Pane>;
 };
 
 const App = () => {
     const [markdownContent, setMarkdownContent] = useState<string>("");
-    const [theme, setTheme] = useState<string>("default");
+    const [theme, setTheme] = useState<NotieThemes>("default");
 
     useEffect(() => {
         const fetchNote = async () => {

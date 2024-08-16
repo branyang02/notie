@@ -1,15 +1,5 @@
 # **notie** Tutorial
 
-## Themes
-
-```component
-
-{
-  componentName: "ToggleThemeButtons"
-}
-
-```
-
 ## Markdown
 
 **notie** supports most native markdown syntax. This tutorial provides an overview of the markdown syntax supported by **notie**.
@@ -299,6 +289,25 @@ x &= \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} \label{eq:quadratic-final}
 $$
 
 Reference equations $\eqref{eq:quadratic-general}$, $\eqref{eq:quadratic-normalized}$, $\eqref{eq:quadratic-half}$, $\eqref{eq:quadratic-complete}$, $\eqref{eq:quadratic-squared}$, $\eqref{eq:quadratic-sqrt}$, $\eqref{eq:quadratic-solve}$, and $\eqref{eq:quadratic-final}$ in the text.
+
+## Config and Themes
+
+**notie** takes a `config` object as a prop to customize the appearance of the rendered markdown. Alternatively, you can use the `theme` prop to apply _pre-defined_ themes to the rendered markdown. We currently support the following themes,
+
+- `default`
+- `default dark`
+- `Starlit Eclipse`
+- `Starlit Eclipse Light`
+
+Click the buttons below to toggle them, which might take a few seconds to load:
+
+```component
+
+{
+  componentName: "ToggleThemeButtons"
+}
+
+```
 
 ## TikZ diagrams
 

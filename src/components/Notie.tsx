@@ -11,18 +11,13 @@ import { MarkdownProcessor } from "../utils/MarkdownProcessor";
 import EquationReference from "./EquationReference";
 import { createRoot } from "react-dom/client";
 import { NotieConfig } from "../config/NotieConfig";
-import { useNotieConfig } from "../utils/useNotieConfig";
+import { NotieThemes, useNotieConfig } from "../utils/useNotieConfig";
 
 export interface NotieProps {
     markdown: string;
     previewEquation?: boolean;
     config?: NotieConfig;
-    theme?:
-        | "Starlit Eclipse"
-        | "Starlit Eclipse Light"
-        | "default dark"
-        | "default"
-        | string;
+    theme?: NotieThemes;
     customComponents?: {
         [key: string]: () => JSX.Element;
     };
@@ -33,7 +28,7 @@ const Notie: React.FC<NotieProps> = ({
     previewEquation = true,
     config: userConfig,
     theme = "default",
-    customComponents = {},
+    customComponents,
 }) => {
     const mdProcessor = new MarkdownProcessor(markdown);
     const { markdownContent, equationMapping } = mdProcessor.process();

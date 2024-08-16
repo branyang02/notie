@@ -20,13 +20,12 @@ type CodeProps = React.HTMLAttributes<HTMLElement> & {
 
 type CustomComponentFormat = {
     componentName: string;
-    props?: Record<string, unknown>;
 };
 
 const MarkdownRenderer: React.FC<{
     markdownContent: string;
     config: FullNotieConfig;
-    customComponents: {
+    customComponents?: {
         [key: string]: () => JSX.Element;
     };
 }> = React.memo(({ markdownContent, config, customComponents }) => {
@@ -57,6 +56,14 @@ const MarkdownRenderer: React.FC<{
                         return <TikZ tikzScript={code} />;
                     }
                     if (language === "component") {
+                        if (!customComponents) {
+                            return (
+                                <Alert
+                                    intent="danger"
+                                    title="You need to provide custom components to render this markdown."
+                                ></Alert>
+                            );
+                        }
                         const jsonString = code.replace(/(\w+):/g, '"$1":');
                         const componentConfig = JSON.parse(
                             jsonString,
@@ -66,9 +73,7 @@ const MarkdownRenderer: React.FC<{
                             customComponents[componentConfig.componentName];
 
                         if (CustomComponent) {
-                            return (
-                                <CustomComponent {...componentConfig.props} />
-                            );
+                            return <CustomComponent />;
                         } else {
                             return (
                                 <Alert
