@@ -1,29 +1,17 @@
-import {
-    Pane,
-    Heading,
-    majorScale,
-    Switch,
-    MoonIcon,
-    LightbulbIcon,
-} from "evergreen-ui";
-import { useDarkMode } from "../context/useDarkMode";
+import { Pane, Heading, majorScale, Combobox } from "evergreen-ui";
+import { useTheme } from "../context/useTheme";
 import { useEffect, useState } from "react";
 import { GitHubButton, NavButton, NavMobileMenu } from "./NavButton";
 import { useNavigate } from "react-router-dom";
 
 const NavBar = () => {
-    const { darkMode, toggleDarkMode } = useDarkMode();
+    const { theme, setTheme } = useTheme();
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1000);
-    const [checked, setChecked] = useState(darkMode);
     const navigate = useNavigate();
+    const darkMode = theme === "default dark" || theme === "Starlit Eclipse";
 
     const NAME = "notie";
     const TABS = ["Home", "Examples", "Tutorial", "Contribute"];
-
-    const handleSwitchChange = () => {
-        setChecked(!checked);
-        toggleDarkMode();
-    };
 
     const handleResize = () => {
         setIsMobile(window.innerWidth <= 1000);
@@ -68,19 +56,18 @@ const NavBar = () => {
                         alignItems="center"
                         marginRight={majorScale(1)}
                     >
-                        {darkMode ? (
-                            <MoonIcon color="muted" />
-                        ) : (
-                            <LightbulbIcon color="muted" />
-                        )}
-                        <Switch
-                            checked={checked}
-                            marginLeft={majorScale(1)}
-                            marginRight={majorScale(1)}
-                            onChange={handleSwitchChange}
-                        >
-                            dark mode
-                        </Switch>
+                        <Combobox
+                            initialSelectedItem={{ label: theme }}
+                            width={majorScale(20)}
+                            items={[
+                                { label: "default" },
+                                { label: "default dark" },
+                                { label: "Starlit Eclipse" },
+                                { label: "Starlit Eclipse Light" },
+                            ]}
+                            itemToString={(item) => (item ? item.label : "")}
+                            onChange={(selected) => setTheme(selected.label)}
+                        />
                     </Pane>
                     {isMobile ? (
                         <NavMobileMenu tabs={TABS} />

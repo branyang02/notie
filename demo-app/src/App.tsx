@@ -5,7 +5,7 @@ import { Route, Routes } from "react-router-dom";
 import Examples from "./pages/Examples";
 import ExamplePage from "./pages/ExamplePage";
 import { useEffect, useState } from "react";
-import { useDarkMode } from "./context/useDarkMode";
+import { useTheme } from "./context/useTheme";
 
 const homeModule = import.meta.glob("../../README.md", {
     query: "?raw",
@@ -23,10 +23,10 @@ const tutorialModule = import.meta.glob("./pages/tutorial.md", {
 });
 
 const App = () => {
-    const { darkMode } = useDarkMode();
     const [homeContent, setHomeContent] = useState<string>("");
     const [tutorialContent, setTutorialContent] = useState<string>("");
     const [contributionContent, setContributionContent] = useState<string>("");
+    const { theme } = useTheme();
 
     useEffect(() => {
         async function fetchContent() {
@@ -48,9 +48,22 @@ const App = () => {
         fetchContent();
     }, []);
 
+    function getBackgroundColor() {
+        switch (theme) {
+            case "default dark":
+                return "#333";
+            case "Starlit Eclipse":
+                return "rgb(3 7 18)";
+            case "Starlit Eclipse Light":
+                return "rgb(255 255 255)";
+            default:
+                return "#fff";
+        }
+    }
+
     return (
         <Pane
-            background={darkMode ? "#333" : "white"}
+            backgroundColor={getBackgroundColor()}
             style={{
                 display: "flex",
                 flexDirection: "column",
@@ -72,12 +85,7 @@ const App = () => {
                         <Route
                             path="/"
                             element={
-                                <Notie
-                                    markdown={homeContent}
-                                    theme={
-                                        darkMode ? "default dark" : "default"
-                                    }
-                                />
+                                <Notie markdown={homeContent} theme={theme} />
                             }
                         />
                         <Route path="/examples" element={<Examples />} />
@@ -86,9 +94,7 @@ const App = () => {
                             element={
                                 <Notie
                                     markdown={tutorialContent}
-                                    theme={
-                                        darkMode ? "default dark" : "default"
-                                    }
+                                    theme={theme}
                                 />
                             }
                         />
@@ -97,9 +103,7 @@ const App = () => {
                             element={
                                 <Notie
                                     markdown={contributionContent}
-                                    theme={
-                                        darkMode ? "default dark" : "default"
-                                    }
+                                    theme={theme}
                                 />
                             }
                         />
