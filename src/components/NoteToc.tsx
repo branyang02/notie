@@ -50,8 +50,6 @@ const NoteToc = ({
         [markdownContent, activeId, config.tocTitle],
     );
 
-    console.log(toc);
-
     return (
         <Pane
             position="sticky"
