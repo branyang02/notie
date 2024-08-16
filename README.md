@@ -37,18 +37,11 @@ The `Notie` component is used to render Markdown content. It accepts the followi
 | Prop               | Type                                              | Description                                                                                                |
 | ------------------ | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `markdown`         | `string`                                          | The Markdown content to be rendered.                                                                       |
-| `previewEquation`  | `boolean` (optional)                              | A flag to enable or disable equation preview. Defaults to `true`.                                          |
 | `config`           | `NotieConfig` (optional)                          | Configuration options for Notie, including table of contents settings, font size, and theme customization. |
 | `theme`            | `NotieThemes` (optional)                          | Predefined theme option. Can be "default", "default dark", "Starlit Eclipse", or "Starlit Eclipse Light".  |
 | `customComponents` | `{ [key: string]: () => JSX.Element }` (optional) | Custom React components to be used for rendering specific elements in the markdown.                        |
 
-Additional notes:
-
-- The `NotieConfig` interface allows for fine-grained control over various styling aspects, including colors, fonts, and component-specific styles.
-- The `Theme` interface within `NotieConfig` provides extensive customization options for appearance, colors, and component-specific styles.
-- `NotieThemes` is a string union type that defines the available predefined themes.
-
-Checkout a full example at `/demo-app`, or visit the live website at [https://notie-markdown.vercel.app/](https://notie-markdown.vercel.app/).
+Check out the [tutorial](https://notie-markdown.vercel.app/tutorial) for more detailed information on how to use **notie**.
 
 ## Features
 

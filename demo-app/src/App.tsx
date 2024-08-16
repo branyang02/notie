@@ -6,6 +6,7 @@ import Examples from "./pages/Examples";
 import ExamplePage from "./pages/ExamplePage";
 import { useEffect, useState } from "react";
 import { useTheme } from "./context/useTheme";
+import MyChart from "./components/MyChart";
 
 const homeModule = import.meta.glob("../../README.md", {
     query: "?raw",
@@ -47,6 +48,10 @@ const App = () => {
 
         fetchContent();
     }, []);
+
+    const customComponents = {
+        myChart: () => <MyChart />,
+    };
 
     function getBackgroundColor() {
         switch (theme) {
@@ -95,6 +100,7 @@ const App = () => {
                                 <Notie
                                     markdown={tutorialContent}
                                     theme={theme}
+                                    customComponents={customComponents}
                                 />
                             }
                         />

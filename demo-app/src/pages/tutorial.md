@@ -7,16 +7,146 @@ The `Notie` component has the following props:
 | Prop               | Type                                              | Description                                                                                                |
 | ------------------ | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `markdown`         | `string`                                          | The Markdown content to be rendered.                                                                       |
-| `previewEquation`  | `boolean` (optional)                              | A flag to enable or disable equation preview. Defaults to `true`.                                          |
 | `config`           | `NotieConfig` (optional)                          | Configuration options for Notie, including table of contents settings, font size, and theme customization. |
 | `theme`            | `NotieThemes` (optional)                          | Predefined theme option. Can be "default", "default dark", "Starlit Eclipse", or "Starlit Eclipse Light".  |
 | `customComponents` | `{ [key: string]: () => JSX.Element }` (optional) | Custom React components to be used for rendering specific elements in the markdown.                        |
 
-Additional notes:
+Additionally, you can import the following types and interfaces from the `notie-markdown` package:
 
-- The `NotieConfig` interface allows for fine-grained control over various styling aspects, including colors, fonts, and component-specific styles.
+```tsx
+import { Notie, NotieConfig, NotieThemes, Theme } from "notie-markdown";
+```
+
+Notes:
+
+- The `NotieConfig` interface allows for fine-grained control over various styling aspects, including colors, fonts, and component-specific styles. This is what `NotieConfig` looks like:
+
+```tsx
+interface NotieConfig {
+  showTableOfContents?: boolean;
+  previewEquations?: boolean;
+  tocTitle?: string;
+  fontSize?: CSSStyleDeclaration["fontSize"];
+  theme?: Theme;
+}
+```
+
 - The `Theme` interface within `NotieConfig` provides extensive customization options for appearance, colors, and component-specific styles.
 - `NotieThemes` is a string union type that defines the available predefined themes.
+
+<blockquote class="note">
+
+`Theme` is the main interface for customizing the appearance of the `Notie` component. `NotieThemes` is a string union type that defines the available predefined themes.
+
+</blockquote>
+
+### Customizing the `Notie` Component
+
+The `Notie` component provides a flexible way to customize the appearance of your Markdown-based content. You can easily adjust the colors for text, links, code blocks, and even specify different themes for static and live code blocks. Here's how you can customize the `Notie` component using a custom theme:
+
+```tsx
+import { Theme } from "notie-markdown";
+
+const customTheme: Theme = {
+  textColor: "#333", // Customize the text color
+  linkColor: "#1a73e8", // Customize the link color
+  codeColor: "#d73a49", // Customize the code color
+  staticCodeTheme: "dracula", // Choose a theme for static code blocks
+  liveCodeTheme: "xcodeDark", // Choose a theme for live code blocks
+};
+
+const App = () => {
+  return (
+    <Notie
+      markdown={tutorialContent}
+      config={{
+        showTableOfContents: false, // Disable the Table of Contents
+        theme: customTheme, // Apply the custom theme
+      }}
+    />
+  );
+};
+```
+
+### Using Custom Components in Markdown
+
+`Notie` component takes in a `customComponents` prop that allows you to define custom React components to be used for rendering specific elements in the markdown. This can be useful for adding interactive elements in your file.
+
+Let's insert a chart component from [MUI](https://mui.com/x/react-charts/) in our markdown file.
+
+First, let's define the chart component:
+
+```tsx
+import { BarChart } from "@mui/x-charts/BarChart";
+
+const MyChart = () => {
+  return (
+    <BarChart
+      series={[
+        { data: [35, 44, 24, 34] },
+        { data: [51, 6, 49, 30] },
+        { data: [15, 25, 30, 50] },
+        { data: [60, 50, 15, 25] },
+      ]}
+      height={290}
+      xAxis={[{ data: ["Q1", "Q2", "Q3", "Q4"], scaleType: "band" }]}
+      margin={{ top: 10, bottom: 30, left: 40, right: 10 }}
+    />
+  );
+};
+```
+
+Next, let's create a `customComponents` object that maps the component to a `string` key, in this case, `myChart`:
+
+```tsx
+const customComponents = {
+  myChart: () => <MyChart />,
+};
+```
+
+Finally, pass the `customComponents` object to the `Notie` component:
+
+````tsx
+import { Notie } from "notie-markdown";
+
+const markdown = `
+```component
+{
+  componentName: "myChart"
+}
+```
+`;
+
+const App = () => {
+  const customComponents = {
+    myChart: () => <MyChart />,
+  };
+
+  return <Notie markdown={markdown} customComponents={customComponents} />;
+};
+````
+
+Let's also break down what you need to write in the markdown file. You need to include a code block with triple backticks and the `component` language identifier. Inside the code block, you need to provide a JSON object with the `componentName` key set to the key you defined in the `customComponents` object.
+
+````markdown
+```component
+{
+componentName: "myChart"
+}
+```
+````
+
+Let's see what this looks like in the rendered markdown.
+
+#### Custom Component Example
+
+```component
+{
+componentName: "myChart"
+}
+```
+
+That's it! You've successfully added a custom component to your markdown file.
 
 ## Markdown
 
@@ -435,6 +565,7 @@ You can use the following classes to create different types of blocks:
 - `equation`
 - `theorem`
 - `important`
+- `note`
 
 ```markdown
 <blockquote class="proof">
@@ -497,6 +628,20 @@ $$
 <blockquote class="important">
 
 **Important.** This is an important note.
+
+</blockquote>
+
+```markdown
+<blockquote class="note">
+
+**Note.** This is a note.
+
+</blockquote>
+```
+
+<blockquote class="note">
+
+**Note.** This is a note.
 
 </blockquote>
 
