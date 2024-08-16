@@ -23,7 +23,7 @@ const generateTableOfContents = (
         const id = cleanedTitle
             .replace(/\s+/g, "-")
             .toLowerCase()
-            .replace(/[+.()']/g, "")
+            .replace(/[+.()'`]/g, "")
             .replace(/&/g, "");
 
         const formattedTitle =
@@ -49,6 +49,8 @@ const NoteToc = ({
             generateTableOfContents(markdownContent, activeId, config.tocTitle),
         [markdownContent, activeId, config.tocTitle],
     );
+
+    console.log(toc);
 
     return (
         <Pane

@@ -23,6 +23,16 @@
     color: var(--blog-title-color);
 }
 
+.note-toc code:not([class]):not(.code-blocks code) {
+    padding: 0.2em 0.4em;
+    margin: 0;
+    font-size: 85%;
+    white-space: break-spaces;
+    background-color: var(--blog-code-background-color);
+    border-radius: 6px;
+    color: var(--blog-code-color);
+}
+
 /* CSS Styles */
 
 .note-toc a:focus {
