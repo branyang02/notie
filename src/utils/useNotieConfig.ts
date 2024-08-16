@@ -122,7 +122,8 @@ export function useNotieConfig(
         | "Starlit Eclipse"
         | "Starlit Eclipse Light"
         | "default dark"
-        | "default",
+        | "default"
+        | string,
 ): FullNotieConfig {
     const selectedTheme = useMemo(() => {
         switch (userTheme) {

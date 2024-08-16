@@ -21,7 +21,11 @@ export interface NotieProps {
         | "Starlit Eclipse"
         | "Starlit Eclipse Light"
         | "default dark"
-        | "default";
+        | "default"
+        | string;
+    customComponents?: {
+        [key: string]: () => JSX.Element;
+    };
 }
 
 const Notie: React.FC<NotieProps> = ({
@@ -29,6 +33,7 @@ const Notie: React.FC<NotieProps> = ({
     previewEquation = true,
     config: userConfig,
     theme = "default",
+    customComponents = {},
 }) => {
     const mdProcessor = new MarkdownProcessor(markdown);
     const { markdownContent, equationMapping } = mdProcessor.process();
@@ -127,6 +132,7 @@ const Notie: React.FC<NotieProps> = ({
                         <MarkdownRenderer
                             markdownContent={markdownContent}
                             config={config}
+                            customComponents={customComponents}
                         />
                         <ScrollToTopButton />
                     </Pane>

@@ -9,6 +9,7 @@ import CodeBlock from "./CodeBlock";
 import TikZ from "./TikZ";
 import StaticCodeBlock from "./StaticCodeBlock";
 import { FullNotieConfig } from "../config/NotieConfig";
+import { Alert } from "evergreen-ui";
 
 type CodeProps = React.HTMLAttributes<HTMLElement> & {
     node?: unknown;
@@ -17,10 +18,18 @@ type CodeProps = React.HTMLAttributes<HTMLElement> & {
     children?: React.ReactNode;
 };
 
+type CustomComponentFormat = {
+    componentName: string;
+    props?: Record<string, unknown>;
+};
+
 const MarkdownRenderer: React.FC<{
     markdownContent: string;
     config: FullNotieConfig;
-}> = React.memo(({ markdownContent, config }) => {
+    customComponents: {
+        [key: string]: () => JSX.Element;
+    };
+}> = React.memo(({ markdownContent, config, customComponents }) => {
     const components = useMemo(
         () => ({
             code({ inline, className, children, ...props }: CodeProps) {
@@ -47,6 +56,28 @@ const MarkdownRenderer: React.FC<{
                     if (language === "tikz") {
                         return <TikZ tikzScript={code} />;
                     }
+                    if (language === "component") {
+                        const jsonString = code.replace(/(\w+):/g, '"$1":');
+                        const componentConfig = JSON.parse(
+                            jsonString,
+                        ) as CustomComponentFormat;
+
+                        const CustomComponent =
+                            customComponents[componentConfig.componentName];
+
+                        if (CustomComponent) {
+                            return (
+                                <CustomComponent {...componentConfig.props} />
+                            );
+                        } else {
+                            return (
+                                <Alert
+                                    intent="danger"
+                                    title={`We couldn't find your component ${componentConfig.componentName}`}
+                                ></Alert>
+                            );
+                        }
+                    }
                     return (
                         <StaticCodeBlock
                             code={code}
@@ -70,6 +101,7 @@ const MarkdownRenderer: React.FC<{
             config.theme.codeCopyButtonHoverColor,
             config.theme.liveCodeTheme,
             config.theme.staticCodeTheme,
+            customComponents,
         ],
     );
 
