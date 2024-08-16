@@ -64,7 +64,7 @@ const App = () => {
                     config={{
                         showTableOfContents: true,
                     }}
-                    theme={"default dark"}
+                    theme={theme}
                     customComponents={customComponents}
                 />
             </Pane>
