@@ -28,6 +28,7 @@ const App = () => {
     const [tutorialContent, setTutorialContent] = useState<string>("");
     const [contributionContent, setContributionContent] = useState<string>("");
     const { theme } = useTheme();
+    const darkMode = theme === "default dark" || theme === "Starlit Eclipse";
 
     useEffect(() => {
         async function fetchContent() {
@@ -50,7 +51,7 @@ const App = () => {
     }, []);
 
     const customComponents = {
-        myChart: () => <MyChart />,
+        myChart: () => <MyChart darkMode={darkMode} />,
     };
 
     function getBackgroundColor() {

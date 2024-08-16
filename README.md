@@ -21,8 +21,7 @@ npm install notie-markdown
 
 Then, import the `Notie` component in your React application:
 
-```jsx
-import React from "react";
+```tsx
 import { Notie } from "notie-markdown";
 
 const Example = () => (
@@ -58,7 +57,6 @@ Check out the [tutorial](https://notie-markdown.vercel.app/tutorial) for more de
 <img width="1069" alt="image" src="https://github.com/user-attachments/assets/d7e22bf0-6920-4107-bea1-567abe8cfc45">
 <img width="1405" alt="image" src="https://github.com/user-attachments/assets/27127d15-a019-4f26-ad29-8eba881d7bbb">
 <img width="1441" alt="image" src="https://github.com/user-attachments/assets/90ea496d-2196-4a31-8556-c819399a0932">
-
 
 ## Features and Documentation
 

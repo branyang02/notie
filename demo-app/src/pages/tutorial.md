@@ -2,13 +2,31 @@
 
 ## Using the `Notie` Component
 
+### Getting Started
+
+To start using **notie**, install the package via npm:
+
+```bash
+npm install notie-markdown
+```
+
+Then, import the `Notie` component in your React application:
+
+```tsx
+import { Notie } from "notie-markdown";
+
+const Example = () => (
+  <Notie markdown="# Hello World\nThis is a Markdown content." />
+);
+```
+
 The `Notie` component has the following props:
 
 | Prop               | Type                                              | Description                                                                                                |
 | ------------------ | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `markdown`         | `string`                                          | The Markdown content to be rendered.                                                                       |
 | `config`           | `NotieConfig` (optional)                          | Configuration options for Notie, including table of contents settings, font size, and theme customization. |
-| `theme`            | `NotieThemes` (optional)                          | Predefined theme option. Can be "default", "default dark", "Starlit Eclipse", or "Starlit Eclipse Light".  |
+| `theme`            | `NotieThemes` (optional)                          | Predefined theme option. Can be `default`, `default dark`, `Starlit Eclipse`, or `Starlit Eclipse Light`.  |
 | `customComponents` | `{ [key: string]: () => JSX.Element }` (optional) | Custom React components to be used for rendering specific elements in the markdown.                        |
 
 Additionally, you can import the following types and interfaces from the `notie-markdown` package:
@@ -45,7 +63,7 @@ interface NotieConfig {
 The `Notie` component provides a flexible way to customize the appearance of your Markdown-based content. You can easily adjust the colors for text, links, code blocks, and even specify different themes for static and live code blocks. Here's how you can customize the `Notie` component using a custom theme:
 
 ```tsx
-import { Theme } from "notie-markdown";
+import { Notie, Theme } from "notie-markdown";
 
 const customTheme: Theme = {
   textColor: "#333", // Customize the text color
