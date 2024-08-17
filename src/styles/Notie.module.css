@@ -130,6 +130,10 @@
     filter: var(--blog-tikz-style);
 }
 
+.code-blocks {
+    font-size: var(--blog-code-font-size);
+}
+
 /* //////////////////////// */
 
 /* Heading styles */

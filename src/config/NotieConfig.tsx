@@ -23,6 +23,7 @@ export interface Theme {
     codeColor?: CSSStyleDeclaration["color"];
     codeBackgroundColor?: CSSStyleDeclaration["backgroundColor"];
     codeHeaderColor?: CSSStyleDeclaration["backgroundColor"];
+    codeFontSize?: CSSStyleDeclaration["fontSize"];
     codeCopyButtonHoverColor?: CSSStyleDeclaration["color"];
     staticCodeTheme?: StaticCodeBlockThemeNames;
     liveCodeTheme?: LiveCodeBlockThemeNames;

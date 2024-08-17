@@ -37,7 +37,7 @@ const App = () => {
                     config={{
                         showTableOfContents: true,
                     }}
-                    theme={"default"}
+                    theme={"Starlit Eclipse"}
                 />
             </Pane>
         </Pane>

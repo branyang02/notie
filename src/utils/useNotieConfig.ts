@@ -24,6 +24,7 @@ const starlitEclipse: FullTheme = {
     codeColor: "#6366f1",
     codeBackgroundColor: "#2d2d2d",
     codeHeaderColor: "rgb(31 41 55)",
+    codeFontSize: "medium",
     codeCopyButtonHoverColor: "#8b8b8b",
     staticCodeTheme: "atomOneDark",
     liveCodeTheme: "tokyoNightStorm",
@@ -54,6 +55,7 @@ const starlitEclipseLight: FullTheme = {
     codeColor: "#6366f1",
     codeBackgroundColor: "#f1f1f1",
     codeHeaderColor: "rgb(232 232 232)",
+    codeFontSize: "medium",
     codeCopyButtonHoverColor: "#F4F5F9",
     staticCodeTheme: "github",
     liveCodeTheme: "duotoneLight",
@@ -84,6 +86,7 @@ const defaultDarkTheme: FullTheme = {
     codeColor: "#fff",
     codeBackgroundColor: "#6e768166",
     codeHeaderColor: "rgba(175, 184, 193, 0.2)",
+    codeFontSize: "medium",
     codeCopyButtonHoverColor: "#8b8b8b",
     staticCodeTheme: "nord",
     liveCodeTheme: "tokyoNightStorm",
@@ -114,6 +117,7 @@ const defaultTheme: FullTheme = {
     codeColor: "#000",
     codeBackgroundColor: "#afb8c133",
     codeHeaderColor: "rgba(175, 184, 193, 0.2)",
+    codeFontSize: "medium",
     codeCopyButtonHoverColor: "#F4F5F9",
     staticCodeTheme: "github",
     liveCodeTheme: "duotoneLight",
@@ -219,6 +223,10 @@ export function useNotieConfig(
         root.style.setProperty(
             "--blog-code-header-color",
             mergedConfig.theme.codeHeaderColor,
+        );
+        root.style.setProperty(
+            "--blog-code-font-size",
+            mergedConfig.theme.codeFontSize,
         );
         root.style.setProperty(
             "--blog-code-copy-button-hover-color",

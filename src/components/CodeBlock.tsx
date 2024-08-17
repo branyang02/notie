@@ -22,6 +22,7 @@ import { useCallback, useRef, useState } from "react";
 
 import { runCode, RunCodeResponse } from "../service/api";
 import CodeHeader from "./CodeHeader";
+import styles from "../styles/Notie.module.css";
 
 const getLanguageCode = (language: string) => {
     switch (language) {
@@ -117,7 +118,7 @@ const CodeBlock = ({
                     overflow="hidden"
                     style={{ borderRadius: "0 0 10px 10px" }}
                 >
-                    <div className="code-blocks">
+                    <div className={styles["code-blocks"]}>
                         <CodeMirror
                             ref={editorRef}
                             value={initialCode}
