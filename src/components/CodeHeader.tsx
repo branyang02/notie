@@ -6,8 +6,6 @@ const CodeHeader = ({ language, code }: { language: string; code: string }) => {
     const [isCopied, setIsCopied] = useState(false);
     const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
 
-    console.log(styles);
-
     const copyToClipboard = () => {
         navigator.clipboard.writeText(code).then(() => {
             setIsCopied(true);
