@@ -7,12 +7,10 @@ const StaticCodeBlock = ({
     code,
     language,
     theme,
-    copyButtonHoverColor,
 }: {
     code: string;
     language: string;
     theme: string;
-    copyButtonHoverColor?: string;
 }) => {
     let selectedTheme = themes[theme as keyof typeof themes];
     if (!selectedTheme) {
@@ -22,11 +20,7 @@ const StaticCodeBlock = ({
 
     return (
         <Pane>
-            <CodeHeader
-                language={language}
-                code={code}
-                copyButtonHoverColor={copyButtonHoverColor}
-            />
+            <CodeHeader language={language} code={code} />
             <div className="code-blocks">
                 <SyntaxHighlighter
                     language="language"
@@ -35,6 +29,7 @@ const StaticCodeBlock = ({
                         fontSize: "1em",
                         borderRadius: "0 0 10px 10px",
                         marginTop: 0,
+                        marginBottom: 0,
                     }}
                 >
                     {code}

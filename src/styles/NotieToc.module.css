@@ -42,7 +42,3 @@
 .note-toc a.active {
     font-weight: bold;
 }
-
-.note-toc a:focus {
-    text-decoration: underline;
-}

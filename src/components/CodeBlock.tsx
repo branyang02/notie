@@ -47,12 +47,10 @@ const CodeBlock = ({
     initialCode,
     language = "python",
     theme,
-    copyButtonHoverColor,
 }: {
     initialCode: string;
     language?: string;
     theme: string;
-    copyButtonHoverColor?: string;
 }) => {
     let selectedTheme = themes[theme as keyof typeof themes] as Extension;
     if (!selectedTheme) {
@@ -112,11 +110,7 @@ const CodeBlock = ({
 
     return (
         <Pane>
-            <CodeHeader
-                language={language}
-                code={code}
-                copyButtonHoverColor={copyButtonHoverColor}
-            />
+            <CodeHeader language={language} code={code} />
             <Pane>
                 <Pane
                     position="relative"

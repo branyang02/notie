@@ -46,9 +46,6 @@ const MarkdownRenderer: React.FC<{
                                 initialCode={code}
                                 language={language.split("-").pop()}
                                 theme={config.theme.liveCodeTheme}
-                                copyButtonHoverColor={
-                                    config.theme.codeCopyButtonHoverColor
-                                }
                             />
                         );
                     }
@@ -87,9 +84,6 @@ const MarkdownRenderer: React.FC<{
                             code={code}
                             language={language}
                             theme={config.theme.staticCodeTheme}
-                            copyButtonHoverColor={
-                                config.theme.codeCopyButtonHoverColor
-                            }
                         />
                     );
                 } else {
@@ -102,7 +96,6 @@ const MarkdownRenderer: React.FC<{
             },
         }),
         [
-            config.theme.codeCopyButtonHoverColor,
             config.theme.liveCodeTheme,
             config.theme.staticCodeTheme,
             customComponents,

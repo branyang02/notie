@@ -25,7 +25,7 @@ const starlitEclipse: FullTheme = {
     codeCopyButtonHoverColor: "#8b8b8b",
     staticCodeTheme: "atomOneDark",
     liveCodeTheme: "tokyoNightStorm",
-    collapseSectionColor: "#353535",
+    collapseSectionColor: "#6e6d6d87",
     katexSize: "1.21rem",
     tableBorderColor: "#fff",
     tableBackgroundColor: "#6f6f70",
