@@ -1,5 +1,6 @@
 import { Pane } from "evergreen-ui";
 import { useEffect, useRef } from "react";
+import styles from "../styles/Notie.module.css";
 
 function tidyTikzSource(tikzSource: string) {
     // Remove non-breaking space characters, otherwise we get errors
@@ -99,11 +100,12 @@ const TikZ = ({ tikzScript }: { tikzScript: string }) => {
     return (
         <Pane
             ref={scriptContainerRef}
-            className="tikz-drawing"
             display="flex"
             justifyContent="center"
             alignItems="center"
             flexGrow={1}
+            maxWidth="100%"
+            className={styles["tikz-drawing"]}
         ></Pane>
     );
 };

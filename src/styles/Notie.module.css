@@ -103,8 +103,15 @@
 }
 
 /* Code Block header color */
-.blog-content .code-header {
+/* Used in CodeHeader.tsx */
+.code-header {
     background-color: var(--blog-code-header-color);
+}
+
+/* Code Block copy button hover color */
+/* Used in CodeHeader.tsx */
+.copy-button:hover {
+    background-color: var(--blog-code-copy-button-hover-color) !important;
 }
 
 /* Collapse Section colors */
@@ -112,26 +119,13 @@
     background-color: var(--blog-collapse-section-color);
 }
 
-/* Katex Size */
-.katex {
-    font-size: var(--blog-katex-size);
-}
-
 /* Table colors */
 .blog-content th {
     background-color: var(--blog-table-background-color);
 }
 
-/* caption colors */
-.caption {
-    color: var(--blog-caption-color);
-}
-
-.subtitle {
-    color: var(--blog-subtitle-color);
-}
-
-.blog-content .tikz-drawing svg {
+/* Used in TikZ.tsx */
+.tikz-drawing svg {
     -webkit-filter: var(--blog-tikz-style);
     filter: var(--blog-tikz-style);
 }
@@ -163,16 +157,11 @@
     font-size: 1.3em;
 }
 
-/* Katex configs */
-.katex .eqn-num:before {
-    content: " ";
-}
-
 /* Table Styles */
 .blog-content table {
     border-collapse: collapse;
     max-width: 100%;
-    margin: 20px auto;
+    margin: 16px auto;
 }
 
 .blog-content th,
@@ -201,29 +190,6 @@
     text-decoration: none;
 }
 
-.blog-content .katex a,
-.blog-content .katex-display a {
-    text-decoration: none;
-}
-
-/* Caption Styles */
-.caption {
-    display: block;
-    font-size: smaller;
-    text-align: center;
-    font-style: italic;
-    margin: 20px auto;
-}
-
-/* Subtitle Styles */
-.subtitle {
-    display: block;
-    font-size: smaller;
-    text-align: left;
-    font-style: italic;
-    margin: 20px auto;
-}
-
 /* Collapse Section Styles */
 .blog-content details {
     padding: 10px;
@@ -243,124 +209,4 @@
 
 .blog-content details[open] summary {
     margin-bottom: 10px;
-}
-
-/* Blockquote Styles */
-.blog-content blockquote {
-    margin-block-start: 0;
-    margin-inline-start: 0;
-    display: block;
-    border-radius: 5px;
-    box-shadow:
-        0 1px 2px rgba(0, 0, 0, 0.12),
-        0 3px 10px rgba(0, 0, 0, 0.08);
-    padding-left: 0.8rem;
-    padding-right: 0.8rem;
-    padding-bottom: 0.9em;
-    margin: 20px auto;
-}
-
-.blog-content blockquote p:first-child {
-    margin-top: 0.5em;
-}
-
-.blog-content blockquote p:last-child {
-    margin-bottom: 0;
-}
-
-.blog-content blockquote::before {
-    display: block;
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 0.85em;
-    padding-top: 0.9rem;
-}
-
-/* Definition */
-.blog-content blockquote.definition::before {
-    color: #31dd2e;
-    content: "Definition";
-}
-
-.blog-content blockquote.definition {
-    background: rgba(174, 247, 126, 0.2);
-    border-left: 5px solid #31dd2e;
-}
-
-/* Proof */
-.blog-content blockquote.proof::before {
-    color: #31dd2e;
-    content: "Proof";
-}
-
-.blog-content blockquote.proof {
-    background: rgba(174, 247, 126, 0.2);
-    border-left: 5px solid #31dd2e;
-}
-
-/* Equation */
-.blog-content blockquote.equation::before {
-    color: #486bd5;
-    content: "Equation";
-}
-
-.blog-content blockquote.equation {
-    background: rgba(126, 174, 247, 0.2);
-    border-left: 5px solid #486bd5;
-    padding-bottom: 0.1em;
-}
-
-/* Theorem */
-.blog-content blockquote.theorem::before {
-    color: #486bd5;
-    content: "Theorem";
-    font-style: normal;
-}
-
-.blog-content blockquote.theorem {
-    background: rgba(126, 174, 247, 0.2);
-    border-left: 5px solid #486bd5;
-    font-style: italic;
-}
-
-/* Important */
-.blog-content blockquote.important::before {
-    color: #dd2e2e;
-    content: "Important";
-}
-
-.blog-content blockquote.important {
-    background: rgba(247, 126, 126, 0.2);
-    border-left: 5px solid #dd2e2e;
-}
-
-/* Example */
-.blog-content blockquote.example::before {
-    color: #555555;
-    content: "Example";
-}
-
-.blog-content blockquote.example {
-    background: #f0f0f0;
-    border-left: 5px solid #555555;
-}
-
-/* Tikz Styles */
-.blog-content .tikz-drawing svg {
-    max-width: 100%;
-    margin: 20px auto;
-}
-
-.blog-content .code-blocks {
-    font-size: 1em;
-}
-
-.blog-content pre:not(.code-blocks pre) {
-    margin: auto;
-    margin-bottom: 1em;
-}
-
-.blog-content .code-blocks pre {
-    margin-bottom: 0rem;
-    overflow: none;
 }

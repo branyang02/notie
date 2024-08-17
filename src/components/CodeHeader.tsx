@@ -1,18 +1,12 @@
 import { Pane, Button, ClipboardIcon, TickCircleIcon } from "evergreen-ui";
-import React, { useState } from "react";
+import { useState } from "react";
+import styles from "../styles/Notie.module.css";
 
-const CodeHeader = ({
-    language,
-    code,
-    copyButtonHoverColor,
-}: {
-    language: string;
-    code: string;
-    copyButtonHoverColor?: string;
-}) => {
+const CodeHeader = ({ language, code }: { language: string; code: string }) => {
     const [isCopied, setIsCopied] = useState(false);
-    const [isHovered, setIsHovered] = useState(false);
     const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+
+    console.log(styles);
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(code).then(() => {
@@ -34,11 +28,6 @@ const CodeHeader = ({
         }
     };
 
-    const buttonStyle: React.CSSProperties = {
-        backgroundColor: isHovered ? copyButtonHoverColor : "transparent",
-        transition: "background-color 0.3s ease",
-    };
-
     return (
         <Pane
             paddingY={1}
@@ -50,20 +39,18 @@ const CodeHeader = ({
                 fontSize: "0.8rem",
                 borderRadius: "10px 10px 0 0",
             }}
-            className="code-header"
+            className={styles["code-header"]}
         >
             <span>{language}</span>
             <Button
                 iconBefore={isCopied ? <TickCircleIcon /> : <ClipboardIcon />}
                 appearance="minimal"
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
                 onClick={isCopied ? resetCopy : copyToClipboard}
                 height={24}
                 paddingY={1}
                 paddingX={8}
-                style={buttonStyle}
                 color="inherit"
+                className={styles["copy-button"]}
             >
                 {isCopied ? "Copied!" : "Copy Code"}
             </Button>

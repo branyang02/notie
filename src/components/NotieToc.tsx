@@ -1,9 +1,9 @@
-import "../styles/note-toc.css";
 import { Pane } from "evergreen-ui";
 import { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeSlug from "rehype-slug";
 import { NotieConfig } from "../config/NotieConfig";
+import styles from "../styles/NotieToc.module.css";
 
 const generateTableOfContents = (
     markdownContent: string,
@@ -35,7 +35,7 @@ const generateTableOfContents = (
     return res;
 };
 
-const NoteToc = ({
+const NotieToc = ({
     markdownContent,
     activeId,
     config,
@@ -56,7 +56,7 @@ const NoteToc = ({
             top={0}
             overflowY="auto"
             maxHeight="100vh"
-            className={`note-toc`}
+            className={styles["note-toc"]}
         >
             <ReactMarkdown rehypePlugins={[[rehypeSlug, { prefix: "toc-" }]]}>
                 {toc}
@@ -65,4 +65,4 @@ const NoteToc = ({
     );
 };
 
-export default NoteToc;
+export default NotieToc;

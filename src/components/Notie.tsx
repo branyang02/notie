@@ -1,11 +1,12 @@
 import "katex/dist/katex.min.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/notie.css";
+import styles from "../styles//Notie.module.css";
+import "../styles/notie-global.css";
 
 import React, { useRef, useState, useEffect } from "react";
 import { Pane } from "evergreen-ui";
 import ScrollToTopButton from "./ScrollToTopButton";
-import NoteToc from "./NoteToc";
+import NoteToc from "./NotieToc";
 import MarkdownRenderer from "./MarkdownRenderer";
 import { MarkdownProcessor } from "../utils/MarkdownProcessor";
 import EquationReference from "./EquationReference";
@@ -105,14 +106,16 @@ const Notie: React.FC<NotieProps> = ({
     }, [config.previewEquations, equationMapping, markdownContent]);
 
     return (
-        <Pane className="notie-container">
+        <Pane className={styles["notie-container"]}>
             <Pane
                 className={
-                    config.showTableOfContents ? "mw-page-container-inner" : ""
+                    config.showTableOfContents
+                        ? styles["mw-page-container-inner"]
+                        : ""
                 }
             >
                 {config.showTableOfContents && (
-                    <Pane className="vector-column-start">
+                    <Pane className={styles["vector-column-start"]}>
                         <NoteToc
                             markdownContent={markdownContent}
                             activeId={activeId}
@@ -120,8 +123,8 @@ const Notie: React.FC<NotieProps> = ({
                         />
                     </Pane>
                 )}
-                <Pane className="mw-content-container">
-                    <Pane className="blog-content" ref={contentRef}>
+                <Pane className={styles["mw-content-container"]}>
+                    <Pane className={styles["blog-content"]} ref={contentRef}>
                         <MarkdownRenderer
                             markdownContent={markdownContent}
                             config={config}

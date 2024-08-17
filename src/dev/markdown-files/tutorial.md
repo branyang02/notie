@@ -1,5 +1,11 @@
 # **notie** Tutorial
 
+<div class="subtitle">
+
+Updated for v1.2.0. Last updated: 8/17/2024
+
+</div>
+
 ## Using the `Notie` Component
 
 The `Notie` component has the following props:

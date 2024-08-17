@@ -1,37 +1,14 @@
 import { useEffect, useState } from "react";
 import Notie from "../components/Notie";
-import { Button, Pane, majorScale } from "evergreen-ui";
-import { NotieThemes } from "../config/NotieConfig";
+import { Pane, majorScale } from "evergreen-ui";
 
 const modules = import.meta.glob("./markdown-files/tutorial.md", {
     query: "?raw",
     import: "default",
 });
 
-const ToggleThemeButtons = ({
-    setTheme,
-}: {
-    setTheme: (theme: NotieThemes) => void;
-}) => {
-    const themes: NotieThemes[] = [
-        "default",
-        "default dark",
-        "Starlit Eclipse",
-        "Starlit Eclipse Light",
-    ];
-
-    const themeButtons = themes.map((theme) => (
-        <Button key={theme} onClick={() => setTheme(theme)}>
-            {theme}
-        </Button>
-    ));
-
-    return <Pane display="flex">{themeButtons}</Pane>;
-};
-
 const App = () => {
     const [markdownContent, setMarkdownContent] = useState<string>("");
-    const [theme, setTheme] = useState<NotieThemes>("default");
 
     useEffect(() => {
         const fetchNote = async () => {
@@ -46,10 +23,6 @@ const App = () => {
         fetchNote();
     }, []);
 
-    const customComponents = {
-        ToggleThemeButtons: () => <ToggleThemeButtons setTheme={setTheme} />,
-    };
-
     return (
         <Pane background="#fff">
             <Pane
@@ -63,9 +36,11 @@ const App = () => {
                     markdown={markdownContent}
                     config={{
                         showTableOfContents: true,
+                        theme: {
+                            // katexSize: "2.3em",
+                        },
                     }}
-                    theme={theme}
-                    customComponents={customComponents}
+                    theme={"Starlit Eclipse Light"}
                 />
             </Pane>
         </Pane>
