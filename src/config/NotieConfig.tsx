@@ -15,6 +15,8 @@ export interface Theme {
     linkColor?: CSSStyleDeclaration["color"];
     linkHoverColor?: CSSStyleDeclaration["color"];
     linkUnderline?: boolean;
+    tocFontFamily?: CSSStyleDeclaration["fontFamily"];
+    tocCustomFontUrl?: string;
     tocColor?: CSSStyleDeclaration["color"];
     tocHoverColor?: CSSStyleDeclaration["color"];
     tocUnderline?: boolean;

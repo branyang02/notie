@@ -16,6 +16,8 @@ const starlitEclipse: FullTheme = {
     linkColor: "#ec4899",
     linkHoverColor: "#f472b6",
     linkUnderline: false,
+    tocFontFamily: "'Space Grotesk', sans-serif",
+    tocCustomFontUrl: "https://fonts.googleapis.com/css?family=Space%20Grotesk",
     tocColor: "#d1d5db",
     tocHoverColor: "#fffefe",
     tocUnderline: false,
@@ -44,6 +46,8 @@ const starlitEclipseLight: FullTheme = {
     linkColor: "#ec4899",
     linkHoverColor: "#f472b6",
     linkUnderline: false,
+    tocFontFamily: "'Space Grotesk', sans-serif",
+    tocCustomFontUrl: "https://fonts.googleapis.com/css?family=Space%20Grotesk",
     tocColor: "#374151",
     tocHoverColor: "#6f6f6f",
     tocUnderline: false,
@@ -72,6 +76,8 @@ const defaultDarkTheme: FullTheme = {
     linkColor: "#4493f8",
     linkHoverColor: "#2177e8",
     linkUnderline: false,
+    tocFontFamily: "",
+    tocCustomFontUrl: "",
     tocColor: "#fff",
     tocHoverColor: "#bbb",
     tocUnderline: false,
@@ -100,6 +106,8 @@ const defaultTheme: FullTheme = {
     linkColor: "#36f",
     linkHoverColor: "#0000cf",
     linkUnderline: false,
+    tocFontFamily: "",
+    tocCustomFontUrl: "",
     tocColor: "#000",
     tocHoverColor: "#777",
     tocUnderline: false,
@@ -187,6 +195,10 @@ export function useNotieConfig(
             "--blog-link-underline",
             mergedConfig.theme.linkUnderline ? "underline" : "none",
         );
+        root.style.setProperty(
+            "--note-toc-font-family",
+            mergedConfig.theme.tocFontFamily,
+        );
         root.style.setProperty("--note-toc-color", mergedConfig.theme.tocColor);
         root.style.setProperty(
             "--note-toc-hover-color",
@@ -253,6 +265,17 @@ export function useNotieConfig(
 
             return () => {
                 document.head.removeChild(fontLink);
+            };
+        }
+        const tocUrl = mergedConfig.theme.tocCustomFontUrl;
+        if (tocUrl) {
+            const tocFontLink = document.createElement("link");
+            tocFontLink.href = tocUrl;
+            tocFontLink.rel = "stylesheet";
+            document.head.appendChild(tocFontLink);
+
+            return () => {
+                document.head.removeChild(tocFontLink);
             };
         }
     }, [mergedConfig]);

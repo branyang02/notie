@@ -36,11 +36,8 @@ const App = () => {
                     markdown={markdownContent}
                     config={{
                         showTableOfContents: true,
-                        theme: {
-                            // katexSize: "2.3em",
-                        },
                     }}
-                    theme={"Starlit Eclipse Light"}
+                    theme={"default"}
                 />
             </Pane>
         </Pane>

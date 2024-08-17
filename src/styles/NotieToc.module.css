@@ -1,6 +1,6 @@
 /* Get colors from Config */
 .note-toc {
-    font-family: var(--blog-font-family);
+    font-family: var(--note-toc-font-family);
     color: var(--blog-text-color);
 }
 
