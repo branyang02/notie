@@ -59,7 +59,7 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add package.json package-lock.json
+          git add package.json package-lock.json demo-app/package-lock.json
           git commit -m "ci: bump version to ${{ env.new_version }}"
           git push origin HEAD:main
         env:
