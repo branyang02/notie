@@ -7,7 +7,6 @@ import ExamplePage from "./pages/ExamplePage";
 import { useEffect, useState } from "react";
 import { useTheme } from "./context/useTheme";
 import MyChart from "./components/MyChart";
-import "./index.css";
 
 const homeModule = import.meta.glob("../../README.md", {
     query: "?raw",
@@ -52,7 +51,7 @@ const App = () => {
     }, []);
 
     const customComponents = {
-        myChart: () => <MyChart />,
+        myChart: () => <MyChart darkMode={darkMode} />,
     };
 
     function getBackgroundColor() {
