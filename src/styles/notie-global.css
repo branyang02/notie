@@ -167,6 +167,10 @@ blockquote.example {
     display: inline;
 }
 
+[style*="--blog-blockquote-style: latex"] blockquote p:last-child {
+    display: inline;
+}
+
 [style*="--blog-blockquote-style: latex"] blockquote::before {
     font-weight: bold;
     text-transform: none;
@@ -201,4 +205,47 @@ blockquote.example {
 [style*="--blog-blockquote-style: latex"] blockquote.lemma::before {
     content: attr(blockquote-theorem-number) " ";
     color: inherit;
+}
+
+[style*="--blog-blockquote-style: latex"] blockquote.equation {
+    font-style: normal;
+}
+
+[style*="--blog-blockquote-style: latex"] blockquote.equation::before {
+    content: none;
+}
+
+[style*="--blog-blockquote-style: latex"] blockquote.proof {
+    font-style: inherit;
+}
+
+[style*="--blog-blockquote-style: latex"] blockquote.proof::before {
+    font-weight: inherit;
+    font-style: italic;
+    content: "Proof. ";
+    color: inherit;
+}
+
+[style*="--blog-blockquote-style: latex"] blockquote.proof::after {
+    content: none;
+}
+
+[style*="--blog-blockquote-style: latex"] blockquote.proof {
+    position: relative;
+}
+
+[style*="--blog-blockquote-style: latex"] blockquote.proof p:last-child {
+    display: inline-block;
+    margin-right: 1.5em; /* Push text away from QED symbol */
+}
+
+[style*="--blog-blockquote-style: latex"] blockquote.proof p:last-child::after {
+    content: "□";
+    font-style: normal;
+    color: inherit;
+    font-size: 1.7em;
+    position: absolute;
+    right: 0.8rem;
+    bottom: 0;
+    line-height: 1.35;
 }
