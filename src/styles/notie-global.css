@@ -202,4 +202,3 @@ blockquote.example {
     content: attr(blockquote-theorem-number) " ";
     color: inherit;
 }
-
