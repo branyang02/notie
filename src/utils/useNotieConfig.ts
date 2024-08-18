@@ -35,6 +35,7 @@ const starlitEclipse: FullTheme = {
     captionColor: "#555",
     subtitleColor: "#969696",
     tikZstyle: "inverted",
+    blockquoteStyle: "default",
 };
 
 const starlitEclipseLight: FullTheme = {
@@ -66,6 +67,7 @@ const starlitEclipseLight: FullTheme = {
     captionColor: "#555",
     subtitleColor: "#969696",
     tikZstyle: "default",
+    blockquoteStyle: "default",
 };
 
 const defaultDarkTheme: FullTheme = {
@@ -97,6 +99,7 @@ const defaultDarkTheme: FullTheme = {
     captionColor: "#fff",
     subtitleColor: "#969696",
     tikZstyle: "inverted",
+    blockquoteStyle: "default",
 };
 
 const defaultTheme: FullTheme = {
@@ -128,6 +131,7 @@ const defaultTheme: FullTheme = {
     captionColor: "#555",
     subtitleColor: "#969696",
     tikZstyle: "default",
+    blockquoteStyle: "default",
 };
 
 const defaultNotieConfig: FullNotieConfig = {
@@ -261,6 +265,12 @@ export function useNotieConfig(
             mergedConfig.theme.tikZstyle === "inverted"
                 ? "invert(100%)"
                 : "none",
+        );
+        root.style.setProperty(
+            "--blog-blockquote-style",
+            mergedConfig.theme.blockquoteStyle === "latex"
+                ? "latex"
+                : "default",
         );
 
         // Handle custom font

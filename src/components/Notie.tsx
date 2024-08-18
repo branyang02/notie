@@ -83,6 +83,44 @@ const Notie: React.FC<NotieProps> = ({
         }
     }, [markdownContent]);
 
+    // Effect to auto label Definitions, Theorems, Lemmas
+    useEffect(() => {
+        if (config.theme.blockquoteStyle !== "latex") return;
+        if (!contentRef.current) return;
+        const sections = contentRef.current.getElementsByClassName("sections");
+
+        for (
+            let sectionIndex = 0;
+            sectionIndex < sections.length;
+            sectionIndex++
+        ) {
+            const section = sections[sectionIndex];
+            const definitions = section.getElementsByClassName("definition");
+            const theoremsAndLemmas =
+                section.querySelectorAll(".theorem, .lemma");
+            for (let defIndex = 0; defIndex < definitions.length; defIndex++) {
+                const def = definitions[defIndex];
+                def.setAttribute(
+                    "blockquote-definition-number",
+                    `Definition ${sectionIndex + 1}.${defIndex + 1}`,
+                );
+            }
+            theoremsAndLemmas.forEach((item, index) => {
+                if (item.classList.contains("theorem")) {
+                    item.setAttribute(
+                        "blockquote-theorem-number",
+                        `Theorem ${sectionIndex + 1}.${index + 1}`,
+                    );
+                } else if (item.classList.contains("lemma")) {
+                    item.setAttribute(
+                        "blockquote-theorem-number",
+                        `Lemma ${sectionIndex + 1}.${index + 1}`,
+                    );
+                }
+            });
+        }
+    }, [config.theme.blockquoteStyle, markdownContent]);
+
     // Effect to enable Equation Preview
     useEffect(() => {
         if (!contentRef.current) return;

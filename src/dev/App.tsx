@@ -36,8 +36,15 @@ const App = () => {
                     markdown={markdownContent}
                     config={{
                         showTableOfContents: true,
+                        fontSize: "1.1em",
+                        theme: {
+                            fontFamily: '"Computer Modern Serif", serif',
+                            customFontUrl:
+                                "https://cdn.jsdelivr.net/gh/bitmaks/cm-web-fonts@latest/fonts.css",
+                            blockquoteStyle: "latex",
+                        },
                     }}
-                    theme={"Starlit Eclipse"}
+                    // theme={"Starlit Eclipse"}
                 />
             </Pane>
         </Pane>
