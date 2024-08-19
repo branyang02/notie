@@ -29,12 +29,11 @@ const Notie: React.FC<NotieProps> = ({
     theme = "default",
     customComponents,
 }) => {
-    const mdProcessor = new MarkdownProcessor(markdown);
+    const config = useNotieConfig(userConfig, theme);
+    const mdProcessor = new MarkdownProcessor(markdown, config);
     const { markdownContent, equationMapping } = mdProcessor.process();
     const contentRef = useRef<HTMLDivElement>(null);
     const [activeId, setActiveId] = useState<string>("");
-
-    const config = useNotieConfig(userConfig, theme);
 
     // Effect to observe headings and update activeId
     useEffect(() => {
@@ -83,7 +82,7 @@ const Notie: React.FC<NotieProps> = ({
         }
     }, [markdownContent]);
 
-    // Effect to auto label Definitions, Theorems, Lemmas
+    // Effect to auto label Definitions, Theorems, Lemmas, only for LaTeX style
     useEffect(() => {
         if (config.theme.blockquoteStyle !== "latex") return;
         if (!contentRef.current) return;

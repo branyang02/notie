@@ -42,3 +42,11 @@
 .note-toc a.active {
     font-weight: bold;
 }
+
+[style*="--blog-toc-marker: false"] .note-toc li::marker {
+    content: none;
+}
+
+[style*="--blog-toc-marker: false"] .note-toc > ul {
+    padding-left: 0em;
+}
