@@ -36,6 +36,8 @@ const starlitEclipse: FullTheme = {
     subtitleColor: "#969696",
     tikZstyle: "inverted",
     blockquoteStyle: "default",
+    numberedHeading: false,
+    tocMarker: true,
 };
 
 const starlitEclipseLight: FullTheme = {
@@ -68,6 +70,8 @@ const starlitEclipseLight: FullTheme = {
     subtitleColor: "#969696",
     tikZstyle: "default",
     blockquoteStyle: "default",
+    numberedHeading: false,
+    tocMarker: true,
 };
 
 const defaultDarkTheme: FullTheme = {
@@ -100,6 +104,8 @@ const defaultDarkTheme: FullTheme = {
     subtitleColor: "#969696",
     tikZstyle: "inverted",
     blockquoteStyle: "default",
+    numberedHeading: false,
+    tocMarker: true,
 };
 
 const defaultTheme: FullTheme = {
@@ -132,6 +138,8 @@ const defaultTheme: FullTheme = {
     subtitleColor: "#969696",
     tikZstyle: "default",
     blockquoteStyle: "default",
+    numberedHeading: false,
+    tocMarker: true,
 };
 
 const defaultNotieConfig: FullNotieConfig = {
@@ -271,6 +279,10 @@ export function useNotieConfig(
             mergedConfig.theme.blockquoteStyle === "latex"
                 ? "latex"
                 : "default",
+        );
+        root.style.setProperty(
+            "--blog-toc-marker",
+            mergedConfig.theme.tocMarker ? "true" : "false",
         );
 
         // Handle custom font

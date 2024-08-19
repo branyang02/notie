@@ -1,11 +1,14 @@
+import { NotieConfig } from "../config/NotieConfig";
 import { EquationMapping } from "./utils";
 
 export class MarkdownProcessor {
     private markdownContent: string;
+    private config: NotieConfig;
     private equationMapping: EquationMapping = {};
 
-    constructor(markdownContent: string) {
+    constructor(markdownContent: string, config: NotieConfig) {
         this.markdownContent = markdownContent;
+        this.config = config;
     }
 
     public process(): {
@@ -18,10 +21,37 @@ export class MarkdownProcessor {
             return this.processSection(section, i);
         });
 
+        if (this.config.theme?.numberedHeading) {
+            const processedMarkdown = this.addHeadingNumbers(
+                processedSections.join(""),
+            );
+            return {
+                markdownContent: processedMarkdown,
+                equationMapping: this.equationMapping,
+            };
+        }
+
         return {
             markdownContent: processedSections.join(""),
             equationMapping: this.equationMapping,
         };
+    }
+
+    private addHeadingNumbers(markdownString: string): string {
+        const headingRegex = /^(#{2,6}) (.*)$/gm;
+        const counters = [0, 0, 0, 0, 0];
+
+        return markdownString.replace(headingRegex, (_match, hashes, title) => {
+            const level = hashes.length - 2;
+            counters[level]++;
+
+            for (let i = level + 1; i < counters.length; i++) {
+                counters[i] = 0;
+            }
+
+            const numbering = counters.slice(0, level + 1).join(".");
+            return `${hashes} ${numbering}&nbsp;&nbsp;&nbsp;${title}`;
+        });
     }
 
     private splitIntoSections(): string[] {

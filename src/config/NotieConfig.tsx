@@ -35,6 +35,8 @@ export interface Theme {
     subtitleColor?: CSSStyleDeclaration["color"];
     tikZstyle?: "inverted" | "default";
     blockquoteStyle?: "default" | "latex";
+    numberedHeading?: boolean;
+    tocMarker?: boolean;
 }
 
 // NotieConfig Type with all optional properties

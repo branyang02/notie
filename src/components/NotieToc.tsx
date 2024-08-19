@@ -24,6 +24,7 @@ const generateTableOfContents = (
             .replace(/\s+/g, "-")
             .toLowerCase()
             .replace(/[+.()'`]/g, "")
+            .replace(/&nbsp;/g, "")
             .replace(/&/g, "");
 
         const formattedTitle =
