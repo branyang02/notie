@@ -237,6 +237,7 @@ blockquote.example {
 [style*="--blog-blockquote-style: latex"] blockquote.proof p:last-child {
     display: inline-block;
     margin-right: 1.5em; /* Push text away from QED symbol */
+    margin-bottom: 1rem;
 }
 
 [style*="--blog-blockquote-style: latex"] blockquote.proof p:last-child::after {
@@ -246,6 +247,5 @@ blockquote.example {
     font-size: 2.2em;
     position: absolute;
     right: 0rem;
-    bottom: 0;
-    line-height: 0.65em;
+    line-height: 0.75em;
 }

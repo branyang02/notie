@@ -6,58 +6,6 @@ Fall 2024 | Author: Brandon Yang
 
 ## Introduction
 
-<blockquote class="proof">
-
-Let's consider a set of $ n $ data points $ \{x*i, y_i\}*{i=1}^{n} $, where each $ x_i \in \mathbb{R}^d $ is a $ d $-dimensional feature vector, and $ y_i \in \mathbb{R} $ is the corresponding target value. We aim to find a linear model $ f(\bm{\theta}, \bm{x}) = \bm{\theta}^\top \bm{x} $ that minimizes the mean squared error (MSE) given by:
-
-$$
-\begin{equation} \label{eq:mse}
-L(\bm{\theta}) = \frac{1}{n} \sum_{i=1}^{n} \left( y_i - \bm{\theta}^\top \bm{x}_i \right)^2.
-\end{equation}
-$$
-
-To minimize this loss function, we apply the gradient descent algorithm. The gradient of the loss function with respect to the parameter vector $ \bm{\theta} $ is:
-
-$$
-\begin{equation} \label{eq:gradient}
-\nabla_{\bm{\theta}} L(\bm{\theta}) = -\frac{2}{n} \sum_{i=1}^{n} \left( y_i - \bm{\theta}^\top \bm{x}_i \right) \bm{x}_i.
-\end{equation}
-$$
-
-The gradient descent update rule is then given by:
-
-$$
-\begin{equation} \label{eq:update-rule}
-\bm{\theta}^{(t+1)} = \bm{\theta}^{(t)} - \alpha \nabla_{\bm{\theta}} L(\bm{\theta}^{(t)}),
-\end{equation}
-$$
-
-where $ \alpha $ is the learning rate. Assuming that the loss function $ L(\bm{\theta}) $ is convex, the gradient descent algorithm is guaranteed to converge to a global minimum.
-
-Next, we consider the Hessian matrix $ H(\bm{\theta}) = \nabla\_{\bm{\theta}}^2 L(\bm{\theta}) $, which is a $ d \times d $ symmetric matrix of second-order partial derivatives. The eigenvalues of the Hessian matrix provide insight into the curvature of the loss function. If all the eigenvalues are positive, the loss function is strictly convex, and the gradient descent will converge rapidly.
-
-For simplicity, assume $ H(\bm{\theta}) $ is positive definite. We can analyze the convergence rate of gradient descent by considering the following relationship:
-
-$$
-\begin{equation} \label{eq:convergence}
-\|\bm{\theta}^{(t+1)} - \bm{\theta}^\*\| \leq \left( 1 - 2\alpha \lambda_{\min}(H) \right) \|\bm{\theta}^{(t)} - \bm{\theta}^\*\|,
-\end{equation}
-$$
-
-where $ \lambda*{\min}(H) $ is the smallest eigenvalue of the Hessian matrix. This inequality shows that the convergence rate depends on the condition number of the Hessian matrix, defined as $ \kappa(H) = \frac{\lambda*{\max}(H)}{\lambda\_{\min}(H)} $.
-
-Finally, let's consider the case where the learning rate $ \alpha $ is chosen optimally as $ \alpha = \frac{1}{\lambda\_{\max}(H)} $. In this case, the gradient descent update rule can be rewritten as:
-
-$$
-\begin{equation} \label{eq:optimal-update}
-\bm{\theta}^{(t+1)} = \bm{\theta}^{(t)} - \frac{1}{\lambda_{\max}(H)} \nabla_{\bm{\theta}} L(\bm{\theta}^{(t)}),
-\end{equation}
-$$
-
-which ensures the fastest possible convergence to the optimal solution $ \bm{\theta}^\* $.
-
-</blockquote>
-
 Machine learning is a field of artificial intelligence that focuses on developing algorithms and models that can learn from data to make predictions and decisions. Machine learning algorithms can be broadly categorized into three types:
 
 1. **Supervised Learning**: Algorithms learn from labeled data to predict outcomes or recognize patterns.
@@ -192,6 +140,8 @@ where $\mathbf{X}^T$ is the transpose of the feature matrix $\mathbf{X}$, and $\
 
 <details><summary>Normal Equation Proof</summary>
 
+<blockquote class="proof">
+
 To prove the normal equation $\eqref{eq:normal-equation}$, we start by rearranging $\eqref{eq:mse}$:
 
 $$
@@ -215,6 +165,8 @@ $$
 $$
 
 Therefore, the normal equation provides the optimal parameter vector $\mathbf{\theta}$ that minimizes the loss function.
+
+</blockquote>
 
 </details>
 
@@ -284,7 +236,9 @@ $$
 
 where $\hat{\mathbf{y}} = \mathbf{X}\mathbf{\theta}$ is the predicted label vector.
 
-<details><summary>MSE Gradient Proof</summary>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec nulla auctor, tincidunt nunc nec, ultricies nunc. Nullam nec nunc nec nunc. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec nulla auctor, tincidunt nunc nec, ultricies nunc. Nullam nec nunc nec nunc. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec nulla auctor, tincidunt nunc nec, ultricies nunc. Nullam nec nunc nec nunc. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec nulla auctor, tincidunt nunc nec, ultricies nunc. Nullam nec nunc nec nunc.
+
+<blockquote class="proof">
 
 To compute $\eqref{eq:mse-gradient}$, we start by expanding Equation $\eqref{eq:mse}$:
 
@@ -318,6 +272,57 @@ $$
 &= \frac{2}{m} \mathbf{X}^T (\mathbf{X}\mathbf{\theta} - \mathbf{y})
 \end{aligned}
 $$
+
+Therefore, the gradient of the MSE loss function with respect to $\mathbf{\theta}$ is given by $\eqref{eq:mse-gradient}$.
+
+</blockquote>
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec nulla auctor, tincidunt nunc nec, ultricies nunc. Nullam nec nunc nec nunc.
+
+<details><summary>MSE Gradient Proof</summary>
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec nulla auctor, tincidunt nunc nec, ultricies nunc. Nullam nec nunc nec nunc.
+
+<blockquote class="proof">
+
+To compute $\eqref{eq:mse-gradient}$, we start by expanding Equation $\eqref{eq:mse}$:
+
+$$
+\begin{aligned}
+\text{MSE}(\mathbf{\theta}) &= \frac{1}{m} \left\| \mathbf{X}\mathbf{\theta} - \mathbf{y} \right\|_2^2 \\
+&= \frac{1}{m} (\mathbf{X}\mathbf{\theta} - \mathbf{y})^T (\mathbf{X}\mathbf{\theta} - \mathbf{y}) \\
+&= \frac{1}{m} (\mathbf{\theta}^T \mathbf{X}^T \mathbf{X} \mathbf{\theta} - 2\mathbf{\theta}^T \mathbf{X}^T \mathbf{y} + \mathbf{y}^T \mathbf{y})
+\end{aligned}
+$$
+
+Next, we compute the gradient with respect to $\mathbf{\theta}$:
+
+$$
+\begin{aligned}
+\nabla_{\mathbf{\theta}} \text{MSE}(\mathbf{\theta}) &= \nabla_{\mathbf{\theta}} \left( \frac{1}{m} (\mathbf{\theta}^T \mathbf{X}^T \mathbf{X} \mathbf{\theta} - 2\mathbf{\theta}^T \mathbf{X}^T \mathbf{y} + \mathbf{y}^T \mathbf{y}) \right) \\
+\end{aligned}
+$$
+
+To compute the gradient, we use the following properties:
+
+1. $\nabla_{\mathbf{x}} \mathbf{x}^T \mathbf{A} \mathbf{x} = 2 \mathbf{A} \mathbf{x}$, where $\mathbf{A}$ is a symmetric matrix.
+2. $\nabla_{\mathbf{x}} \mathbf{a}^T \mathbf{x} = \mathbf{a}$, where $\mathbf{a}$ is a vector.
+3. $A^TA$ is symmetric for any matrix $A$.
+
+Applying these properties, we get:
+
+$$
+\begin{aligned}
+\nabla_{\mathbf{\theta}} \text{MSE}(\mathbf{\theta}) &= \frac{1}{m} \left( 2 \mathbf{X}^T \mathbf{X} \mathbf{\theta} - 2 \mathbf{X}^T \mathbf{y} \right) \\
+&= \frac{2}{m} \mathbf{X}^T (\mathbf{X}\mathbf{\theta} - \mathbf{y})
+\end{aligned}
+$$
+
+Therefore, the gradient of the MSE loss function with respect to $\mathbf{\theta}$ is given by $\eqref{eq:mse-gradient}$.
+
+</blockquote>
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec nulla auctor, tincidunt nunc nec, ultricies nunc. Nullam nec nunc nec nunc.
 
 </details>
 
@@ -683,20 +688,4 @@ where $ \nabla f(x) $ denotes the gradient vector of $ f $ at $ x $, and $ \lang
 
 #### Fixed Learning Rate
 
-<blockquote class="theorem">
-
-</blockquote>
-
-<blockquote class="proof">
-
-consider a convex and differentiable loss function $ L(\bm{\theta}) $, and let $ \bm{\theta}^\* $ be the optimal parameter vector that minimizes the loss function. The gradient descent update rule is given by:
-
-$$
-\begin{equation} \label{eq:gd-update}
-\bm{\theta}^{(t+1)} = \bm{\theta}^{(t)} - \alpha \nabla_{\bm{\theta}} L(\bm{\theta}^{(t)}),
-\end{equation}
-$$
-
-where $ \alpha $ is the learning rate. We can write the update rule in terms of the difference between the current parameter vector $ \bm{\theta}^{(t)} $ and the optimal parameter vector $ \bm{\theta}^\* $:
-
-</blockquote>
+coming soon...
