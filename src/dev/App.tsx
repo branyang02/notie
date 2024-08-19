@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Notie from "../components/Notie";
 import { Pane, majorScale } from "evergreen-ui";
 
-const modules = import.meta.glob("./markdown-files/tutorial.md", {
+const modules = import.meta.glob("./markdown-files/ml.md", {
     query: "?raw",
     import: "default",
 });
@@ -42,6 +42,8 @@ const App = () => {
                             customFontUrl:
                                 "https://cdn.jsdelivr.net/gh/bitmaks/cm-web-fonts@latest/fonts.css",
                             blockquoteStyle: "latex",
+                            numberedHeading: true,
+                            tocMarker: false,
                         },
                     }}
                     // theme={"Starlit Eclipse"}

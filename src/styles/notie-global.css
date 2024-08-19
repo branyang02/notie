@@ -216,7 +216,10 @@ blockquote.example {
 }
 
 [style*="--blog-blockquote-style: latex"] blockquote.proof {
+    all: unset;
+    position: relative;
     font-style: inherit;
+    display: block;
 }
 
 [style*="--blog-blockquote-style: latex"] blockquote.proof::before {
@@ -230,10 +233,6 @@ blockquote.example {
     content: none;
 }
 
-[style*="--blog-blockquote-style: latex"] blockquote.proof {
-    position: relative;
-}
-
 [style*="--blog-blockquote-style: latex"] blockquote.proof p:last-child {
     display: inline-block;
     margin-right: 1.5em; /* Push text away from QED symbol */
@@ -243,9 +242,10 @@ blockquote.example {
     content: "□";
     font-style: normal;
     color: inherit;
-    font-size: 1.7em;
+    font-size: 2.2em;
     position: absolute;
     right: 0.8rem;
     bottom: 0;
-    line-height: 1.35;
+    line-height: 1em;
+    font-weight: 0;
 }
