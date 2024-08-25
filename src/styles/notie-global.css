@@ -20,6 +20,10 @@
     margin: 16px auto;
 }
 
+.caption .katex {
+    font-size: inherit;
+}
+
 .caption {
     color: var(--blog-caption-color);
 }
