@@ -54,8 +54,6 @@ The carbonyl group consists of a carbon atom double bonded to an oxygen atom, cr
 
 The electrophilic carbon of aldehydes and ketones undergoes nucleophilic addition, which is fundamental to many reactions in carbonyl chemistry.
 
-<blockquote class="example">
-
 1. **Addition of water (Hydration)**:
    - Equation: `RCHO + H2O -> RCH(OH)2`
    - The hydration of aldehydes and ketones forms hydrates, though these are generally reversible and not always isolable under normal conditions.
@@ -63,13 +61,9 @@ The electrophilic carbon of aldehydes and ketones undergoes nucleophilic additio
    - Equation: `RCHO + 2ROH -> RCH(OR)2 + H2O`
    - Acetals are formed via the reaction of aldehydes with alcohols, serving as protective groups for carbonyl during synthetic sequences.
 
-</blockquote>
-
 #### Oxidation and Reduction
 
 Aldehydes can be oxidized to carboxylic acids, while ketones are generally resistant to oxidation. Both aldehydes and ketones can be reduced to alcohols.
-
-<blockquote class="example">
 
 - **Oxidation**:
   - Aldehydes to carboxylic acids: `RCHO + [O] -> RCOOH`
@@ -77,20 +71,14 @@ Aldehydes can be oxidized to carboxylic acids, while ketones are generally resis
   - Ketones to secondary alcohols: `RCOR' + H2 -> RCH(OH)R'`
   - Aldehydes to primary alcohols: `RCHO + H2 -> RCH2OH`
 
-</blockquote>
-
 ### Applications in Synthesis
 
 Carbonyl compounds are pivotal in the synthesis of pharmaceuticals, polymers, and perfumes. They serve as intermediates in the synthesis of more complex molecules.
-
-<blockquote class="example">
 
 - **Aldol Condensation**:
   - A powerful reaction that forms a new carbon-carbon bond, essential for building complex molecular structures.
 - **Cannizzaro Reaction**:
   - A unique reaction where non-enolizable aldehydes are treated with a strong base to give alcohols and carboxylic acids.
-
-</blockquote>
 
 ### Conclusion
 

@@ -90,8 +90,6 @@ $$
 
 </blockquote>
 
-<blockquote class="example">
-
 Let $X$ be a random variable with mean $\mu$ and variance $\sigma^2$. Let $f(x) = x^2$. By Jensen's inequality, we have:
 
 $$
@@ -103,8 +101,6 @@ f(\mu) & = \mu^2 \\
 $$
 
 Therefore, $\sigma^2 \geq 0$.
-
-</blockquote>
 
 <details open>
 <summary>Coding Example</summary>
@@ -138,8 +134,6 @@ As we can see from the example, Jensen's inequality provides a lower bound on th
 
 Jensen's inequality is a powerful tool in machine learning for deriving bounds on the expected value of a convex function of a random variable. In particular, Jensen's inequality is often used to derive the loss functions for various machine learning algorithms.
 
-<blockquote class="example">
-
 Consider the logistic loss function:
 
 $$
@@ -156,8 +150,6 @@ $$
 $$
 
 where $\mathbb{E}[\hat{y}]$ is the expected value of the predicted score.
-
-</blockquote>
 
 The logistic loss function is commonly used in binary classification problems to measure the error between the true label and the predicted score. By applying Jensen's inequality, we can derive a lower bound on the expected value of the logistic loss function, which can be used to optimize the model parameters.
 

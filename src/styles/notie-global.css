@@ -135,17 +135,6 @@ blockquote.important {
     border-left: 5px solid #dd2e2e;
 }
 
-/* Example */
-blockquote.example::before {
-    color: #555555;
-    content: "Example";
-}
-
-blockquote.example {
-    background: #f0f0f0;
-    border-left: 5px solid #555555;
-}
-
 /* Definition Styles in Math Mode */
 [style*="--blog-blockquote-style: latex"] blockquote {
     margin-block-start: 0;
