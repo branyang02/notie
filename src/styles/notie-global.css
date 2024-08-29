@@ -208,6 +208,16 @@ blockquote.important {
     content: none;
 }
 
+[style*="--blog-blockquote-style: latex"] blockquote.problem {
+    all: unset;
+    font-style: normal;
+}
+
+[style*="--blog-blockquote-style: latex"] blockquote.problem::before {
+    content: attr(blockquote-problem-number) " ";
+    color: inherit;
+}
+
 [style*="--blog-blockquote-style: latex"] blockquote.proof {
     all: unset;
     position: relative;
