@@ -223,8 +223,15 @@ blockquote.important {
     margin-right: 0.3em;
 }
 
-[style*="--blog-blockquote-style: latex"] blockquote.proof::after {
-    content: none;
+[style*="--blog-blockquote-style: latex"]
+    blockquote.proof:not(:has(p:last-child))::after {
+    content: "□";
+    font-style: normal;
+    color: inherit;
+    font-size: 2.2em;
+    display: block;
+    text-align: right;
+    line-height: 0.75em;
 }
 
 [style*="--blog-blockquote-style: latex"] blockquote.proof p:last-child {
