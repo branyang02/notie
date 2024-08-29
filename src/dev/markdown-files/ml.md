@@ -265,13 +265,17 @@ $$
 \end{equation}
 $$
 
-<details><summary>Examples</summary>
+<details open><summary>Examples</summary>
+
+<blockquote class="problem">
 
 For example, suppose we want to evaluate the following derivative:
 
 $$
 \frac{d}{dx} \cos(x^2 + 1).
 $$
+
+</blockquote>
 
 <blockquote class="proof">
 
@@ -286,11 +290,15 @@ $$
 
 </blockquote>
 
+<blockquote class="problem">
+
 Suppose we want to evaluate the following derivative:
 
 $$
 \frac{d}{dx} \left(x \cdot \cos(x^2 + 1)\right).
 $$
+
+</blockquote>
 
 <blockquote class="proof">
 
@@ -305,11 +313,15 @@ $$
 
 </blockquote>
 
+<blockquote class="problem">
+
 Suppose we want to evaluate the following integral:
 
 $$
 \frac{d}{dx} \int_1^2 \left( \tan(x+100) - x \right) \, dx.
 $$
+
+</blockquote>
 
 <blockquote class="proof">
 
@@ -327,11 +339,15 @@ $$
 
 </blockquote>
 
+<blockquote class="problem">
+
 Suppose we have the following derivative:
 
 $$
 \frac{d}{dx} \int_0^x \sin^{-1}(s^2+1) \, ds.
 $$
+
+</blockquote>
 
 <blockquote class="proof">
 
@@ -346,11 +362,15 @@ $$
 
 </blockquote>
 
+<blockquote class="problem">
+
 Suppose we have the following derivative:
 
 $$
 \frac{d}{dx} \int_{x^2 - 1}^{10} \cos(s) \, ds.
 $$
+
+</blockquote>
 
 <blockquote class="proof">
 
