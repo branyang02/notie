@@ -10,27 +10,27 @@ export function extractEquationInfo(
     children: Element,
     equationMapping: EquationMapping,
 ) {
-    const equationLabel = children.textContent?.replace(/−/g, "-") || "";
-    if (!equationLabel) {
+    const href = children.getAttribute("href");
+    const label = href?.split("#pre-eqn-").pop();
+    if (!label) {
         throw new Error("No equation label found");
     }
 
-    const trimmedLabel = equationLabel.replace(/^\(|\)$/g, "");
-    const parenthesesRemoved = trimmedLabel !== equationLabel;
+    const parenthesesRemoved = children.textContent?.includes("(") ?? false;
 
-    if (!(trimmedLabel in equationMapping)) {
+    if (!(label in equationMapping)) {
         console.error(
-            `Equation label "${trimmedLabel}" not found in equation mapping`,
+            `Equation label "${label}" not found in equation mapping`,
         );
 
         return {
-            equationNumber: `Error: reference ${trimmedLabel} not labeled`,
+            equationNumber: `Error: reference ${label} not labeled`,
             equationString: "error",
             parenthesesRemoved: false,
         };
     }
 
-    const { equationNumber, equationString } = equationMapping[trimmedLabel];
+    const { equationNumber, equationString } = equationMapping[label];
 
     return { equationNumber, equationString, parenthesesRemoved };
 }
