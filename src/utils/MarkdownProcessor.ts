@@ -147,7 +147,8 @@ export class MarkdownProcessor {
         return (
             line.includes("$$") ||
             line.includes("\\begin{align}") ||
-            line.includes("\\end{align}")
+            line.includes("\\end{align}") ||
+            /^\s*$/.test(line)
         );
     }
 
