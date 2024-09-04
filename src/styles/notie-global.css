@@ -3,6 +3,12 @@
     content: " ";
 }
 
+@media (max-width: 430px) {
+    .katex .tag {
+        display: none;
+    }
+}
+
 .katex-display {
     overflow: auto hidden;
 }
