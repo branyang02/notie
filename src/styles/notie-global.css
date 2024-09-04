@@ -3,6 +3,10 @@
     content: " ";
 }
 
+.katex-display {
+    overflow: auto hidden;
+}
+
 .katex {
     font-size: var(--blog-katex-size);
 }
