@@ -1,10 +1,11 @@
-import { Pane, Heading, majorScale, Combobox } from "evergreen-ui";
+import { Pane, Heading, majorScale, Combobox, Text } from "evergreen-ui";
 import { useTheme } from "../context/useTheme";
 import { useEffect, useState } from "react";
 import { GitHubButton, NavButton, NavMobileMenu } from "./NavButton";
 import { useNavigate } from "react-router-dom";
 
 const NavBar = () => {
+    const version = import.meta.env.PACKAGE_VERSION;
     const { theme, setTheme } = useTheme();
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1000);
     const navigate = useNavigate();
@@ -47,7 +48,12 @@ const NavBar = () => {
                     style={{ cursor: "pointer" }}
                     onClick={() => navigate("/")}
                 >
-                    {NAME}
+                    <Pane>
+                        {NAME}
+                        <Text display="block" color="muted">
+                            v{version}
+                        </Text>
+                    </Pane>
                 </Heading>
 
                 <Pane display="flex" alignItems="center">
