@@ -1,4 +1,13 @@
-import { Card, Heading, majorScale, Pane, Spinner, Text } from "evergreen-ui";
+import {
+    Card,
+    Heading,
+    Link,
+    majorScale,
+    Pane,
+    Paragraph,
+    Spinner,
+    Text,
+} from "evergreen-ui";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../context/useTheme";
@@ -124,97 +133,133 @@ const Examples = () => {
                 margin: "0 auto",
             }}
             display="flex"
-            flexDirection="row"
-            justifyContent="space-between"
+            flexDirection="column"
+            alignItems="center"
         >
-            <Pane width="48%" display="flex" flexDirection="column">
-                <Heading
-                    size={600}
-                    marginBottom={majorScale(2)}
-                    color={darkMode ? "white" : "default"}
-                >
-                    Examples
-                </Heading>
-                {exampleNotes.map((post, index) => (
-                    <Card
-                        key={index}
-                        className="BlogCard"
-                        elevation={1}
-                        hoverElevation={2}
-                        marginY={majorScale(1)}
-                        padding={majorScale(2)}
-                        display="flex"
-                        flexDirection="column"
-                        justifyContent="space-between"
-                        onClick={() => handleCardClick(post.link)}
-                        cursor="pointer"
-                        background={darkMode ? "overlay" : "tint2"}
+            <Pane
+                width="100%"
+                display="flex"
+                flexDirection="row"
+                justifyContent="space-between"
+            >
+                <Pane width="48%" display="flex" flexDirection="column">
+                    <Heading
+                        size={600}
+                        marginBottom={majorScale(2)}
                         color={darkMode ? "white" : "default"}
                     >
-                        <Heading
-                            size={500}
-                            marginBottom={majorScale(1)}
-                            className="note-postHeading"
+                        Examples
+                    </Heading>
+                    {exampleNotes.map((post, index) => (
+                        <Card
+                            key={index}
+                            className="BlogCard"
+                            elevation={1}
+                            hoverElevation={2}
+                            marginY={majorScale(1)}
+                            padding={majorScale(2)}
+                            display="flex"
+                            flexDirection="column"
+                            justifyContent="space-between"
+                            onClick={() => handleCardClick(post.link)}
+                            cursor="pointer"
+                            background={darkMode ? "overlay" : "tint2"}
                             color={darkMode ? "white" : "default"}
                         >
-                            {post.title}
-                        </Heading>
-                        <Pane
+                            <Heading
+                                size={500}
+                                marginBottom={majorScale(1)}
+                                className="note-postHeading"
+                                color={darkMode ? "white" : "default"}
+                            >
+                                {post.title}
+                            </Heading>
+                            <Pane
+                                display="flex"
+                                justifyContent="space-between"
+                                alignItems="center"
+                            >
+                                <Text size={300} color={"A7B6C2"}>
+                                    {post.subtitle}
+                                </Text>
+                            </Pane>
+                        </Card>
+                    ))}
+                </Pane>
+                <Pane width="48%" display="flex" flexDirection="column">
+                    <Heading
+                        size={600}
+                        marginBottom={majorScale(2)}
+                        color={darkMode ? "white" : "default"}
+                    >
+                        Full Demos
+                    </Heading>
+                    {otherNotes.map((post, index) => (
+                        <Card
+                            key={index}
+                            className="BlogCard"
+                            elevation={1}
+                            hoverElevation={2}
+                            marginY={majorScale(1)}
+                            padding={majorScale(2)}
                             display="flex"
+                            flexDirection="column"
                             justifyContent="space-between"
-                            alignItems="center"
+                            onClick={() => handleCardClick(post.link)}
+                            cursor="pointer"
+                            background={darkMode ? "overlay" : "tint2"}
+                            color={darkMode ? "white" : "default"}
                         >
-                            <Text size={300} color={"A7B6C2"}>
-                                {post.subtitle}
-                            </Text>
-                        </Pane>
-                    </Card>
-                ))}
+                            <Heading
+                                size={500}
+                                marginBottom={majorScale(1)}
+                                className="note-postHeading"
+                                color={darkMode ? "white" : "default"}
+                            >
+                                {post.title}
+                            </Heading>
+                            <Pane
+                                display="flex"
+                                justifyContent="space-between"
+                                alignItems="center"
+                            >
+                                <Text size={300} color={"A7B6C2"}>
+                                    {post.subtitle}
+                                </Text>
+                            </Pane>
+                        </Card>
+                    ))}
+                </Pane>
             </Pane>
-
-            <Pane width="48%" display="flex" flexDirection="column">
-                <Heading
-                    size={600}
-                    marginBottom={majorScale(2)}
-                    color={darkMode ? "white" : "default"}
-                >
-                    Full Demos
-                </Heading>
-                {otherNotes.map((post, index) => (
-                    <Card
-                        key={index}
-                        className="BlogCard"
-                        elevation={1}
-                        hoverElevation={2}
-                        marginY={majorScale(1)}
-                        padding={majorScale(2)}
-                        display="flex"
-                        flexDirection="column"
-                        justifyContent="space-between"
-                        onClick={() => handleCardClick(post.link)}
-                        cursor="pointer"
-                        background={darkMode ? "overlay" : "tint2"}
-                        color={darkMode ? "white" : "default"}
+            <Pane
+                textAlign="center"
+                width="100%"
+                position="fixed"
+                bottom={0}
+                padding={majorScale(2)}
+                marginBottom={majorScale(2)}
+            >
+                <Paragraph color={darkMode ? "white" : "default"}>
+                    All examples and demos are written in markdown and can be
+                    found in the github repository{" "}
+                    <Link
+                        href="https://github.com/branyang02/notie/tree/main/demo-app/src/assets"
+                        target="_blank"
+                        color={darkMode ? "white" : "blue"}
                     >
-                        <Heading
-                            size={500}
-                            marginBottom={majorScale(1)}
-                            className="note-postHeading"
-                            color={darkMode ? "white" : "default"}
-                        >
-                            {post.title}
-                        </Heading>
-                        <Pane
-                            display="flex"
-                            justifyContent="space-between"
-                            alignItems="center"
-                        >
-                            <Text size={300} color={"A7B6C2"}>
-                                {post.subtitle}
-                            </Text>
-                        </Pane>
-                    </Card>
-                ))}
+                        here.
+                    </Link>
+                </Paragraph>
+                <Text size={400} color={darkMode ? "white" : "default"}>
+                    For more examples, visit{" "}
+                    <Link
+                        href="https://www.brandonyifanyang.com/notes"
+                        target="_blank"
+                        color={darkMode ? "white" : "blue"}
+                    >
+                        www.brandonyifanyang.com/notes.
+                    </Link>
+                </Text>
             </Pane>
         </Pane>
     );
