@@ -234,7 +234,6 @@ const Examples = () => {
             <Pane
                 textAlign="center"
                 width="100%"
-                position="fixed"
                 bottom={0}
                 padding={majorScale(2)}
                 marginBottom={majorScale(2)}
