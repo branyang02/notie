@@ -466,20 +466,82 @@ Reference equations $\eqref{eq:quadratic-general}$, $\eqref{eq:quadratic-normali
 
 You can create TikZ diagrams in your markdown file by including `tikz` after the triple backticks. For example,
 
+````markdown
 ```tikz
 \begin{document}
-\begin{tikzpicture}
-    % Draw a rectangle
-    \draw (0,0) rectangle (4,2);
 
-    % Label the corners of the rectangle
-    \node at (0,0) [below left] {A};
-    \node at (4,0) [below right] {B};
-    \node at (4,2) [above right] {C};
-    \node at (0,2) [above left] {D};
+\begin{tikzpicture}[level/.style={sibling distance=60mm/#1}]
+\node [circle,draw] (z){$n$}
+  child {node [circle,draw] (a) {$\frac{n}{2}$}
+    child {node [circle,draw] (b) {$\frac{n}{2^2}$}
+      child {node {$\vdots$}
+        child {node [circle,draw] (d) {$\frac{n}{2^k}$}}
+        child {node [circle,draw] (e) {$\frac{n}{2^k}$}}
+      }
+      child {node {$\vdots$}}
+    }
+    child {node [circle,draw] (g) {$\frac{n}{2^2}$}
+      child {node {$\vdots$}}
+      child {node {$\vdots$}}
+    }
+  }
+  child {node [circle,draw] (j) {$\frac{n}{2}$}
+    child {node [circle,draw] (k) {$\frac{n}{2^2}$}
+      child {node {$\vdots$}}
+      child {node {$\vdots$}}
+    }
+  child {node [circle,draw] (l) {$\frac{n}{2^2}$}
+    child {node {$\vdots$}}
+    child {node (c){$\vdots$}
+      child {node [circle,draw] (o) {$\frac{n}{2^k}$}}
+      child {node [circle,draw] (p) {$\frac{n}{2^k}$}
+        child [grow=right] {node (q) {$=$} edge from parent[draw=none]
+          child [grow=right] {node (q) {$O_{k = \lg n}(n)$} edge from parent[draw=none]
+            child [grow=up] {node (r) {$\vdots$} edge from parent[draw=none]
+              child [grow=up] {node (s) {$O_2(n)$} edge from parent[draw=none]
+                child [grow=up] {node (t) {$O_1(n)$} edge from parent[draw=none]
+                  child [grow=up] {node (u) {$O_0(n)$} edge from parent[draw=none]}
+                }
+              }
+            }
+            child [grow=down] {node (v) {$O(n \cdot \lg n)$}edge from parent[draw=none]}
+          }
+        }
+      }
+    }
+  }
+};
+\path (a) -- (j) node [midway] {+};
+\path (b) -- (g) node [midway] {+};
+\path (k) -- (l) node [midway] {+};
+\path (k) -- (g) node [midway] {+};
+\path (d) -- (e) node [midway] {+};
+\path (o) -- (p) node [midway] {+};
+\path (o) -- (e) node (x) [midway] {$\cdots$}
+  child [grow=down] {
+    node (y) {$O\left(\displaystyle\sum_{i = 0}^k 2^i \cdot \frac{n}{2^i}\right)$}
+    edge from parent[draw=none]
+  };
+\path (q) -- (r) node [midway] {+};
+\path (s) -- (r) node [midway] {+};
+\path (s) -- (t) node [midway] {+};
+\path (s) -- (l) node [midway] {=};
+\path (t) -- (u) node [midway] {+};
+\path (z) -- (u) node [midway] {=};
+\path (j) -- (t) node [midway] {=};
+\path (y) -- (x) node [midway] {$\Downarrow$};
+\path (v) -- (y)
+  node (w) [midway] {$O\left(\displaystyle\sum_{i = 0}^k n\right) = O(k \cdot n)$};
+\path (q) -- (v) node [midway] {=};
+\path (e) -- (x) node [midway] {+};
+\path (o) -- (x) node [midway] {+};
+\path (y) -- (w) node [midway] {$=$};
+\path (v) -- (w) node [midway] {$\Leftrightarrow$};
+\path (r) -- (c) node [midway] {$\cdots$};
 \end{tikzpicture}
 \end{document}
 ```
+````
 
 ```tikz
 \begin{document}
@@ -563,6 +625,27 @@ You can create TikZ diagrams in your markdown file by including `tikz` after the
 </div>
 
 Note that this uses an external library which requires an internet connection to render the diagram.
+
+## Desmos Graphs
+
+You can create Desmos graphs in your markdown file by including `desmos` after the triple backticks. For example,
+
+````markdown
+```desmos
+
+y = \sin(x^2) + \frac{x^2}{10}
+y=\frac{x^2}{4}-\frac{x}{3}+\frac{1}{2}+\frac{c_1}{x^2}
+
+```
+````
+
+```desmos
+
+y = \sin(x^2) + \frac{x^2}{10}
+y=\frac{x^2}{4}-\frac{x}{3}+\frac{1}{2}+\frac{c_1}{x^2}
+
+
+```
 
 ## Blockquotes
 
