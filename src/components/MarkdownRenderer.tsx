@@ -10,6 +10,7 @@ import TikZ from "./TikZ";
 import StaticCodeBlock from "./StaticCodeBlock";
 import { FullNotieConfig } from "../config/NotieConfig";
 import { InlineAlert } from "evergreen-ui";
+import DesmosGraph from "./DesmosGraph";
 
 type CodeProps = React.HTMLAttributes<HTMLElement> & {
     node?: unknown;
@@ -51,6 +52,9 @@ const MarkdownRenderer: React.FC<{
                     }
                     if (language === "tikz") {
                         return <TikZ tikzScript={code} />;
+                    }
+                    if (language === "desmos") {
+                        return <DesmosGraph graphScript={code} />;
                     }
                     if (language === "component") {
                         if (!customComponents) {
