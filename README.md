@@ -4,7 +4,7 @@
 
 ## Updates
 
-9/24/2024: Version [1.3.0](): **notie** adds support for graphing using [desmos](https://www.desmos.com/)!
+9/24/2024: Version [1.3.0](https://github.com/branyang02/notie/tree/a89c10cb3ad6201971f7e89fa24b58c3b6f96633): **notie** adds support for graphing using [desmos](https://www.desmos.com/)!
 
 8/16/2024: Version [1.2.0](https://github.com/branyang02/notie/tree/030936ad9765931f5f061e369461996719e3fdea): **notie** has migrated to using _themes_ instead of _dark mode_. This allows for more customization options and better user experience.
 
