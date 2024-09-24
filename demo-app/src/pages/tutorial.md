@@ -2,7 +2,7 @@
 
 <div class="subtitle">
 
-Updated for [v1.2](https://github.com/branyang02/notie/tree/030936ad9765931f5f061e369461996719e3fdea).
+Updated for [v1.3](https://github.com/branyang02/notie/tree/a89c10cb3ad6201971f7e89fa24b58c3b6f96633).
 
 </div>
 
