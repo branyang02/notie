@@ -30,6 +30,7 @@ const StaticCodeBlock = ({
                         borderRadius: "0 0 10px 10px",
                         marginTop: 0,
                         marginBottom: 0,
+                        maxHeight: "80vh",
                     }}
                 >
                     {code}
