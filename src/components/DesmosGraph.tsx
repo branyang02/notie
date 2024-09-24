@@ -14,8 +14,8 @@ const DesmosGraph = ({ graphScript }: { graphScript: string }) => {
     useEffect(() => {
         if (!scriptLoaded.current) {
             const scriptEl = document.createElement("script");
-            scriptEl.src =
-                "https://www.desmos.com/api/v1.9/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6";
+            const apiUrl = import.meta.env.VITE_DESMOS_API_URL;
+            scriptEl.src = apiUrl;
             scriptEl.async = true;
             scriptEl.onload = () => {
                 scriptLoaded.current = true;
