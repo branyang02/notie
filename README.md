@@ -4,6 +4,8 @@
 
 ## Updates
 
+9/24/2024: Version [1.3.0](): **notie** adds support for graphing using [desmos](https://www.desmos.com/)!
+
 8/16/2024: Version [1.2.0](https://github.com/branyang02/notie/tree/030936ad9765931f5f061e369461996719e3fdea): **notie** has migrated to using _themes_ instead of _dark mode_. This allows for more customization options and better user experience.
 
 8/12/2024: Version [1.1.0](https://github.com/branyang02/notie/tree/f5e2539ba395e0e2540809e11ee967af1b170436): Fully integrated automatic equation numbering and equation preview.
@@ -55,6 +57,7 @@ Check out the [tutorial](https://notie-markdown.vercel.app/tutorial) for more de
 <img width="1129" alt="image" src="https://github.com/user-attachments/assets/593799c4-ad23-4a07-8822-08bb98a194ef">
 <img width="1414" alt="image" src="https://github.com/user-attachments/assets/da36f8bd-b631-4b72-bb88-25f017e76609">
 <img width="1069" alt="image" src="https://github.com/user-attachments/assets/d7e22bf0-6920-4107-bea1-567abe8cfc45">
+<img width="1478" alt="image" src="https://github.com/user-attachments/assets/9bb43d55-9924-49d1-a895-5c03db1ae821">
 <img width="1405" alt="image" src="https://github.com/user-attachments/assets/27127d15-a019-4f26-ad29-8eba881d7bbb">
 <img width="1441" alt="image" src="https://github.com/user-attachments/assets/90ea496d-2196-4a31-8556-c819399a0932">
 
