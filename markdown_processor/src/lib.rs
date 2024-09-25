@@ -25,7 +25,6 @@ pub struct RustMarkdownProcessor {
 
 #[wasm_bindgen]
 impl RustMarkdownProcessor {
-    // Constructor
     #[wasm_bindgen(constructor)]
     pub fn new(markdown_content: String) -> RustMarkdownProcessor {
         set_panic_hook();
@@ -36,8 +35,7 @@ impl RustMarkdownProcessor {
     }
 
     pub fn process(&mut self) {
-        // print processing
-        println!("Processing markdown content...");
+        web_sys::console::log_1(&"Processing markdown".into());
     }
 
     pub fn get_equation_mapping(&self) -> EquationMapping {
