@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import dts from "vite-plugin-dts";
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
+import wasmPack from "vite-plugin-wasm-pack";
 
 export default defineConfig({
     build: {
@@ -23,6 +24,6 @@ export default defineConfig({
         sourcemap: true,
         emptyOutDir: true,
     },
-    plugins: [react(), dts(), cssInjectedByJsPlugin()],
+    plugins: [react(), dts(), cssInjectedByJsPlugin(), wasmPack("./markdown_processor")],
     assetsInclude: ["**/*.md"],
 });
