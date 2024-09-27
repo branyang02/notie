@@ -10,6 +10,12 @@ Fall 2024 | Author: Brandon Yang
 
 An **ordinary differential equation (ODE)** is an equation that contains one or more functions of one independent variable and its derivatives. For example, the following are ODEs:
 
+<blockquote class="note">
+
+An ODE is an equation that contains one or more functions of one independent variable and its derivatives.
+
+</blockquote>
+
 ```desmos
 
 y = mx + b

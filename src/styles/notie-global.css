@@ -149,6 +149,17 @@ blockquote.important {
     border-left: 5px solid #dd2e2e;
 }
 
+/* Note */
+blockquote.note::before {
+    color: oklab(0.46 -0.02 0.09);
+    content: "Note";
+}
+
+blockquote.note {
+    background: rgb(255 253 0 / 19%);
+    border-left: 5px solid #ffea00;
+}
+
 /* Definition Styles in Math Mode */
 [style*="--blog-blockquote-style: latex"] blockquote {
     margin-block-start: 0;
@@ -215,6 +226,10 @@ blockquote.important {
 }
 
 [style*="--blog-blockquote-style: latex"] blockquote.equation::before {
+    content: none;
+}
+
+[style*="--blog-blockquote-style: latex"] blockquote.note::before {
     content: none;
 }
 

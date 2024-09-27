@@ -672,32 +672,13 @@ You can use the following classes to create different types of blocks:
 - `equation`
 - `theorem`
 - `important`
-
-```markdown
-<blockquote class="proof">
-
-A **proof** is a logical argument that demonstrates the truth of a statement.
-
-</blockquote>
-```
+- `note`
 
 <blockquote class="proof">
 
 A **proof** is a logical argument that demonstrates the truth of a statement.
 
 </blockquote>
-
-```markdown
-<blockquote class="equation">
-
-$$
-\begin{equation}
-a^2 + b^2 = c^2
-\end{equation}
-$$
-
-</blockquote>
-```
 
 <blockquote class="equation">
 
@@ -709,31 +690,21 @@ $$
 
 </blockquote>
 
-```markdown
-<blockquote class="theorem">
-
-**Theorem.** This is a theorem.
-
-</blockquote>
-```
-
 <blockquote class="theorem">
 
 **Theorem.** This is a theorem.
 
 </blockquote>
 
-```markdown
 <blockquote class="important">
 
 **Important.** This is an important note.
 
 </blockquote>
-```
 
-<blockquote class="important">
+<blockquote class="note">
 
-**Important.** This is an important note.
+**Note.** This is a note.
 
 </blockquote>
 
