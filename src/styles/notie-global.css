@@ -161,7 +161,7 @@ blockquote.note {
 }
 
 /* Definition Styles in Math Mode */
-[style*="--blog-blockquote-style: latex"] blockquote {
+[style*="--blog-blockquote-style: latex"] blockquote:not(.note) {
     margin-block-start: 0;
     margin-inline-start: 0;
     display: block;
@@ -176,16 +176,16 @@ blockquote.note {
     padding-bottom: 0.5rem;
 }
 
-[style*="--blog-blockquote-style: latex"] blockquote p:first-child {
+[style*="--blog-blockquote-style: latex"] blockquote:not(.note) p:first-child {
     margin-top: 0;
     display: inline;
 }
 
-[style*="--blog-blockquote-style: latex"] blockquote p:last-child {
+[style*="--blog-blockquote-style: latex"] blockquote:not(.note) p:last-child {
     display: inline;
 }
 
-[style*="--blog-blockquote-style: latex"] blockquote::before {
+[style*="--blog-blockquote-style: latex"] blockquote:not(.note)::before {
     font-weight: bold;
     text-transform: none;
     font-size: 1.1em;
@@ -226,10 +226,6 @@ blockquote.note {
 }
 
 [style*="--blog-blockquote-style: latex"] blockquote.equation::before {
-    content: none;
-}
-
-[style*="--blog-blockquote-style: latex"] blockquote.note::before {
     content: none;
 }
 

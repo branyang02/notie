@@ -12,7 +12,7 @@ An **ordinary differential equation (ODE)** is an equation that contains one or 
 
 <blockquote class="note">
 
-An ODE is an equation that contains one or more functions of one independent variable and its derivatives.
+So why not just use calculus to find the optimal value? The answer is that in many real-world ML problems, the loss function is not as simple as the one we just saw. It may be a complex function with many parameters, and the optimal solution may not have a closed-form solution. Therefore, we use iterative optimization algorithms like GD to find the optimal parameters.
 
 </blockquote>
 
