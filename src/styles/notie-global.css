@@ -151,7 +151,7 @@ blockquote.important {
 
 /* Note */
 blockquote.note::before {
-    color: oklab(0.46 -0.02 0.09);
+    color: lch(86 109.24 91.22);
     content: "Note";
 }
 
