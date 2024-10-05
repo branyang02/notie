@@ -13,6 +13,10 @@
     overflow: auto hidden;
 }
 
+.katex .vlist-t2 {
+    margin-right: 0px;
+}
+
 .katex {
     font-size: var(--blog-katex-size);
 }
