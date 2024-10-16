@@ -25,7 +25,8 @@ const generateTableOfContents = (
             .toLowerCase()
             .replace(/[+.()'`]/g, "")
             .replace(/&nbsp;/g, "")
-            .replace(/&/g, "");
+            .replace(/&/g, "")
+            .replace(/:/g, "");
 
         const formattedTitle =
             activeId === id ? `**${cleanedTitle}**` : cleanedTitle;
