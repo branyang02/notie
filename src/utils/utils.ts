@@ -37,32 +37,12 @@ export function extractEquationInfo(
 
 // Used in EquationReference.tsx
 export function processEquationString(equationString: string): string {
-    // List of addition KaTeX environments where we do not remove `&`.
-    const envs = ["cases", "split"];
-
+    // equationString is a line of LaTeX equation.
     let processedEquationString = "";
-    // equationString is a line of LaTeX equation
-    processedEquationString += "$$\n";
-    processedEquationString += equationString
-        .replace(/\\label\{[^}]*\}/g, "") // Remove \label{...}
-        .split(
-            new RegExp(
-                `(\\\\begin\\{(?:[^}]*matrix[^}]*|${envs.join("|")})\\}[\\s\\S]*?\\\\end\\{(?:[^}]*matrix[^}]*|${envs.join("|")})\\})`,
-            ),
-        )
-        .map((segment) => {
-            // If the segment is inside one of the environments, do not remove the & symbols
-            if (
-                new RegExp(
-                    `\\\\begin\\{(?:[^}]*matrix[^}]*|${envs.join("|")})\\}`,
-                ).test(segment)
-            ) {
-                return segment;
-            }
-            // If the segment is outside, remove the & symbols
-            return segment.replace(/&/g, "");
-        })
-        .join("");
-    processedEquationString += "\n$$\n";
+    // Use `aligned` environment even though we only have one line of equation. This is because we do not have to deal with `&` symbols in the equation.
+    processedEquationString += "$$\n\\begin{aligned}\n";
+    processedEquationString += equationString.replace(/\\label\{[^}]*\}/g, ""); // Remove \label{...}
+    processedEquationString += "\n\\end{aligned}\n$$\n";
+
     return processedEquationString;
 }
