@@ -38,19 +38,11 @@ export function extractEquationInfo(
 // Used in EquationReference.tsx
 export function processEquationString(equationString: string): string {
     let processedEquationString = "";
-    if (equationString.includes("\\begin{equation}")) {
-        processedEquationString = equationString
-            .replace(/\\label\{[^}]*\}/g, "")
-            .replace(/\\begin\{align\}/g, "\\begin{aligned}")
-            .replace(/\\begin\{equation\}/g, "")
-            .replace(/\\end\{equation\}/g, "");
-    } else {
-        // We are given a single line from \begin{align}
-        processedEquationString += "$$\n";
-        processedEquationString += equationString
-            .replace(/\\label\{[^}]*\}/g, "")
-            .replace(/&=/g, "=");
-        processedEquationString += "\n$$\n";
-    }
+    // equationString is a line of LaTeX equation
+    processedEquationString += "$$\n";
+    processedEquationString += equationString
+        .replace(/\\label\{[^}]*\}/g, "")
+        .replace(/&/g, "");
+    processedEquationString += "\n$$\n";
     return processedEquationString;
 }

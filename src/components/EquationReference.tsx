@@ -59,6 +59,8 @@ export default EquationReference;
 const EquationCard = ({ equationString }: { equationString: string }) => {
     const processedEquationString = processEquationString(equationString);
 
+    console.log(processedEquationString);
+
     return (
         <Card>
             <ReactMarkdown
