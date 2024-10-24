@@ -112,6 +112,43 @@ $$
 
 Reference equation $\eqref{eq:some-equation}$ in the text.
 
+### Equations inside Lists
+
+1. Let us have an equation here:
+
+   $$
+   \begin{equation} \label{eq:cases}
+   f(x) = \begin{cases}
+   1 & \text{if } x > 0 \\
+   0 & \text{if } x = 0 \\
+   -1 & \text{if } x < 0
+   \end{cases}
+   \end{equation}
+   $$
+
+   Also an `align` environment:
+
+   $$
+   \begin{align}
+   y &= 2 + 2 \label{eq:align-1} \\
+   z &= 3 + 3 \label{eq:align-2} \\
+   t &= \begin{cases}
+   a &= 4 + 4 \\
+   b &= 5 + 5
+   \end{cases} \label{eq:align-3} \\
+   f &= \begin{smallmatrix}
+   a &= 6 + 6 \\
+   b &= 7 + 7
+   \end{smallmatrix} \label{eq:align-4} \\
+   g &= \begin{bmatrix}
+   a &= 8 + 8 \\
+   b &= 9 + 9
+   \end{bmatrix}. \label{eq:align-5}
+   \end{align}
+   $$
+
+   Let us refer to the equation $\eqref{eq:cases}$, and the `align` environment $\eqref{eq:align-1}$, $\eqref{eq:align-2}$, $\eqref{eq:align-3}$, $\eqref{eq:align-4}$, $\eqref{eq:align-5}$.
+
 ## More Equations
 
 We can reference all equations in the document:

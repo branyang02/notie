@@ -37,20 +37,12 @@ export function extractEquationInfo(
 
 // Used in EquationReference.tsx
 export function processEquationString(equationString: string): string {
+    // equationString is a line of LaTeX equation.
     let processedEquationString = "";
-    if (equationString.includes("\\begin{equation}")) {
-        processedEquationString = equationString
-            .replace(/\\label\{[^}]*\}/g, "")
-            .replace(/\\begin\{align\}/g, "\\begin{aligned}")
-            .replace(/\\begin\{equation\}/g, "")
-            .replace(/\\end\{equation\}/g, "");
-    } else {
-        // We are given a single line from \begin{align}
-        processedEquationString += "$$\n";
-        processedEquationString += equationString
-            .replace(/\\label\{[^}]*\}/g, "")
-            .replace(/&=/g, "=");
-        processedEquationString += "\n$$\n";
-    }
+    // Use `aligned` environment even though we only have one line of equation. This is because we do not have to deal with `&` symbols in the equation.
+    processedEquationString += "$$\n\\begin{aligned}\n";
+    processedEquationString += equationString.replace(/\\label\{[^}]*\}/g, ""); // Remove \label{...}
+    processedEquationString += "\n\\end{aligned}\n$$\n";
+
     return processedEquationString;
 }

@@ -167,7 +167,13 @@ export class MarkdownProcessor {
     ): number {
         const label = equation.match(/\\label\{(.*?)\}/g)?.[0];
         if (label) {
-            this.handleLabel(label, equation, sectionIndex, currEquationNumber);
+            // extract between \begin{equation} and \end{equation}
+            const line = equation
+                .replace(/\\label\{(.*?)\}/g, "") // remove label from equation
+                .replace(/\$\$/g, "") // remove $$
+                .replace(/\\begin{equation}/, "") // remove \begin{equation}
+                .replace(/\\end{equation}/, ""); // remove \end{equation}
+            this.handleLabel(label, line, sectionIndex, currEquationNumber);
         }
         currEquationNumber++;
         return currEquationNumber;
