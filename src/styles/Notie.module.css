@@ -64,6 +64,7 @@
     font-size: var(--blog-font-size);
     font-family: var(--blog-font-family);
     color: var(--blog-text-color);
+    overflow-x: hidden;
 }
 
 /* Heading colors */
@@ -163,9 +164,12 @@
 
 /* Table Styles */
 .blog-content table {
+    display: block;
     border-collapse: collapse;
     max-width: 100%;
+    width: fit-content;
     margin: 16px auto;
+    overflow-x: auto;
 }
 
 .blog-content th,
