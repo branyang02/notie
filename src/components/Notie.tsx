@@ -38,8 +38,8 @@ const Notie: React.FC<NotieProps> = ({
     // Effect to observe headings and update activeId
     useEffect(() => {
         const observerOptions = {
-            rootMargin: "0px 0px -80% 0px",
-            threshold: 1.0,
+            rootMargin: "0px 0px -90% 0px",
+            threshold: 0,
         };
 
         if (!contentRef.current) return;

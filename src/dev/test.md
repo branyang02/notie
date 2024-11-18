@@ -11,11 +11,11 @@ x &= 1 + 1 \\
 \end{equation}
 $$
 
-| $g_i(t)$ | $Y_i(t)$ |
-| --- | --- |
-| $P_n(t)=a_0 t^n+a_1 t^{n-1}+\cdots+a_n$ | $t^s\left(A_0 t^n+A_1 t^{n-1}+\cdots+A_n\right)$ |
-|$P_n(t) e^{\alpha t}$ | $t^s\left(A_0 t^n+A_1 t^{n-1}+\cdots+A_n\right) e^{\alpha t}$ |
-|$P_n(t) e^{\alpha t}\begin{cases}\sin \beta t\\ \cos \beta t \end{cases}$ | $\begin{aligned} & t^s\left(\left(A_0 t^n+A_1 t^{n-1}+\cdots+A_n\right) e^{\alpha t} \cos (\beta t)\right. \\ & \left.+\left(B_0 t^n+B_1 t^{n-1}+\cdots+B_n\right) e^{\alpha t} \sin (\beta t)\right)\end{aligned}$  |
+| $g_i(t)$                                                                  | $Y_i(t)$                                                                                                                                                                                                            |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| $P_n(t)=a_0 t^n+a_1 t^{n-1}+\cdots+a_n$                                   | $t^s\left(A_0 t^n+A_1 t^{n-1}+\cdots+A_n\right)$                                                                                                                                                                    |
+| $P_n(t) e^{\alpha t}$                                                     | $t^s\left(A_0 t^n+A_1 t^{n-1}+\cdots+A_n\right) e^{\alpha t}$                                                                                                                                                       |
+| $P_n(t) e^{\alpha t}\begin{cases}\sin \beta t\\ \cos \beta t \end{cases}$ | $\begin{aligned} & t^s\left(\left(A_0 t^n+A_1 t^{n-1}+\cdots+A_n\right) e^{\alpha t} \cos (\beta t)\right. \\ & \left.+\left(B_0 t^n+B_1 t^{n-1}+\cdots+B_n\right) e^{\alpha t} \sin (\beta t)\right)\end{aligned}$ |
 
 ### Equations inside Lists
 
