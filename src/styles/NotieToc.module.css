@@ -1,3 +1,13 @@
+/* Disable TOC scrollbar */
+.note-toc {
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For Internet Explorer and Edge */
+}
+
+.note-toc::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Opera */
+}
+
 /* Get colors from Config */
 .note-toc {
     font-family: var(--note-toc-font-family);
