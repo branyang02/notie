@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import styles from "../styles//Notie.module.css";
 import "../styles/notie-global.css";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import { Pane } from "evergreen-ui";
 import ScrollToTopButton from "./ScrollToTopButton";
 import NoteToc from "./NotieToc";
@@ -30,19 +30,20 @@ const Notie: React.FC<NotieProps> = ({
     customComponents,
 }) => {
     const config = useNotieConfig(userConfig, theme);
-    const mdProcessor = new MarkdownProcessor(markdown, config);
-    const { markdownContent, equationMapping } = mdProcessor.process();
+    const { markdownContent, equationMapping } = useMemo(() => {
+        const processor = new MarkdownProcessor(markdown, config);
+        return processor.process();
+    }, [markdown, config]);
     const contentRef = useRef<HTMLDivElement>(null);
     const [activeId, setActiveId] = useState<string>("");
 
     // Effect to observe headings and update activeId
     useEffect(() => {
+        if (!contentRef.current) return;
         const observerOptions = {
             rootMargin: "0px 0px -90% 0px",
             threshold: 0,
         };
-
-        if (!contentRef.current) return;
 
         const headings = contentRef.current.querySelectorAll(
             "h1, h2, h3, h4, h5, h6",
@@ -60,7 +61,7 @@ const Notie: React.FC<NotieProps> = ({
         return () => {
             headings.forEach((heading) => observer.unobserve(heading));
         };
-    }, [markdownContent]);
+    }, [markdownContent, activeId]);
 
     // Effect to auto label equation numbers
     useEffect(() => {
@@ -131,7 +132,6 @@ const Notie: React.FC<NotieProps> = ({
     // Effect to enable Equation Preview
     useEffect(() => {
         if (!contentRef.current) return;
-
         const eqnRefs = contentRef.current.querySelectorAll(
             'a[href^="#pre-eqn-"]',
         );
@@ -148,7 +148,7 @@ const Notie: React.FC<NotieProps> = ({
             createRoot(equReference).render(equReferenceComponent);
             ref.parentNode?.replaceChild(equReference, ref);
         });
-    }, [config.previewEquations, equationMapping, markdownContent]);
+    }, [config.previewEquations, equationMapping]);
 
     return (
         <Pane className={styles["notie-container"]}>
