@@ -39,7 +39,7 @@ const Notie: React.FC<NotieProps> = ({
     useEffect(() => {
         const observerOptions = {
             rootMargin: "0px 0px -80% 0px",
-            threshold: 1.0,
+            threshold: 0,
         };
 
         if (!contentRef.current) return;
