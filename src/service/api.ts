@@ -5,7 +5,7 @@ export interface RunCodeResponse {
 
 const baseUrl =
     import.meta.env.VITE_API_BASE_URL ||
-    "https://yang-website-backend-c3338735a47f.herokuapp.com";
+    "https://yang-website-backend-c3338735a47f.herokuapp.com/";
 
 export const runCode = async (
     code: string,
