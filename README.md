@@ -15,7 +15,7 @@
 
 ## Getting Started
 
-To start using **notie**, install the package via npm:
+To start using **notie**, install the package via npm: 
 
 ```bash
 npm install notie-markdown
