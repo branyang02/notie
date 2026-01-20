@@ -3,9 +3,7 @@ export interface RunCodeResponse {
     image: string;
 }
 
-const baseUrl =
-    import.meta.env.VITE_API_BASE_URL ||
-    "https://yang-website-backend-c3338735a47f.herokuapp.com/";
+const baseUrl = "http://141.148.45.82:5000";
 
 export const runCode = async (
     code: string,

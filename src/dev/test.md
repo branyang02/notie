@@ -90,3 +90,64 @@ $$
 Let's reference equations $\eqref{eq:dot-product}$, $\eqref{eq:2x2-determinant}$, $\eqref{eq:3x3-determinant}$, $\eqref{eq:2x2-inverse}$, $\eqref{eq:eigenvalue}$, $\eqref{eq:cramers-rule}$, and $\eqref{eq:rref}$ in the text.
 
 Let's also reference $\eqref{eq:gauss-law}$, $\eqref{eq:ampere-maxwell}$, $\eqref{eq:energy-equation}$, and $\eqref{eq:einstein-field}$
+
+### Running Code
+
+```execute-python
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+
+n = 10
+print(fibonacci(n))
+```
+
+```execute-javascript
+function helloWorld() {
+  console.log("Hello, World!");
+}
+
+helloWorld();
+```
+
+#### PyTorch
+
+```execute-python
+import torch
+
+print(torch.__version__)
+print(torch.cuda.is_available())
+
+class NeuralNetwork(torch.nn.Module):
+    def __init__(self):
+        super(NeuralNetwork, self).__init__()
+        self.linear = torch.nn.Linear(1, 1)
+
+    def forward(self, x):
+        return self.linear(x)
+
+model = NeuralNetwork()
+print(model)
+```
+
+#### Matplotlib
+
+Users can use the pre-definied `get_image` function to display Matplotlib plots.
+
+```execute-python
+import matplotlib.pyplot as plt
+
+# random data
+x = [1, 2, 3, 4, 5]
+y = [10, 20, 25, 30, 35]
+
+plt.plot(x, y)
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Simple plot')
+plt.grid(True)
+plt.tight_layout()
+
+get_image(plt)
+```
