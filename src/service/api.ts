@@ -3,7 +3,7 @@ export interface RunCodeResponse {
     image: string;
 }
 
-const baseUrl = "http://141.148.45.82:5000";
+const baseUrl = "https://api.brandonyifanyang.com";
 
 export const runCode = async (
     code: string,
