@@ -14,6 +14,11 @@ import { createRoot } from "react-dom/client";
 import { NotieConfig, NotieThemes } from "../config/NotieConfig";
 import { useNotieConfig } from "../utils/useNotieConfig";
 
+import init, {
+    EquationMapping,
+    RustMarkdownProcessor,
+} from "../../markdown_processor/pkg";
+
 export interface NotieProps {
     markdown: string;
     config?: NotieConfig;
@@ -36,6 +41,21 @@ const Notie: React.FC<NotieProps> = ({
     }, [markdown, config]);
     const contentRef = useRef<HTMLDivElement>(null);
     const [activeId, setActiveId] = useState<string>("");
+
+    useEffect(() => {
+        const runWasm = async () => {
+            await init();
+            const mp = new RustMarkdownProcessor(markdown);
+            mp.process();
+            const markdownContent: string = mp.get_markdown_content();
+            const equationMapping: EquationMapping = mp.get_equation_mapping();
+            console.log("Markdown Content: ", markdownContent);
+            console.log("Equation Mapping: ", equationMapping);
+            // TODO: Update the state with the processed markdown content
+        };
+
+        runWasm();
+    }, [markdown]);
 
     // Effect to observe headings and update activeId
     useEffect(() => {
