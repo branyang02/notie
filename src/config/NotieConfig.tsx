@@ -1,8 +1,7 @@
-import * as liveThemes from "@uiw/codemirror-themes-all";
-import * as staticThemes from "react-syntax-highlighter/dist/esm/styles/hljs";
+import type { BundledTheme } from "shiki";
 
-type LiveCodeBlockThemeNames = keyof typeof liveThemes;
-type StaticCodeBlockThemeNames = keyof typeof staticThemes;
+type LiveCodeBlockThemeNames = BundledTheme;
+type StaticCodeBlockThemeNames = BundledTheme;
 
 // Theme Type with all optional properties
 export interface Theme {

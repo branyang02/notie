@@ -135,6 +135,15 @@
     font-size: var(--blog-code-font-size);
 }
 
+.code-blocks :global(pre.shiki) {
+    margin: 0;
+    border-radius: 0 0 10px 10px;
+    max-height: 80vh;
+    overflow-y: auto;
+    overflow-x: auto;
+    padding: 1em;
+}
+
 /* //////////////////////// */
 
 /* Heading styles */

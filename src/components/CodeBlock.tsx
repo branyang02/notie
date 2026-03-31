@@ -1,12 +1,6 @@
-import { cpp } from "@codemirror/lang-cpp";
-import { go } from "@codemirror/lang-go";
-import { java } from "@codemirror/lang-java";
-import { javascript } from "@codemirror/lang-javascript";
-import { python } from "@codemirror/lang-python";
-import { rust } from "@codemirror/lang-rust";
 import { indentUnit } from "@codemirror/language";
-import * as themes from "@uiw/codemirror-themes-all";
 import { Extension } from "@codemirror/state";
+import { EditorView } from "@codemirror/view";
 import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import {
     Button,
@@ -18,31 +12,14 @@ import {
     ResetIcon,
     Spinner,
 } from "evergreen-ui";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { BundledTheme } from "shiki";
+import shiki from "codemirror-shiki";
 
 import { runCode, RunCodeResponse } from "../service/api";
 import CodeHeader from "./CodeHeader";
 import styles from "../styles/Notie.module.css";
-
-const getLanguageCode = (language: string) => {
-    switch (language) {
-        case "c":
-        case "cpp":
-            return cpp();
-        case "go":
-            return go();
-        case "java":
-            return java();
-        case "rust":
-            return rust();
-        case "javascript":
-        case "js":
-        case "typescript":
-            return javascript();
-        default:
-            return python();
-    }
-};
+import { getHighlighter, resolveLanguage } from "../utils/shikiHighlighter";
 
 const CodeBlock = ({
     initialCode,
@@ -53,11 +30,41 @@ const CodeBlock = ({
     language?: string;
     theme: string;
 }) => {
-    let selectedTheme = themes[theme as keyof typeof themes] as Extension;
-    if (!selectedTheme) {
-        console.error(`Invalid theme name: ${theme}, falling back to default.`);
-        selectedTheme = themes.duotoneLight; // Default fallback theme
-    }
+    const [extensions, setExtensions] = useState<Extension[]>([
+        indentUnit.of("    "),
+    ]);
+
+    useEffect(() => {
+        let cancelled = false;
+        getHighlighter().then((highlighter) => {
+            if (cancelled) return;
+            const resolvedTheme = highlighter.getTheme(theme as BundledTheme);
+            const { bg, fg, type, colors } = resolvedTheme;
+            const selectionBg =
+                colors?.["editor.selectionBackground"] ??
+                (type === "dark"
+                    ? "rgba(255,255,255,0.15)"
+                    : "rgba(0,0,0,0.1)");
+            setExtensions([
+                shiki({
+                    highlighter: Promise.resolve(highlighter),
+                    language: resolveLanguage(language),
+                    theme: theme as BundledTheme,
+                }),
+                EditorView.theme({
+                    "&": { backgroundColor: bg },
+                    ".cm-gutters": { backgroundColor: bg, borderRight: "none" },
+                    "&.cm-focused .cm-selectionBackground, .cm-selectionBackground":
+                        { backgroundColor: selectionBg },
+                    "& .cm-cursor, & .cm-dropCursor": { borderLeftColor: fg },
+                }),
+                indentUnit.of("    "),
+            ]);
+        });
+        return () => {
+            cancelled = true;
+        };
+    }, [language, theme]);
 
     const [isLoading, setIsLoading] = useState(false);
     const [output, setOutput] = useState("");
@@ -65,8 +72,6 @@ const CodeBlock = ({
     const [code, setCode] = useState(initialCode);
     const [image, setImage] = useState("");
     const editorRef = useRef<ReactCodeMirrorRef>(null);
-
-    const languageCode = getLanguageCode(language);
 
     const onChange = useCallback((value: string) => {
         setCode(value);
@@ -122,10 +127,10 @@ const CodeBlock = ({
                         <CodeMirror
                             ref={editorRef}
                             value={initialCode}
-                            extensions={[languageCode, indentUnit.of("    ")]}
+                            extensions={extensions}
                             maxHeight="80vh"
                             minHeight="100px"
-                            theme={selectedTheme}
+                            theme="none"
                             onChange={onChange}
                         />
                     </div>
