@@ -38,7 +38,13 @@ const CodeBlock = ({
         let cancelled = false;
         getHighlighter().then((highlighter) => {
             if (cancelled) return;
-            const { bg } = highlighter.getTheme(theme as BundledTheme);
+            const resolvedTheme = highlighter.getTheme(theme as BundledTheme);
+            const { bg, fg, type, colors } = resolvedTheme;
+            const selectionBg =
+                colors?.["editor.selectionBackground"] ??
+                (type === "dark"
+                    ? "rgba(255,255,255,0.15)"
+                    : "rgba(0,0,0,0.1)");
             setExtensions([
                 shiki({
                     highlighter: Promise.resolve(highlighter),
@@ -49,6 +55,9 @@ const CodeBlock = ({
                     "&": { backgroundColor: bg },
                     ".cm-content": { backgroundColor: bg },
                     ".cm-gutters": { backgroundColor: bg, borderRight: "none" },
+                    "&.cm-focused .cm-selectionBackground, .cm-selectionBackground":
+                        { backgroundColor: selectionBg },
+                    "& .cm-cursor, & .cm-dropCursor": { borderLeftColor: fg },
                 }),
                 indentUnit.of("    "),
             ]);
