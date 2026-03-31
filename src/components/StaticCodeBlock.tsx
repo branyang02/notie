@@ -1,8 +1,16 @@
+import { useEffect, useState } from "react";
+import type { BundledTheme } from "shiki";
 import { Pane } from "evergreen-ui";
 import CodeHeader from "./CodeHeader";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import * as themes from "react-syntax-highlighter/dist/esm/styles/hljs";
 import styles from "../styles/Notie.module.css";
+import { getHighlighter, resolveLanguage } from "../utils/shikiHighlighter";
+
+function escapeHtml(s: string) {
+    return s
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
 
 const StaticCodeBlock = ({
     code,
@@ -13,29 +21,37 @@ const StaticCodeBlock = ({
     language: string;
     theme: string;
 }) => {
-    let selectedTheme = themes[theme as keyof typeof themes];
-    if (!selectedTheme) {
-        console.error(`Invalid theme name: ${theme}, falling back to default.`);
-        selectedTheme = themes.github; // Default fallback theme
-    }
+    const [html, setHtml] = useState<string>(
+        `<pre><code>${escapeHtml(code)}</code></pre>`,
+    );
+
+    useEffect(() => {
+        let cancelled = false;
+        getHighlighter().then((highlighter) => {
+            if (cancelled) return;
+            try {
+                setHtml(
+                    highlighter.codeToHtml(code, {
+                        lang: resolveLanguage(language),
+                        theme: theme as BundledTheme,
+                    }),
+                );
+            } catch {
+                // keep escaped fallback
+            }
+        });
+        return () => {
+            cancelled = true;
+        };
+    }, [code, language, theme]);
 
     return (
         <Pane>
             <CodeHeader language={language} code={code} />
-            <div className={styles["code-blocks"]}>
-                <SyntaxHighlighter
-                    language="language"
-                    style={selectedTheme}
-                    customStyle={{
-                        borderRadius: "0 0 10px 10px",
-                        marginTop: 0,
-                        marginBottom: 0,
-                        maxHeight: "80vh",
-                    }}
-                >
-                    {code}
-                </SyntaxHighlighter>
-            </div>
+            <div
+                className={styles["code-blocks"]}
+                dangerouslySetInnerHTML={{ __html: html }}
+            />
         </Pane>
     );
 };

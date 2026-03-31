@@ -1,11 +1,4 @@
-import { cpp } from "@codemirror/lang-cpp";
-import { go } from "@codemirror/lang-go";
-import { java } from "@codemirror/lang-java";
-import { javascript } from "@codemirror/lang-javascript";
-import { python } from "@codemirror/lang-python";
-import { rust } from "@codemirror/lang-rust";
 import { indentUnit } from "@codemirror/language";
-import * as themes from "@uiw/codemirror-themes-all";
 import { Extension } from "@codemirror/state";
 import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import {
@@ -18,31 +11,14 @@ import {
     ResetIcon,
     Spinner,
 } from "evergreen-ui";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { BundledTheme } from "shiki";
+import shiki from "codemirror-shiki";
 
 import { runCode, RunCodeResponse } from "../service/api";
 import CodeHeader from "./CodeHeader";
 import styles from "../styles/Notie.module.css";
-
-const getLanguageCode = (language: string) => {
-    switch (language) {
-        case "c":
-        case "cpp":
-            return cpp();
-        case "go":
-            return go();
-        case "java":
-            return java();
-        case "rust":
-            return rust();
-        case "javascript":
-        case "js":
-        case "typescript":
-            return javascript();
-        default:
-            return python();
-    }
-};
+import { getHighlighter, resolveLanguage } from "../utils/shikiHighlighter";
 
 const CodeBlock = ({
     initialCode,
@@ -53,11 +29,27 @@ const CodeBlock = ({
     language?: string;
     theme: string;
 }) => {
-    let selectedTheme = themes[theme as keyof typeof themes] as Extension;
-    if (!selectedTheme) {
-        console.error(`Invalid theme name: ${theme}, falling back to default.`);
-        selectedTheme = themes.duotoneLight; // Default fallback theme
-    }
+    const [extensions, setExtensions] = useState<Extension[]>([
+        indentUnit.of("    "),
+    ]);
+
+    useEffect(() => {
+        let cancelled = false;
+        getHighlighter().then((highlighter) => {
+            if (cancelled) return;
+            setExtensions([
+                shiki({
+                    highlighter: Promise.resolve(highlighter),
+                    language: resolveLanguage(language),
+                    theme: theme as BundledTheme,
+                }),
+                indentUnit.of("    "),
+            ]);
+        });
+        return () => {
+            cancelled = true;
+        };
+    }, [language, theme]);
 
     const [isLoading, setIsLoading] = useState(false);
     const [output, setOutput] = useState("");
@@ -65,8 +57,6 @@ const CodeBlock = ({
     const [code, setCode] = useState(initialCode);
     const [image, setImage] = useState("");
     const editorRef = useRef<ReactCodeMirrorRef>(null);
-
-    const languageCode = getLanguageCode(language);
 
     const onChange = useCallback((value: string) => {
         setCode(value);
@@ -122,10 +112,10 @@ const CodeBlock = ({
                         <CodeMirror
                             ref={editorRef}
                             value={initialCode}
-                            extensions={[languageCode, indentUnit.of("    ")]}
+                            extensions={extensions}
                             maxHeight="80vh"
                             minHeight="100px"
-                            theme={selectedTheme}
+                            theme="none"
                             onChange={onChange}
                         />
                     </div>
