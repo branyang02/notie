@@ -1,5 +1,6 @@
 import { indentUnit } from "@codemirror/language";
 import { Extension } from "@codemirror/state";
+import { EditorView } from "@codemirror/view";
 import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import {
     Button,
@@ -37,11 +38,17 @@ const CodeBlock = ({
         let cancelled = false;
         getHighlighter().then((highlighter) => {
             if (cancelled) return;
+            const { bg } = highlighter.getTheme(theme as BundledTheme);
             setExtensions([
                 shiki({
                     highlighter: Promise.resolve(highlighter),
                     language: resolveLanguage(language),
                     theme: theme as BundledTheme,
+                }),
+                EditorView.theme({
+                    "&": { backgroundColor: bg },
+                    ".cm-content": { backgroundColor: bg },
+                    ".cm-gutters": { backgroundColor: bg, borderRight: "none" },
                 }),
                 indentUnit.of("    "),
             ]);
