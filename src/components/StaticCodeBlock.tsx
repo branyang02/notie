@@ -6,10 +6,7 @@ import styles from "../styles/Notie.module.css";
 import { getHighlighter, resolveLanguage } from "../utils/shikiHighlighter";
 
 function escapeHtml(s: string) {
-    return s
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 const StaticCodeBlock = ({
