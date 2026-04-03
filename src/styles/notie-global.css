@@ -142,6 +142,17 @@ blockquote.lemma {
     border-left: 5px solid #486bd5;
 }
 
+/* Algorithm */
+blockquote.algorithm::before {
+    color: #486bd5;
+    content: "Algorithm";
+}
+
+blockquote.algorithm {
+    background: rgba(126, 174, 247, 0.2);
+    border-left: 5px solid #486bd5;
+}
+
 /* Important */
 blockquote.important::before {
     color: #dd2e2e;
@@ -222,6 +233,15 @@ blockquote.note {
 
 [style*="--blog-blockquote-style: latex"] blockquote.lemma::before {
     content: attr(blockquote-theorem-number) " ";
+    color: inherit;
+}
+
+[style*="--blog-blockquote-style: latex"] blockquote.algorithm {
+    font-style: normal;
+}
+
+[style*="--blog-blockquote-style: latex"] blockquote.algorithm::before {
+    content: attr(blockquote-algorithm-number) " ";
     color: inherit;
 }
 

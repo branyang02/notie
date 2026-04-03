@@ -97,6 +97,7 @@ const Notie: React.FC<NotieProps> = ({
             const section = sections[sectionIndex];
             const definitions = section.getElementsByClassName("definition");
             const problems = section.getElementsByClassName("problem");
+            const algorithms = section.getElementsByClassName("algorithm");
             const theoremsAndLemmas =
                 section.querySelectorAll(".theorem, .lemma");
             for (let defIndex = 0; defIndex < definitions.length; defIndex++) {
@@ -111,6 +112,13 @@ const Notie: React.FC<NotieProps> = ({
                 prob.setAttribute(
                     "blockquote-problem-number",
                     `Problem ${sectionIndex + 1}.${probIndex + 1}`,
+                );
+            }
+            for (let algIndex = 0; algIndex < algorithms.length; algIndex++) {
+                const alg = algorithms[algIndex];
+                alg.setAttribute(
+                    "blockquote-algorithm-number",
+                    `Algorithm ${sectionIndex + 1}.${algIndex + 1}`,
                 );
             }
             theoremsAndLemmas.forEach((item, index) => {
