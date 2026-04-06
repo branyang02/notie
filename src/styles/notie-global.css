@@ -153,6 +153,17 @@ blockquote.algorithm {
     border-left: 5px solid #486bd5;
 }
 
+/* Problem */
+blockquote.problem::before {
+    color: #486bd5;
+    content: "Problem";
+}
+
+blockquote.problem {
+    background: rgba(126, 174, 247, 0.2);
+    border-left: 5px solid #486bd5;
+}
+
 /* Important */
 blockquote.important::before {
     color: #dd2e2e;
@@ -254,7 +265,6 @@ blockquote.note {
 }
 
 [style*="--blog-blockquote-style: latex"] blockquote.problem {
-    all: unset;
     font-style: normal;
 }
 
