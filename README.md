@@ -50,6 +50,7 @@ Check out the [tutorial](https://notie-markdown.vercel.app/tutorial) for more de
 - **TikZ Support**: Use TikZ to draw diagrams in your notes.
 - **Math Equations**: Write math equations using LaTeX syntax.
   - **Automatic Equation Numbering**: Automatically number equations and refer to them in your notes.
+- **Blockquote References**: Label definitions, theorems, lemmas, algorithms, and problems with an `id`, then reference them anywhere in the document with hover-preview tooltips.
 - **Customizable Themes**: Customize the appearance of your notes with different themes.
 
 ## Showcase

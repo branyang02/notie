@@ -1,10 +1,11 @@
 import { NotieConfig } from "../config/NotieConfig";
-import { EquationMapping } from "./utils";
+import { BlockquoteMapping, EquationMapping } from "./utils";
 
 export class MarkdownProcessor {
     private markdownContent: string;
     private config: NotieConfig;
     private equationMapping: EquationMapping = {};
+    private blockquoteMapping: BlockquoteMapping = {};
 
     constructor(markdownContent: string, config: NotieConfig) {
         this.markdownContent = markdownContent;
@@ -14,6 +15,7 @@ export class MarkdownProcessor {
     public process(): {
         markdownContent: string;
         equationMapping: EquationMapping;
+        blockquoteMapping: BlockquoteMapping;
     } {
         const sections = this.splitIntoSections();
         const processedSections = sections.map((section, i) => {
@@ -28,12 +30,14 @@ export class MarkdownProcessor {
             return {
                 markdownContent: processedMarkdown,
                 equationMapping: this.equationMapping,
+                blockquoteMapping: this.blockquoteMapping,
             };
         }
 
         return {
             markdownContent: processedSections.join(""),
             equationMapping: this.equationMapping,
+            blockquoteMapping: this.blockquoteMapping,
         };
     }
 
@@ -72,7 +76,56 @@ export class MarkdownProcessor {
             modifiedContent,
             sectionIndex,
         );
+        this.processBlockquotes(modifiedContent, sectionIndex);
         return this.reinsertCodeBlocks(finalContent, codeBlocks);
+    }
+
+    private processBlockquotes(content: string, sectionIndex: number): void {
+        const tagPattern = /<blockquote\b([^>]*)>/g;
+        const SUPPORTED = [
+            "definition",
+            "theorem",
+            "lemma",
+            "algorithm",
+            "problem",
+        ];
+        const counts: Record<string, number> = {};
+
+        let tagMatch;
+        while ((tagMatch = tagPattern.exec(content)) !== null) {
+            const attrs = tagMatch[1];
+            const classAttr =
+                attrs.match(/\bclass="([^"]+)"/)?.[1] ?? "";
+            const idAttr = attrs.match(/\bid="([^"]+)"/)?.[1];
+
+            if (!idAttr) continue;
+
+            const type = SUPPORTED.find((t) => classAttr.includes(t));
+            if (!type) continue;
+
+            // Theorems and lemmas share a counter (mirrors DOM useEffect)
+            const counterKey = type === "lemma" ? "theorem" : type;
+            counts[counterKey] = (counts[counterKey] ?? 0) + 1;
+
+            const blockquoteNumber = `${sectionIndex}.${counts[counterKey]}`;
+
+            const contentStart = tagMatch.index + tagMatch[0].length;
+            const endIndex = content.indexOf("</blockquote>", contentStart);
+            const rawContent =
+                endIndex !== -1
+                    ? content.slice(contentStart, endIndex).trim()
+                    : "";
+
+            if (idAttr in this.blockquoteMapping) {
+                console.error(`Duplicate blockquote id found: ${idAttr}.`);
+            } else {
+                this.blockquoteMapping[idAttr] = {
+                    blockquoteNumber,
+                    blockquoteType: type,
+                    blockquoteContent: rawContent,
+                };
+            }
+        }
     }
 
     private processEquations(content: string, sectionIndex: number): string {

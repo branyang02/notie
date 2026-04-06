@@ -9,6 +9,7 @@ import ScrollToTopButton from "./ScrollToTopButton";
 import NoteToc from "./NotieToc";
 import MarkdownRenderer from "./MarkdownRenderer";
 import { MarkdownProcessor } from "../utils/MarkdownProcessor";
+import BlockquoteReference from "./BlockquoteReference";
 import EquationReference from "./EquationReference";
 import { createRoot } from "react-dom/client";
 import { NotieConfig, NotieThemes } from "../config/NotieConfig";
@@ -30,7 +31,7 @@ const Notie: React.FC<NotieProps> = ({
     customComponents,
 }) => {
     const config = useNotieConfig(userConfig, theme);
-    const { markdownContent, equationMapping } = useMemo(() => {
+    const { markdownContent, equationMapping, blockquoteMapping } = useMemo(() => {
         const processor = new MarkdownProcessor(markdown, config);
         return processor.process();
     }, [markdown, config]);
@@ -157,6 +158,27 @@ const Notie: React.FC<NotieProps> = ({
             ref.parentNode?.replaceChild(equReference, ref);
         });
     }, [config.previewEquations, equationMapping]);
+
+    // Effect to enable Blockquote Preview
+    useEffect(() => {
+        if (!contentRef.current) return;
+        const bqRefs = contentRef.current.querySelectorAll(
+            'a[href^="#bqref-"]',
+        );
+
+        bqRefs.forEach((ref) => {
+            const bqReference = document.createElement("span");
+            const bqReferenceComponent = (
+                <BlockquoteReference
+                    children={ref}
+                    blockquoteMapping={blockquoteMapping}
+                    previewBlockquotes={config.previewBlockquotes}
+                />
+            );
+            createRoot(bqReference).render(bqReferenceComponent);
+            ref.parentNode?.replaceChild(bqReference, ref);
+        });
+    }, [config.previewBlockquotes, blockquoteMapping]);
 
     return (
         <Pane className={styles["notie-container"]}>
