@@ -1,13 +1,15 @@
 import { indentUnit } from "@codemirror/language";
-import { Extension } from "@codemirror/state";
+import { Extension, Prec } from "@codemirror/state";
 import { EditorView, keymap } from "@codemirror/view";
-import { defaultKeymap } from "@codemirror/commands";
 import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import {
     Button,
     Card,
     Code,
     IconButton,
+    KeyCommandIcon,
+    KeyControlIcon,
+    KeyEnterIcon,
     Pane,
     PlayIcon,
     ResetIcon,
@@ -35,16 +37,17 @@ const CodeBlock = ({
 
     const runKeymap = useMemo(
         () =>
-            keymap.of([
-                ...defaultKeymap,
-                {
-                    key: "Mod-Enter",
-                    run: () => {
-                        runCodeRef.current();
-                        return true;
+            Prec.highest(
+                keymap.of([
+                    {
+                        key: "Mod-Enter",
+                        run: () => {
+                            runCodeRef.current();
+                            return true;
+                        },
                     },
-                },
-            ]),
+                ]),
+            ),
         [],
     );
 
@@ -174,17 +177,23 @@ const CodeBlock = ({
                             intent="success"
                             isLoading={isLoading}
                             onClick={runCodeAsync}
-                            title={
-                                navigator.platform.includes("Mac")
-                                    ? "Run Code (⌘↵)"
-                                    : "Run Code (Ctrl+Enter)"
-                            }
                         >
-                            Run Code (
-                            {navigator.platform.includes("Mac")
-                                ? "⌘↵"
-                                : "Ctrl+↵"}
-                            )
+                            <span
+                                style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                }}
+                            >
+                                {navigator.platform.includes("Mac") ? (
+                                    <KeyCommandIcon size={12} />
+                                ) : (
+                                    <KeyControlIcon size={12} />
+                                )}
+                                <KeyEnterIcon size={12} />
+                                <span style={{ marginLeft: 4 }}>
+                                    {"Run Code"}
+                                </span>
+                            </span>
                         </Button>
                     </Pane>
                 </Pane>
