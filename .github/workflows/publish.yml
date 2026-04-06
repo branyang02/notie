@@ -27,12 +27,15 @@ jobs:
 
       - name: Determine version bump
         id: version_bump
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
-          if [[ "${{ github.event.head_commit.message }}" =~ ^fix ]]; then
+          FIRST_LINE=$(echo "$COMMIT_MSG" | head -1)
+          if [[ "$FIRST_LINE" =~ ^fix ]]; then
             echo "bump=patch" >> $GITHUB_ENV
-          elif [[ "${{ github.event.head_commit.message }}" =~ ^feat ]]; then
+          elif [[ "$FIRST_LINE" =~ ^feat ]]; then
             echo "bump=minor" >> $GITHUB_ENV
-          elif [[ "${{ github.event.head_commit.message }}" =~ BREAKING[[:space:]]CHANGE ]]; then
+          elif [[ "$FIRST_LINE" =~ BREAKING[[:space:]]CHANGE ]]; then
             echo "bump=major" >> $GITHUB_ENV
           else
             echo "bump=patch" >> $GITHUB_ENV
