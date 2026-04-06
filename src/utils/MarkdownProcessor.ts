@@ -97,14 +97,15 @@ export class MarkdownProcessor {
             const classAttr = attrs.match(/\bclass="([^"]+)"/)?.[1] ?? "";
             const idAttr = attrs.match(/\bid="([^"]+)"/)?.[1];
 
-            if (!idAttr) continue;
-
             const type = SUPPORTED.find((t) => classAttr.includes(t));
             if (!type) continue;
 
             // Theorems and lemmas share a counter (mirrors DOM useEffect)
             const counterKey = type === "lemma" ? "theorem" : type;
             counts[counterKey] = (counts[counterKey] ?? 0) + 1;
+
+            // Only store in mapping if this blockquote has a label id
+            if (!idAttr) continue;
 
             const blockquoteNumber = `${sectionIndex}.${counts[counterKey]}`;
 
