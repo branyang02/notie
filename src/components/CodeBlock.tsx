@@ -54,7 +54,7 @@ const CodeBlock = ({
                 EditorView.theme({
                     "&": { backgroundColor: bg },
                     ".cm-gutters": { backgroundColor: bg, borderRight: "none" },
-                    "&.cm-focused .cm-selectionBackground, .cm-selectionBackground":
+                    "&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection":
                         { backgroundColor: selectionBg },
                     "& .cm-cursor, & .cm-dropCursor": { borderLeftColor: fg },
                 }),

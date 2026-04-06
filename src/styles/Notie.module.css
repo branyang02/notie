@@ -142,6 +142,7 @@
     overflow-y: auto;
     overflow-x: auto;
     padding: 1em;
+    background-color: var(--blog-code-background-color) !important;
 }
 
 /* //////////////////////// */
