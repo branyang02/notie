@@ -103,7 +103,7 @@ const BlockquoteCard = ({
                 paddingLeft: "0.8rem",
                 paddingRight: "0.8rem",
                 paddingBottom: "0.9em",
-                maxWidth: "400px",
+                maxWidth: "800px",
                 fontFamily: "var(--blog-font-family)",
                 fontSize: "var(--blog-font-size)",
             }}
