@@ -106,7 +106,6 @@ const BlockquoteCard = ({
                 maxWidth: "400px",
                 fontFamily: "var(--blog-font-family)",
                 fontSize: "var(--blog-font-size)",
-                color: "var(--blog-text-color)",
             }}
         >
             <span
