@@ -1,14 +1,30 @@
 import { useEffect, useState } from "react";
 import Notie from "../components/Notie";
-import { Pane, majorScale } from "evergreen-ui";
+import { Pane, majorScale, Select } from "evergreen-ui";
+import { NotieThemes } from "../config/NotieConfig";
 
 const modules = import.meta.glob("./test.md", {
     query: "?raw",
     import: "default",
 });
 
+const THEMES: NotieThemes[] = [
+    "default",
+    "default dark",
+    "Starlit Eclipse",
+    "Starlit Eclipse Light",
+];
+
+const BACKGROUND: Record<NotieThemes, string> = {
+    default: "#fff",
+    "default dark": "#333",
+    "Starlit Eclipse": "rgb(3 7 18)",
+    "Starlit Eclipse Light": "#fff",
+};
+
 const App = () => {
     const [markdownContent, setMarkdownContent] = useState<string>("");
+    const [theme, setTheme] = useState<NotieThemes>("default");
 
     useEffect(() => {
         const fetchNote = async () => {
@@ -24,7 +40,19 @@ const App = () => {
     }, []);
 
     return (
-        <Pane background="#fff">
+        <Pane background={BACKGROUND[theme]}>
+            <Pane position="fixed" top={12} right={16} zIndex={1000}>
+                <Select
+                    value={theme}
+                    onChange={(e) => setTheme(e.target.value as NotieThemes)}
+                >
+                    {THEMES.map((t) => (
+                        <option key={t} value={t}>
+                            {t}
+                        </option>
+                    ))}
+                </Select>
+            </Pane>
             <Pane
                 maxWidth={majorScale(180)}
                 padding={20}
@@ -34,6 +62,7 @@ const App = () => {
             >
                 <Notie
                     markdown={markdownContent}
+                    theme={theme}
                     config={{
                         showTableOfContents: true,
                         fontSize: "1.1em",
@@ -46,7 +75,6 @@ const App = () => {
                             tocMarker: false,
                         },
                     }}
-                    // theme={"Starlit Eclipse"}
                 />
             </Pane>
         </Pane>

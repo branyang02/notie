@@ -35,6 +35,7 @@ export function resolveLanguage(lang: string): string {
 }
 
 export const PRELOADED_THEMES: BundledTheme[] = [
+    "github-dark",
     "github-light",
     "nord",
     "one-dark-pro",
@@ -68,6 +69,7 @@ export function getHighlighter() {
                 import("@shikijs/langs/sql"),
             ],
             themes: [
+                import("@shikijs/themes/github-dark"),
                 import("@shikijs/themes/github-light"),
                 import("@shikijs/themes/nord"),
                 import("@shikijs/themes/one-dark-pro"),

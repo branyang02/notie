@@ -1,18 +1,21 @@
 import { indentUnit } from "@codemirror/language";
-import { Extension } from "@codemirror/state";
-import { EditorView } from "@codemirror/view";
+import { Extension, Prec } from "@codemirror/state";
+import { EditorView, keymap } from "@codemirror/view";
 import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import {
     Button,
     Card,
     Code,
     IconButton,
+    KeyCommandIcon,
+    KeyControlIcon,
+    KeyEnterIcon,
     Pane,
     PlayIcon,
     ResetIcon,
     Spinner,
 } from "evergreen-ui";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { BundledTheme } from "shiki";
 import shiki from "codemirror-shiki";
 
@@ -30,8 +33,27 @@ const CodeBlock = ({
     language?: string;
     theme: string;
 }) => {
+    const runCodeRef = useRef<() => void>(() => {});
+
+    const runKeymap = useMemo(
+        () =>
+            Prec.highest(
+                keymap.of([
+                    {
+                        key: "Mod-Enter",
+                        run: () => {
+                            runCodeRef.current();
+                            return true;
+                        },
+                    },
+                ]),
+            ),
+        [],
+    );
+
     const [extensions, setExtensions] = useState<Extension[]>([
         indentUnit.of("    "),
+        runKeymap,
     ]);
 
     useEffect(() => {
@@ -54,17 +76,18 @@ const CodeBlock = ({
                 EditorView.theme({
                     "&": { backgroundColor: bg },
                     ".cm-gutters": { backgroundColor: bg, borderRight: "none" },
-                    "&.cm-focused .cm-selectionBackground, .cm-selectionBackground":
+                    "&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection":
                         { backgroundColor: selectionBg },
                     "& .cm-cursor, & .cm-dropCursor": { borderLeftColor: fg },
                 }),
                 indentUnit.of("    "),
+                runKeymap,
             ]);
         });
         return () => {
             cancelled = true;
         };
-    }, [language, theme]);
+    }, [language, theme, runKeymap]);
 
     const [isLoading, setIsLoading] = useState(false);
     const [output, setOutput] = useState("");
@@ -95,6 +118,10 @@ const CodeBlock = ({
             setIsLoading(false);
         }
     }, [code, language]);
+
+    useEffect(() => {
+        runCodeRef.current = runCodeAsync;
+    }, [runCodeAsync]);
 
     const clearOutput = useCallback(() => {
         setOutput("");
@@ -151,7 +178,22 @@ const CodeBlock = ({
                             isLoading={isLoading}
                             onClick={runCodeAsync}
                         >
-                            Run Code
+                            <span
+                                style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                }}
+                            >
+                                {navigator.platform.includes("Mac") ? (
+                                    <KeyCommandIcon size={12} />
+                                ) : (
+                                    <KeyControlIcon size={12} />
+                                )}
+                                <KeyEnterIcon size={12} />
+                                <span style={{ marginLeft: 4 }}>
+                                    {"Run Code"}
+                                </span>
+                            </span>
                         </Button>
                     </Pane>
                 </Pane>
