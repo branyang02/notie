@@ -1,6 +1,7 @@
 import { indentUnit } from "@codemirror/language";
 import { Extension } from "@codemirror/state";
-import { EditorView } from "@codemirror/view";
+import { EditorView, keymap } from "@codemirror/view";
+import { defaultKeymap } from "@codemirror/commands";
 import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import {
     Button,
@@ -12,7 +13,7 @@ import {
     ResetIcon,
     Spinner,
 } from "evergreen-ui";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { BundledTheme } from "shiki";
 import shiki from "codemirror-shiki";
 
@@ -30,8 +31,26 @@ const CodeBlock = ({
     language?: string;
     theme: string;
 }) => {
+    const runCodeRef = useRef<() => void>(() => {});
+
+    const runKeymap = useMemo(
+        () =>
+            keymap.of([
+                ...defaultKeymap,
+                {
+                    key: "Mod-Enter",
+                    run: () => {
+                        runCodeRef.current();
+                        return true;
+                    },
+                },
+            ]),
+        [],
+    );
+
     const [extensions, setExtensions] = useState<Extension[]>([
         indentUnit.of("    "),
+        runKeymap,
     ]);
 
     useEffect(() => {
@@ -59,12 +78,13 @@ const CodeBlock = ({
                     "& .cm-cursor, & .cm-dropCursor": { borderLeftColor: fg },
                 }),
                 indentUnit.of("    "),
+                runKeymap,
             ]);
         });
         return () => {
             cancelled = true;
         };
-    }, [language, theme]);
+    }, [language, theme, runKeymap]);
 
     const [isLoading, setIsLoading] = useState(false);
     const [output, setOutput] = useState("");
@@ -95,6 +115,10 @@ const CodeBlock = ({
             setIsLoading(false);
         }
     }, [code, language]);
+
+    useEffect(() => {
+        runCodeRef.current = runCodeAsync;
+    }, [runCodeAsync]);
 
     const clearOutput = useCallback(() => {
         setOutput("");
@@ -150,8 +174,17 @@ const CodeBlock = ({
                             intent="success"
                             isLoading={isLoading}
                             onClick={runCodeAsync}
+                            title={
+                                navigator.platform.includes("Mac")
+                                    ? "Run Code (⌘↵)"
+                                    : "Run Code (Ctrl+Enter)"
+                            }
                         >
-                            Run Code
+                            Run Code (
+                            {navigator.platform.includes("Mac")
+                                ? "⌘↵"
+                                : "Ctrl+↵"}
+                            )
                         </Button>
                     </Pane>
                 </Pane>
