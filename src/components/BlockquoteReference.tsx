@@ -70,7 +70,7 @@ const BlockquoteReference = ({
                 />
             }
             appearance="card"
-            statelessProps={{ maxWidth: "100%" }}
+            statelessProps={{ maxWidth: "100%", paddingX: 8, paddingY: 8 }}
         >
             <a href={`#${targetId}`}>
                 <span>{label}</span>
@@ -95,6 +95,7 @@ const BlockquoteCard = ({
     blockquoteType: string;
 }) => {
     const style = BLOCKQUOTE_STYLES[blockquoteType] ?? DEFAULT_STYLE;
+    const strippedContent = content.replace(/\\label\{[^}]*\}/g, "");
     return (
         <div
             style={{
@@ -124,7 +125,7 @@ const BlockquoteCard = ({
                 remarkPlugins={[remarkGfm, remarkMath]}
                 rehypePlugins={[[rehypeKatex]]}
             >
-                {content}
+                {strippedContent}
             </ReactMarkdown>
         </div>
     );

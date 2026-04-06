@@ -128,6 +128,35 @@ The roots can be computed using [Theorem](#bqref-thm:quadratic-formula).
 [Lemma](#bqref-lem:discriminant) characterizes the root types based on the discriminant.
 Efficient search is described in [Algorithm](#bqref-alg:binary-search).
 
+### Mixed: Blockquote and Equation References
+
+<blockquote class="theorem" id="thm:pythagorean">
+
+For a right triangle with legs $a$, $b$ and hypotenuse $c$:
+
+$$
+\begin{equation} \label{eq:pythagoras}
+a^2 + b^2 = c^2
+\end{equation}
+$$
+
+</blockquote>
+
+<blockquote class="definition" id="def:dot-product">
+
+The **dot product** of two vectors $\mathbf{u}, \mathbf{v} \in \mathbb{R}^n$ is:
+
+$$
+\begin{align}
+\mathbf{u} \cdot \mathbf{v} &= \sum_{i=1}^{n} u_i v_i \label{eq:dot-sum} \\
+&= \|\mathbf{u}\| \|\mathbf{v}\| \cos\theta \label{eq:dot-cosine}
+\end{align}
+$$
+
+</blockquote>
+
+As shown in [Theorem](#bqref-thm:pythagorean), equation $\eqref{eq:pythagoras}$ holds for all right triangles. The two equivalent forms of the dot product are $\eqref{eq:dot-sum}$ and $\eqref{eq:dot-cosine}$, defined in [Definition](#bqref-def:dot-product).
+
 ### Running Code
 
 ```execute-python
