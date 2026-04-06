@@ -1,3 +1,35 @@
+export interface BlockquoteMapping {
+    [label: string]: {
+        blockquoteNumber: string;
+        blockquoteType: string;
+        blockquoteContent: string;
+    };
+}
+
+export function extractBlockquoteInfo(
+    children: Element,
+    blockquoteMapping: BlockquoteMapping,
+) {
+    const href = children.getAttribute("href");
+    const label = href?.split("#bqref-").pop();
+    if (!label) throw new Error("No blockquote label found");
+
+    if (!(label in blockquoteMapping)) {
+        console.error(
+            `Blockquote label "${label}" not found in blockquote mapping`,
+        );
+        return {
+            blockquoteNumber: `Error: reference ${label} not labeled`,
+            blockquoteType: "unknown",
+            blockquoteContent: "error",
+        };
+    }
+
+    const { blockquoteNumber, blockquoteType, blockquoteContent } =
+        blockquoteMapping[label];
+    return { blockquoteNumber, blockquoteType, blockquoteContent };
+}
+
 export interface EquationMapping {
     [key: string]: {
         equationNumber: string;

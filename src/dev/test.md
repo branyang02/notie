@@ -91,6 +91,72 @@ Let's reference equations $\eqref{eq:dot-product}$, $\eqref{eq:2x2-determinant}$
 
 Let's also reference $\eqref{eq:gauss-law}$, $\eqref{eq:ampere-maxwell}$, $\eqref{eq:energy-equation}$, and $\eqref{eq:einstein-field}$
 
+### Blockquote References
+
+<blockquote class="definition" id="def:quadratic">
+
+A **quadratic equation** is a polynomial equation of degree 2 of the form $ax^2 + bx + c = 0$, where $a \neq 0$.
+
+</blockquote>
+
+<blockquote class="theorem" id="thm:quadratic-formula">
+
+The solutions to a quadratic equation $ax^2 + bx + c = 0$ are given by:
+
+$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
+
+</blockquote>
+
+<blockquote class="lemma" id="lem:discriminant">
+
+The **discriminant** $\Delta = b^2 - 4ac$ determines the nature of the roots: if $\Delta > 0$ there are two real roots, if $\Delta = 0$ there is one repeated root, and if $\Delta < 0$ there are two complex roots.
+
+</blockquote>
+
+<blockquote class="algorithm" id="alg:binary-search">
+
+**Input:** Sorted array $A$, target value $t$
+
+1. Set $lo = 0$, $hi = |A| - 1$
+2. While $lo \leq hi$: let $mid = \lfloor (lo + hi) / 2 \rfloor$; if $A[mid] = t$ return $mid$; if $A[mid] < t$ set $lo = mid + 1$; else set $hi = mid - 1$
+3. Return $-1$
+
+</blockquote>
+
+As established in [Definition](#bqref-def:quadratic), a quadratic equation has degree 2.
+The roots can be computed using [Theorem](#bqref-thm:quadratic-formula).
+[Lemma](#bqref-lem:discriminant) characterizes the root types based on the discriminant.
+Efficient search is described in [Algorithm](#bqref-alg:binary-search).
+
+### Mixed: Blockquote and Equation References
+
+<blockquote class="theorem" id="thm:pythagorean">
+
+For a right triangle with legs $a$, $b$ and hypotenuse $c$:
+
+$$
+\begin{equation} \label{eq:pythagoras}
+a^2 + b^2 = c^2
+\end{equation}
+$$
+
+</blockquote>
+
+<blockquote class="definition" id="def:dot-product">
+
+The **dot product** of two vectors $\mathbf{u}, \mathbf{v} \in \mathbb{R}^n$ is:
+
+$$
+\begin{align}
+\mathbf{u} \cdot \mathbf{v} &= \sum_{i=1}^{n} u_i v_i \label{eq:dot-sum} \\
+&= \|\mathbf{u}\| \|\mathbf{v}\| \cos\theta \label{eq:dot-cosine}
+\end{align}
+$$
+
+</blockquote>
+
+As shown in [Theorem](#bqref-thm:pythagorean), equation $\eqref{eq:pythagoras}$ holds for all right triangles. The two equivalent forms of the dot product are $\eqref{eq:dot-sum}$ and $\eqref{eq:dot-cosine}$, defined in [Definition](#bqref-def:dot-product).
+
 ### Running Code
 
 ```execute-python

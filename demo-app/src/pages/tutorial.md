@@ -49,6 +49,7 @@ Notes:
 interface NotieConfig {
   showTableOfContents?: boolean;
   previewEquations?: boolean;
+  previewBlockquotes?: boolean;
   tocTitle?: string;
   fontSize?: CSSStyleDeclaration["fontSize"];
   theme?: Theme;
@@ -671,6 +672,9 @@ You can use the following classes to create different types of blocks:
 - `proof`
 - `equation`
 - `theorem`
+- `lemma`
+- `algorithm`
+- `problem`
 - `important`
 - `note`
 
@@ -702,11 +706,72 @@ $$
 
 </blockquote>
 
+<blockquote class="lemma">
+
+**Lemma.** This is a lemma.
+
+</blockquote>
+
+<blockquote class="algorithm">
+
+**Algorithm.** This is an algorithm.
+
+</blockquote>
+
+<blockquote class="problem">
+
+**Problem.** This is a problem.
+
+</blockquote>
+
 <blockquote class="note">
 
 **Note.** This is a note.
 
 </blockquote>
+
+### Blockquote References
+
+You can label a blockquote with an `id` attribute and reference it anywhere in the document using a `#bqref-` link. Supported types are `definition`, `theorem`, `lemma`, `algorithm`, and `problem`.
+
+```html
+<blockquote class="definition" id="def:limit">
+  A **limit** is the value that a function approaches as the input approaches
+  some value.
+</blockquote>
+
+See [Definition](#bqref-def:limit) for the formal definition.
+```
+
+<blockquote class="definition" id="def:limit">
+
+A **limit** is the value that a function approaches as the input approaches some value.
+
+</blockquote>
+
+See [Definition](#bqref-def:limit) for the formal definition. Hovering over the link shows a preview of the blockquote. Clicking navigates to it.
+
+Theorems and lemmas share a counter within each section:
+
+<blockquote class="theorem" id="thm:limit-uniqueness">
+
+If a limit exists, it is unique.
+
+</blockquote>
+
+<blockquote class="lemma" id="lem:squeeze">
+
+If $f(x) \leq g(x) \leq h(x)$ near $a$ and $\lim_{x \to a} f(x) = \lim_{x \to a} h(x) = L$, then $\lim_{x \to a} g(x) = L$.
+
+</blockquote>
+
+[Theorem](#bqref-thm:limit-uniqueness) guarantees uniqueness; [Lemma](#bqref-lem:squeeze) is useful for evaluating limits by comparison.
+
+To disable hover previews, set `previewBlockquotes: false` in the config:
+
+```tsx
+<Notie markdown={markdown} config={{ previewBlockquotes: false }} />
+```
 
 ## Collapsible Sections
 
