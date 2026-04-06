@@ -31,10 +31,11 @@ const Notie: React.FC<NotieProps> = ({
     customComponents,
 }) => {
     const config = useNotieConfig(userConfig, theme);
-    const { markdownContent, equationMapping, blockquoteMapping } = useMemo(() => {
-        const processor = new MarkdownProcessor(markdown, config);
-        return processor.process();
-    }, [markdown, config]);
+    const { markdownContent, equationMapping, blockquoteMapping } =
+        useMemo(() => {
+            const processor = new MarkdownProcessor(markdown, config);
+            return processor.process();
+        }, [markdown, config]);
     const contentRef = useRef<HTMLDivElement>(null);
     const [activeId, setActiveId] = useState<string>("");
 
@@ -162,9 +163,8 @@ const Notie: React.FC<NotieProps> = ({
     // Effect to enable Blockquote Preview
     useEffect(() => {
         if (!contentRef.current) return;
-        const bqRefs = contentRef.current.querySelectorAll(
-            'a[href^="#bqref-"]',
-        );
+        const bqRefs =
+            contentRef.current.querySelectorAll('a[href^="#bqref-"]');
 
         bqRefs.forEach((ref) => {
             const bqReference = document.createElement("span");

@@ -94,8 +94,7 @@ export class MarkdownProcessor {
         let tagMatch;
         while ((tagMatch = tagPattern.exec(content)) !== null) {
             const attrs = tagMatch[1];
-            const classAttr =
-                attrs.match(/\bclass="([^"]+)"/)?.[1] ?? "";
+            const classAttr = attrs.match(/\bclass="([^"]+)"/)?.[1] ?? "";
             const idAttr = attrs.match(/\bid="([^"]+)"/)?.[1];
 
             if (!idAttr) continue;

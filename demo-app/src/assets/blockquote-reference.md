@@ -13,10 +13,8 @@ Add an `id` attribute to any supported blockquote type:
 
 ```html
 <blockquote class="definition" id="def:quadratic">
-
-A **quadratic equation** is a polynomial equation of degree 2 of the form
-$ax^2 + bx + c = 0$, where $a \neq 0$.
-
+  A **quadratic equation** is a polynomial equation of degree 2 of the form
+  $ax^2 + bx + c = 0$, where $a \neq 0$.
 </blockquote>
 ```
 

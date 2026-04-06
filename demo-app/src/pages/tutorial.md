@@ -736,9 +736,8 @@ You can label a blockquote with an `id` attribute and reference it anywhere in t
 
 ```html
 <blockquote class="definition" id="def:limit">
-
-A **limit** is the value that a function approaches as the input approaches some value.
-
+  A **limit** is the value that a function approaches as the input approaches
+  some value.
 </blockquote>
 
 See [Definition](#bqref-def:limit) for the formal definition.
