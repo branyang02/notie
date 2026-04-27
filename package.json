@@ -31,7 +31,8 @@
         "build": "tsc -b && vite build",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "format": "prettier --write .",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "test": "vitest run"
     },
     "dependencies": {
         "@codemirror/language": "^6.10.2",
@@ -40,9 +41,8 @@
         "@shikijs/themes": "^4.0.2",
         "@types/node": "^22.1.0",
         "@uiw/react-codemirror": "^4.23.0",
-        "codemirror-shiki": "^0.3.0",
-        "shiki": "^4.0.2",
         "bootstrap": "^5.3.3",
+        "codemirror-shiki": "^0.3.0",
         "evergreen-ui": "^7.1.9",
         "katex": "^0.16.11",
         "react": "^18.3.1",
@@ -53,6 +53,7 @@
         "rehype-slug": "^6.0.0",
         "remark-gfm": "^4.0.0",
         "remark-math": "^6.0.0",
+        "shiki": "^4.0.2",
         "vite-plugin-css-injected-by-js": "^3.5.1",
         "vite-plugin-dts": "^4.0.0-beta.2"
     },
@@ -68,6 +69,7 @@
         "prettier": "^3.3.3",
         "prettier-plugin-organize-imports": "^4.0.0",
         "typescript": "^5.2.2",
-        "vite": "^5.3.4"
+        "vite": "^5.3.4",
+        "vitest": "^4.1.5"
     }
 }

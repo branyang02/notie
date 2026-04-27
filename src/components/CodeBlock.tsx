@@ -123,6 +123,13 @@ const CodeBlock = ({
         runCodeRef.current = runCodeAsync;
     }, [runCodeAsync]);
 
+    const [isMac, setIsMac] = useState(false);
+    useEffect(() => {
+        if (typeof navigator !== "undefined") {
+            setIsMac(/Mac|iPhone|iPad|iPod/.test(navigator.platform));
+        }
+    }, []);
+
     const clearOutput = useCallback(() => {
         setOutput("");
         setImage("");
@@ -184,7 +191,7 @@ const CodeBlock = ({
                                     alignItems: "center",
                                 }}
                             >
-                                {navigator.platform.includes("Mac") ? (
+                                {isMac ? (
                                     <KeyCommandIcon size={12} />
                                 ) : (
                                     <KeyControlIcon size={12} />
