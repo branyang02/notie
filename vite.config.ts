@@ -5,6 +5,11 @@ import dts from "vite-plugin-dts";
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
 export default defineConfig({
+    test: {
+        environment: "jsdom",
+        setupFiles: ["src/test/setup.ts"],
+        globals: true,
+    },
     build: {
         lib: {
             entry: path.resolve(__dirname, "src/index.ts"),
@@ -23,6 +28,17 @@ export default defineConfig({
         sourcemap: true,
         emptyOutDir: true,
     },
-    plugins: [react(), dts(), cssInjectedByJsPlugin()],
+    plugins: [
+        react(),
+        dts({
+            exclude: [
+                "src/**/*.test.ts",
+                "src/**/*.test.tsx",
+                "src/dev/**",
+                "src/test/**",
+            ],
+        }),
+        cssInjectedByJsPlugin(),
+    ],
     assetsInclude: ["**/*.md"],
 });

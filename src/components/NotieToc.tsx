@@ -1,83 +1,47 @@
 import { Pane } from "evergreen-ui";
-import rehypeRaw from "rehype-raw";
-import { useEffect, useMemo, useRef } from "react";
-import ReactMarkdown from "react-markdown";
+import React, { useEffect, useRef } from "react";
 import { NotieConfig } from "../config/NotieConfig";
 import styles from "../styles/NotieToc.module.css";
-
-const generateTableOfContents = (
-    markdownContent: string,
-    activeId: string,
-    tocTitle?: string,
-): string => {
-    let res = `# ${tocTitle}\n---\n`;
-    const pattern = /^#+ (.*)$/gm;
-    let match;
-
-    while ((match = pattern.exec(markdownContent)) !== null) {
-        const [fullMatch, title] = match;
-        const level = fullMatch.match(/^#+/)?.[0].length || 0;
-        if (level === 1) continue;
-
-        const cleanedTitle = title.replace(/[*]/g, "").trim();
-        const id = cleanedTitle
-            .replace(/\s+/g, "-")
-            .toLowerCase()
-            .replace(/[+.()'`]/g, "")
-            .replace(/&nbsp;/g, "")
-            .replace(/&/g, "")
-            .replace(/:/g, "");
-
-        const formattedTitle =
-            activeId === id ? `**${cleanedTitle}**` : cleanedTitle;
-
-        res += `${"\t".repeat(level - 2)}- <a id="toc-${id}" href="#${id}">${formattedTitle}</a>\n`;
-    }
-
-    return res;
-};
+import { TocEntry } from "../utils/toc";
 
 const NotieToc = ({
-    markdownContent,
+    tocEntries,
     activeId,
     config,
+    onNavigate,
 }: {
-    markdownContent: string;
+    tocEntries: TocEntry[];
     activeId: string;
     config: NotieConfig;
+    onNavigate?: (
+        id: string,
+        event: React.MouseEvent<HTMLAnchorElement>,
+    ) => void;
 }) => {
-    const tocRef = useRef<HTMLDivElement>(null); // Ref for the TOC container
-
-    const toc = useMemo(
-        () =>
-            generateTableOfContents(markdownContent, activeId, config.tocTitle),
-        [markdownContent, activeId, config.tocTitle],
-    );
+    const tocRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
         const tocContainer = tocRef.current;
-        if (tocContainer) {
-            const activeElement = tocContainer.querySelector(
-                `#toc-${activeId}`,
-            );
-            if (activeElement) {
-                const tocRect = tocContainer.getBoundingClientRect();
-                const activeRect = activeElement.getBoundingClientRect();
-                const offset =
-                    activeRect.top -
-                    tocRect.top -
-                    tocContainer.clientHeight / 2;
+        if (!tocContainer || !activeId) return;
 
-                tocContainer.scrollTo({
-                    top: tocContainer.scrollTop + offset,
-                    behavior: "smooth",
-                });
-            }
-        }
+        const activeElement = document.getElementById(`toc-${activeId}`);
+        if (!activeElement || !tocContainer.contains(activeElement)) return;
+
+        const tocRect = tocContainer.getBoundingClientRect();
+        const activeRect = activeElement.getBoundingClientRect();
+        const offset =
+            activeRect.top - tocRect.top - tocContainer.clientHeight / 2;
+
+        tocContainer.scrollTo({
+            top: tocContainer.scrollTop + offset,
+            behavior: "smooth",
+        });
     }, [activeId]);
 
     return (
         <Pane
+            is="nav"
+            aria-label={config.tocTitle}
             position="sticky"
             top={0}
             overflowY="auto"
@@ -85,7 +49,29 @@ const NotieToc = ({
             className={styles["note-toc"]}
             ref={tocRef}
         >
-            <ReactMarkdown rehypePlugins={[rehypeRaw]}>{toc}</ReactMarkdown>
+            <h1>{config.tocTitle}</h1>
+            <hr />
+            <ul>
+                {tocEntries.map((entry, index) => (
+                    <li
+                        key={`${entry.id}-${entry.level}-${index}`}
+                        style={{ marginLeft: `${entry.level - 2}em` }}
+                    >
+                        <a
+                            id={`toc-${entry.id}`}
+                            href={`#${entry.id}`}
+                            onClick={(event) => onNavigate?.(entry.id, event)}
+                            className={
+                                activeId === entry.id
+                                    ? styles["active"]
+                                    : undefined
+                            }
+                        >
+                            {entry.title}
+                        </a>
+                    </li>
+                ))}
+            </ul>
         </Pane>
     );
 };

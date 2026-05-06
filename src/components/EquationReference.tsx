@@ -3,6 +3,7 @@ import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
+import { katexOptions } from "../utils/katexOptions";
 import {
     EquationMapping,
     extractEquationInfo,
@@ -10,16 +11,18 @@ import {
 } from "../utils/utils";
 
 const EquationReference = ({
-    children,
+    href,
+    textContent,
     equationMapping,
     previewEquation,
 }: {
-    children: Element;
+    href: string;
+    textContent?: string;
     equationMapping: EquationMapping;
     previewEquation?: boolean;
 }) => {
     const { equationNumber, equationString, parenthesesRemoved } =
-        extractEquationInfo(children, equationMapping);
+        extractEquationInfo(href, textContent, equationMapping);
 
     if (equationString == "error") {
         return (
@@ -63,7 +66,7 @@ const EquationCard = ({ equationString }: { equationString: string }) => {
         <Card>
             <ReactMarkdown
                 remarkPlugins={[remarkGfm, remarkMath]}
-                rehypePlugins={[[rehypeKatex]]}
+                rehypePlugins={[[rehypeKatex, katexOptions]]}
             >
                 {processedEquationString}
             </ReactMarkdown>

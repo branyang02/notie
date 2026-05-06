@@ -3,17 +3,21 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import styles from "../styles//Notie.module.css";
 import "../styles/notie-global.css";
 
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, {
+    useCallback,
+    useRef,
+    useState,
+    useEffect,
+    useMemo,
+} from "react";
 import { Pane } from "evergreen-ui";
 import ScrollToTopButton from "./ScrollToTopButton";
 import NoteToc from "./NotieToc";
 import MarkdownRenderer from "./MarkdownRenderer";
 import { MarkdownProcessor } from "../utils/MarkdownProcessor";
-import BlockquoteReference from "./BlockquoteReference";
-import EquationReference from "./EquationReference";
-import { createRoot } from "react-dom/client";
 import { NotieConfig, NotieThemes } from "../config/NotieConfig";
 import { useNotieConfig } from "../utils/useNotieConfig";
+import { extractTableOfContents } from "../utils/toc";
 
 export interface NotieProps {
     markdown: string;
@@ -31,13 +35,66 @@ const Notie: React.FC<NotieProps> = ({
     customComponents,
 }) => {
     const config = useNotieConfig(userConfig, theme);
-    const { markdownContent, equationMapping, blockquoteMapping } =
-        useMemo(() => {
-            const processor = new MarkdownProcessor(markdown, config);
-            return processor.process();
-        }, [markdown, config]);
+    const {
+        markdownContent,
+        markdownSections,
+        equationMapping,
+        blockquoteMapping,
+    } = useMemo(() => {
+        const processor = new MarkdownProcessor(markdown, config);
+        return processor.process();
+    }, [markdown, config]);
+    const tocEntries = useMemo(
+        () => extractTableOfContents(markdownContent),
+        [markdownContent],
+    );
     const contentRef = useRef<HTMLDivElement>(null);
     const [activeId, setActiveId] = useState<string>("");
+    const [renderedSectionCount, setRenderedSectionCount] = useState(0);
+    const [renderAllToken, setRenderAllToken] = useState(0);
+    const [pendingScrollId, setPendingScrollId] = useState<string | null>(null);
+    const handleRenderedSectionsChange = useCallback(
+        (count: number) => setRenderedSectionCount(count),
+        [],
+    );
+    const requestRenderAll = useCallback(() => {
+        setRenderAllToken((token) => token + 1);
+    }, []);
+    const handleTocNavigate = useCallback(
+        (id: string, event: React.MouseEvent<HTMLAnchorElement>) => {
+            if (document.getElementById(id)) return;
+
+            event.preventDefault();
+            setPendingScrollId(id);
+            requestRenderAll();
+        },
+        [requestRenderAll],
+    );
+
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        const hash = window.location.hash.slice(1);
+        if (!hash) return;
+
+        const id = decodeURIComponent(hash);
+        if (document.getElementById(id)) return;
+
+        setPendingScrollId(id);
+        requestRenderAll();
+    }, [markdownContent, requestRenderAll]);
+
+    useEffect(() => {
+        if (!pendingScrollId || typeof window === "undefined") return;
+
+        const target = document.getElementById(pendingScrollId);
+        if (!target) return;
+
+        target.scrollIntoView();
+        if (window.location.hash !== `#${pendingScrollId}`) {
+            window.history.pushState(null, "", `#${pendingScrollId}`);
+        }
+        setPendingScrollId(null);
+    }, [pendingScrollId, renderedSectionCount]);
 
     // Effect to observe headings and update activeId
     useEffect(() => {
@@ -53,17 +110,16 @@ const Notie: React.FC<NotieProps> = ({
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
-                    setActiveId(entry.target.id);
+                    const id = entry.target.id;
+                    setActiveId((current) => (current === id ? current : id));
                 }
             });
         }, observerOptions);
 
         headings.forEach((heading) => observer.observe(heading));
 
-        return () => {
-            headings.forEach((heading) => observer.unobserve(heading));
-        };
-    }, [markdownContent, activeId]);
+        return () => observer.disconnect();
+    }, [markdownContent, renderedSectionCount]);
 
     // Effect to auto label equation numbers
     useEffect(() => {
@@ -83,7 +139,7 @@ const Notie: React.FC<NotieProps> = ({
                 eqn.textContent = `(${sectionIndex + 1}.${eqnIndex + 1})`;
             }
         }
-    }, [markdownContent]);
+    }, [markdownContent, renderedSectionCount]);
 
     // Effect to auto label Definitions, Theorems, Lemmas, only for LaTeX style
     useEffect(() => {
@@ -137,48 +193,7 @@ const Notie: React.FC<NotieProps> = ({
                 }
             });
         }
-    }, [config.theme.blockquoteStyle, markdownContent]);
-
-    // Effect to enable Equation Preview
-    useEffect(() => {
-        if (!contentRef.current) return;
-        const eqnRefs = contentRef.current.querySelectorAll(
-            'a[href^="#pre-eqn-"]',
-        );
-
-        eqnRefs.forEach((ref) => {
-            const equReference = document.createElement("span");
-            const equReferenceComponent = (
-                <EquationReference
-                    children={ref}
-                    equationMapping={equationMapping}
-                    previewEquation={config.previewEquations}
-                />
-            );
-            createRoot(equReference).render(equReferenceComponent);
-            ref.parentNode?.replaceChild(equReference, ref);
-        });
-    }, [config.previewEquations, equationMapping]);
-
-    // Effect to enable Blockquote Preview
-    useEffect(() => {
-        if (!contentRef.current) return;
-        const bqRefs =
-            contentRef.current.querySelectorAll('a[href^="#bqref-"]');
-
-        bqRefs.forEach((ref) => {
-            const bqReference = document.createElement("span");
-            const bqReferenceComponent = (
-                <BlockquoteReference
-                    children={ref}
-                    blockquoteMapping={blockquoteMapping}
-                    previewBlockquotes={config.previewBlockquotes}
-                />
-            );
-            createRoot(bqReference).render(bqReferenceComponent);
-            ref.parentNode?.replaceChild(bqReference, ref);
-        });
-    }, [config.previewBlockquotes, blockquoteMapping]);
+    }, [config.theme.blockquoteStyle, markdownContent, renderedSectionCount]);
 
     return (
         <Pane className={styles["notie-container"]}>
@@ -192,9 +207,10 @@ const Notie: React.FC<NotieProps> = ({
                 {config.showTableOfContents && (
                     <Pane className={styles["vector-column-start"]}>
                         <NoteToc
-                            markdownContent={markdownContent}
+                            tocEntries={tocEntries}
                             activeId={activeId}
                             config={config}
+                            onNavigate={handleTocNavigate}
                         />
                     </Pane>
                 )}
@@ -202,8 +218,15 @@ const Notie: React.FC<NotieProps> = ({
                     <Pane className={styles["blog-content"]} ref={contentRef}>
                         <MarkdownRenderer
                             markdownContent={markdownContent}
+                            markdownSections={markdownSections}
                             config={config}
+                            equationMapping={equationMapping}
+                            blockquoteMapping={blockquoteMapping}
                             customComponents={customComponents}
+                            renderAllToken={renderAllToken}
+                            onRenderedSectionsChange={
+                                handleRenderedSectionsChange
+                            }
                         />
                         <ScrollToTopButton />
                     </Pane>
