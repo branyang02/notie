@@ -2,6 +2,47 @@ import { Pane } from "evergreen-ui";
 import { useEffect, useRef } from "react";
 import styles from "../styles/Notie.module.css";
 
+let tikzCssPromise: Promise<void> | null = null;
+let tikzScriptPromise: Promise<void> | null = null;
+
+function loadTikzCss(): Promise<void> {
+    if (!tikzCssPromise) {
+        tikzCssPromise = fetch(
+            "https://raw.githubusercontent.com/artisticat1/obsidian-tikzjax/main/styles.css",
+        )
+            .then((response) => {
+                if (response.ok) return response.text();
+                throw new Error("Failed to load CSS");
+            })
+            .then((cssContent) => {
+                const styleEl = document.createElement("style");
+                styleEl.textContent = cssContent;
+                document.head.appendChild(styleEl);
+            });
+    }
+
+    return tikzCssPromise;
+}
+
+function loadTikzScript(): Promise<void> {
+    if (!tikzScriptPromise) {
+        tikzScriptPromise = fetch(
+            "https://raw.githubusercontent.com/artisticat1/obsidian-tikzjax/main/tikzjax.js",
+        )
+            .then((response) => {
+                if (response.ok) return response.text();
+                throw new Error("Failed to load script");
+            })
+            .then((scriptContent) => {
+                const scriptEl = document.createElement("script");
+                scriptEl.textContent = scriptContent;
+                document.body.appendChild(scriptEl);
+            });
+    }
+
+    return tikzScriptPromise;
+}
+
 function tidyTikzSource(tikzSource: string) {
     // Remove non-breaking space characters, otherwise we get errors
     const remove = /&nbsp;/g;
@@ -18,83 +59,59 @@ function tidyTikzSource(tikzSource: string) {
     return lines.join("\n");
 }
 
+function removeTikzScripts(container: HTMLDivElement | null) {
+    if (!container) return;
+
+    const existingScripts = container.querySelectorAll(
+        'script[type="text/tikz"]',
+    );
+    existingScripts.forEach((script) => script.remove());
+}
+
+function waitForNextFrame(): Promise<void> {
+    if (typeof window === "undefined") return Promise.resolve();
+
+    return new Promise((resolve) => {
+        window.requestAnimationFrame(() => resolve());
+    });
+}
+
 const TikZ = ({ tikzScript }: { tikzScript: string }) => {
     const scriptContainerRef = useRef<HTMLDivElement>(null);
-    const scriptLoaded = useRef(false);
-    const cssLoaded = useRef(false);
 
     useEffect(() => {
-        // Load CSS if not already loaded
-        if (!cssLoaded.current) {
-            fetch(
-                "https://raw.githubusercontent.com/artisticat1/obsidian-tikzjax/main/styles.css",
-            )
-                .then((response) => {
-                    if (response.ok) return response.text();
-                    throw new Error("Failed to load CSS");
-                })
-                .then((cssContent) => {
-                    const styleEl = document.createElement("style");
-                    styleEl.textContent = cssContent;
-                    document.head.appendChild(styleEl);
-                    cssLoaded.current = true;
-                })
-                .catch((error) => console.error("Failed to load CSS", error));
-        }
+        const container = scriptContainerRef.current;
+        let isCancelled = false;
 
-        // Load script if not already loaded
-        if (!scriptLoaded.current) {
-            fetch(
-                "https://raw.githubusercontent.com/artisticat1/obsidian-tikzjax/main/tikzjax.js",
-            )
-                .then((response) => response.text())
-                .then((scriptContent) => {
-                    const scriptEl = document.createElement("script");
-                    scriptEl.textContent = scriptContent;
-                    document.body.appendChild(scriptEl);
-                    scriptLoaded.current = true;
-                })
-                .catch((error) =>
-                    console.error("Failed to load script", error),
-                );
-        }
-
-        // Cleanup on component unmount
-        return () => {
-            if (scriptContainerRef.current) {
-                // Remove any existing TikZ scripts when component unmounts
-                const existingScripts =
-                    // eslint-disable-next-line react-hooks/exhaustive-deps
-                    scriptContainerRef.current.querySelectorAll(
-                        'script[type="text/tikz"]',
-                    );
-                existingScripts.forEach((script) => script.remove());
+        async function renderTikz() {
+            try {
+                await Promise.all([loadTikzCss(), loadTikzScript()]);
+                await waitForNextFrame();
+            } catch (error) {
+                console.error("Failed to load TikZJax", error);
+                return;
             }
-        };
-    }, []);
 
-    useEffect(() => {
-        function loadTikZJax() {
+            if (isCancelled || !container) return;
+
             const scriptEl = document.createElement("script");
             scriptEl.type = "text/tikz";
             scriptEl.async = true;
             scriptEl.textContent = tidyTikzSource(tikzScript);
-
             scriptEl.setAttribute("data-show-console", "true");
 
-            if (scriptContainerRef.current) {
-                // Remove any previous TikZ scripts before adding a new one
-                const existingScripts =
-                    scriptContainerRef.current.querySelectorAll(
-                        'script[type="text/tikz"]',
-                    );
-                existingScripts.forEach((script) => script.remove());
-
-                scriptContainerRef.current.appendChild(scriptEl);
-            }
+            // TikZJax registers a MutationObserver after its loader runs, so
+            // append only after the loader promise resolves.
+            removeTikzScripts(container);
+            container.appendChild(scriptEl);
         }
 
-        loadTikZJax();
+        renderTikz();
+
+        return () => {
+            isCancelled = true;
+            removeTikzScripts(container);
+        };
     }, [tikzScript]);
 
     return (

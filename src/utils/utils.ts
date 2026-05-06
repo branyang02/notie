@@ -7,10 +7,9 @@ export interface BlockquoteMapping {
 }
 
 export function extractBlockquoteInfo(
-    children: Element,
+    href: string | null | undefined,
     blockquoteMapping: BlockquoteMapping,
 ) {
-    const href = children.getAttribute("href");
     const label = href?.split("#bqref-").pop();
     if (!label) throw new Error("No blockquote label found");
 
@@ -37,18 +36,46 @@ export interface EquationMapping {
     };
 }
 
-// Used in EquationReference.tsx
-export function extractEquationInfo(
-    children: Element,
-    equationMapping: EquationMapping,
-) {
-    const href = children.getAttribute("href");
-    const label = href?.split("#pre-eqn-").pop();
-    if (!label) {
-        throw new Error("No equation label found");
+function parseEquationReferenceHref(href: string | null | undefined) {
+    const rawLabel = href?.split("#pre-eqn-").pop();
+    if (!rawLabel) return null;
+
+    if (rawLabel.startsWith("eqref:")) {
+        return {
+            label: rawLabel.slice("eqref:".length),
+            parenthesesRemoved: true,
+        };
     }
 
-    const parenthesesRemoved = children.textContent?.includes("(") ?? false;
+    if (rawLabel.startsWith("ref:")) {
+        return {
+            label: rawLabel.slice("ref:".length),
+            parenthesesRemoved: false,
+        };
+    }
+
+    return {
+        label: rawLabel,
+        parenthesesRemoved: undefined,
+    };
+}
+
+// Used in EquationReference.tsx
+export function extractEquationInfo(
+    href: string | null | undefined,
+    textContent: string | null | undefined,
+    equationMapping: EquationMapping,
+) {
+    const parsedReference = parseEquationReferenceHref(href);
+    if (!parsedReference) {
+        throw new Error("No equation label found");
+    }
+    const { label } = parsedReference;
+
+    const parenthesesRemoved =
+        parsedReference.parenthesesRemoved ??
+        textContent?.includes("(") ??
+        false;
 
     if (!(label in equationMapping)) {
         console.error(
@@ -58,7 +85,7 @@ export function extractEquationInfo(
         return {
             equationNumber: `Error: reference ${label} not labeled`,
             equationString: "error",
-            parenthesesRemoved: false,
+            parenthesesRemoved,
         };
     }
 

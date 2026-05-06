@@ -1,21 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowUpIcon, Button, Pane } from "evergreen-ui";
 
 const ScrollToTopButton = () => {
     const [isVisible, setIsVisible] = useState(false);
-    const [lastScrollTop, setLastScrollTop] = useState(0);
-
-    const toggleVisibility = () => {
-        const currentScrollTop = window.pageYOffset;
-        const closeToTop = currentScrollTop < 600;
-
-        if (!closeToTop && currentScrollTop < lastScrollTop) {
-            setIsVisible(true);
-        } else {
-            setIsVisible(false);
-        }
-        setLastScrollTop(currentScrollTop);
-    };
+    const lastScrollTopRef = useRef(0);
+    const frameRef = useRef<number | null>(null);
 
     const scrollToTop = () => {
         window.scrollTo({
@@ -25,12 +14,29 @@ const ScrollToTopButton = () => {
     };
 
     useEffect(() => {
-        window.addEventListener("scroll", toggleVisibility);
+        const toggleVisibility = () => {
+            if (frameRef.current !== null) return;
+
+            frameRef.current = window.requestAnimationFrame(() => {
+                const currentScrollTop = window.pageYOffset;
+                const closeToTop = currentScrollTop < 600;
+
+                setIsVisible(
+                    !closeToTop && currentScrollTop < lastScrollTopRef.current,
+                );
+                lastScrollTopRef.current = currentScrollTop;
+                frameRef.current = null;
+            });
+        };
+
+        window.addEventListener("scroll", toggleVisibility, { passive: true });
         return () => {
             window.removeEventListener("scroll", toggleVisibility);
+            if (frameRef.current !== null) {
+                window.cancelAnimationFrame(frameRef.current);
+            }
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [lastScrollTop]);
+    }, []);
 
     return isVisible ? (
         <Pane display="flex" justifyContent="center">

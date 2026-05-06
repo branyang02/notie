@@ -14,6 +14,7 @@ export class MarkdownProcessor {
 
     public process(): {
         markdownContent: string;
+        markdownSections: string[];
         equationMapping: EquationMapping;
         blockquoteMapping: BlockquoteMapping;
     } {
@@ -24,11 +25,11 @@ export class MarkdownProcessor {
         });
 
         if (this.config.theme?.numberedHeading) {
-            const processedMarkdown = this.addHeadingNumbers(
-                processedSections.join(""),
-            );
+            const numberedSections =
+                this.addHeadingNumbersToSections(processedSections);
             return {
-                markdownContent: processedMarkdown,
+                markdownContent: numberedSections.join(""),
+                markdownSections: numberedSections,
                 equationMapping: this.equationMapping,
                 blockquoteMapping: this.blockquoteMapping,
             };
@@ -36,26 +37,29 @@ export class MarkdownProcessor {
 
         return {
             markdownContent: processedSections.join(""),
+            markdownSections: processedSections,
             equationMapping: this.equationMapping,
             blockquoteMapping: this.blockquoteMapping,
         };
     }
 
-    private addHeadingNumbers(markdownString: string): string {
+    private addHeadingNumbersToSections(sections: string[]): string[] {
         const headingRegex = /^(#{2,6}) (.*)$/gm;
         const counters = [0, 0, 0, 0, 0];
 
-        return markdownString.replace(headingRegex, (_match, hashes, title) => {
-            const level = hashes.length - 2;
-            counters[level]++;
+        return sections.map((section) =>
+            section.replace(headingRegex, (_match, hashes, title) => {
+                const level = hashes.length - 2;
+                counters[level]++;
 
-            for (let i = level + 1; i < counters.length; i++) {
-                counters[i] = 0;
-            }
+                for (let i = level + 1; i < counters.length; i++) {
+                    counters[i] = 0;
+                }
 
-            const numbering = counters.slice(0, level + 1).join(".");
-            return `${hashes} ${numbering}&nbsp;&nbsp;&nbsp;${title}`;
-        });
+                const numbering = counters.slice(0, level + 1).join(".");
+                return `${hashes} ${numbering}&nbsp;&nbsp;&nbsp;${title}`;
+            }),
+        );
     }
 
     private splitIntoSections(): string[] {

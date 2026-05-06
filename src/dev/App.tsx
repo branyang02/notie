@@ -2,11 +2,18 @@ import { useEffect, useState } from "react";
 import Notie from "../components/Notie";
 import { Pane, majorScale, Select } from "evergreen-ui";
 import { NotieThemes } from "../config/NotieConfig";
+import initialMarkdown from "./test.md?raw";
 
-const modules = import.meta.glob("./test.md", {
-    query: "?raw",
-    import: "default",
-});
+const markdownListeners = new Set<(markdown: string) => void>();
+let currentMarkdown = initialMarkdown;
+
+if (import.meta.hot) {
+    import.meta.hot.accept("./test.md?raw", (module) => {
+        if (!module) return;
+        currentMarkdown = module.default;
+        markdownListeners.forEach((listener) => listener(currentMarkdown));
+    });
+}
 
 const THEMES: NotieThemes[] = [
     "default",
@@ -23,20 +30,16 @@ const BACKGROUND: Record<NotieThemes, string> = {
 };
 
 const App = () => {
-    const [markdownContent, setMarkdownContent] = useState<string>("");
+    const [markdownContent, setMarkdownContent] =
+        useState<string>(currentMarkdown);
     const [theme, setTheme] = useState<NotieThemes>("default");
 
     useEffect(() => {
-        const fetchNote = async () => {
-            for (const path in modules) {
-                const markdown = await modules[path]();
-                const rawMDString = markdown as string;
-                setMarkdownContent(rawMDString);
-                break;
-            }
-        };
+        markdownListeners.add(setMarkdownContent);
 
-        fetchNote();
+        return () => {
+            markdownListeners.delete(setMarkdownContent);
+        };
     }, []);
 
     return (

@@ -1,10 +1,17 @@
 import { Tooltip } from "evergreen-ui";
+import React, { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 
-import { BlockquoteMapping, extractBlockquoteInfo } from "../utils/utils";
+import { katexOptions } from "../utils/katexOptions";
+import {
+    BlockquoteMapping,
+    EquationMapping,
+    extractBlockquoteInfo,
+} from "../utils/utils";
+import EquationReference from "./EquationReference";
 
 interface BlockquoteStyle {
     background: string;
@@ -40,16 +47,20 @@ const DEFAULT_STYLE: BlockquoteStyle = {
 };
 
 const BlockquoteReference = ({
-    children,
+    href,
     blockquoteMapping,
+    equationMapping,
     previewBlockquotes,
+    previewEquations,
 }: {
-    children: Element;
+    href: string;
     blockquoteMapping: BlockquoteMapping;
+    equationMapping: EquationMapping;
     previewBlockquotes?: boolean;
+    previewEquations?: boolean;
 }) => {
     const { blockquoteNumber, blockquoteType, blockquoteContent } =
-        extractBlockquoteInfo(children, blockquoteMapping);
+        extractBlockquoteInfo(href, blockquoteMapping);
 
     if (blockquoteContent === "error") {
         return <span style={{ color: "red" }}>{blockquoteNumber}</span>;
@@ -58,7 +69,7 @@ const BlockquoteReference = ({
     const displayType =
         blockquoteType.charAt(0).toUpperCase() + blockquoteType.slice(1);
     const label = `${displayType} ${blockquoteNumber}`;
-    const targetId = children.getAttribute("href")?.split("#bqref-").pop();
+    const targetId = href.split("#bqref-").pop();
 
     return previewBlockquotes ? (
         <Tooltip
@@ -67,6 +78,8 @@ const BlockquoteReference = ({
                     label={label}
                     content={blockquoteContent}
                     blockquoteType={blockquoteType}
+                    equationMapping={equationMapping}
+                    previewEquations={previewEquations}
                 />
             }
             appearance="card"
@@ -89,13 +102,48 @@ const BlockquoteCard = ({
     label,
     content,
     blockquoteType,
+    equationMapping,
+    previewEquations,
 }: {
     label: string;
     content: string;
     blockquoteType: string;
+    equationMapping: EquationMapping;
+    previewEquations?: boolean;
 }) => {
     const style = BLOCKQUOTE_STYLES[blockquoteType] ?? DEFAULT_STYLE;
     const strippedContent = content.replace(/\\label\{[^}]*\}/g, "");
+    const components = useMemo(
+        () => ({
+            a({
+                href = "",
+                children,
+                ...props
+            }: React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+                node?: unknown;
+                children?: React.ReactNode;
+            }) {
+                if (href.startsWith("#pre-eqn-")) {
+                    return (
+                        <EquationReference
+                            href={href}
+                            textContent={textFromReactNode(children)}
+                            equationMapping={equationMapping}
+                            previewEquation={previewEquations}
+                        />
+                    );
+                }
+
+                return (
+                    <a href={href} {...props}>
+                        {children}
+                    </a>
+                );
+            },
+        }),
+        [equationMapping, previewEquations],
+    );
+
     return (
         <div
             style={{
@@ -123,10 +171,24 @@ const BlockquoteCard = ({
             </span>
             <ReactMarkdown
                 remarkPlugins={[remarkGfm, remarkMath]}
-                rehypePlugins={[[rehypeKatex]]}
+                rehypePlugins={[[rehypeKatex, katexOptions]]}
+                components={components}
             >
                 {strippedContent}
             </ReactMarkdown>
         </div>
     );
 };
+
+function textFromReactNode(node: React.ReactNode): string {
+    if (typeof node === "string" || typeof node === "number") {
+        return String(node);
+    }
+    if (Array.isArray(node)) {
+        return node.map(textFromReactNode).join("");
+    }
+    if (React.isValidElement<{ children?: React.ReactNode }>(node)) {
+        return textFromReactNode(node.props.children);
+    }
+    return "";
+}
