@@ -45,6 +45,54 @@ export const PRELOADED_THEMES: BundledTheme[] = [
 
 let highlighterPromise: ReturnType<typeof createHighlighterCore> | null = null;
 
+const DEFAULT_HIGHLIGHT_CACHE_CAP = 200;
+
+let highlightCacheCap = DEFAULT_HIGHLIGHT_CACHE_CAP;
+
+// Bounded LRU-ish cache of highlight results. Map iteration order is
+// insertion order; hits are re-inserted so the oldest entry is evicted first.
+const highlightCache = new Map<string, string>();
+
+/** Test hook: override the cache capacity and clear the cache. */
+export function __configureHighlightCacheForTests(
+    cap: number = DEFAULT_HIGHLIGHT_CACHE_CAP,
+) {
+    highlightCacheCap = cap;
+    highlightCache.clear();
+}
+
+/**
+ * Highlight `code`, memoizing the resulting HTML per (theme, lang, code).
+ * Static code blocks remount on section re-renders with identical inputs,
+ * so caching avoids repeating the dominant codeToHtml cost.
+ */
+export async function highlightWithCache(
+    code: string,
+    lang: string,
+    theme: string,
+): Promise<string> {
+    const key = `${theme}|${lang}|${code}`;
+    const cached = highlightCache.get(key);
+    if (cached !== undefined) {
+        // Refresh recency: move the entry to the end of iteration order.
+        highlightCache.delete(key);
+        highlightCache.set(key, cached);
+        return cached;
+    }
+    const highlighter = await getHighlighter();
+    const html = highlighter.codeToHtml(code, {
+        lang: resolveLanguage(lang),
+        theme: theme as BundledTheme,
+    });
+    highlightCache.set(key, html);
+    while (highlightCache.size > highlightCacheCap) {
+        const oldest = highlightCache.keys().next().value;
+        if (oldest === undefined) break;
+        highlightCache.delete(oldest);
+    }
+    return html;
+}
+
 export function getHighlighter() {
     if (!highlighterPromise) {
         highlighterPromise = createHighlighterCore({

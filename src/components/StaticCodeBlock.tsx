@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import type { BundledTheme } from "shiki";
 import { Pane } from "evergreen-ui";
 import CodeHeader from "./CodeHeader";
 import styles from "../styles/Notie.module.css";
-import { getHighlighter, resolveLanguage } from "../utils/shikiHighlighter";
+import { highlightWithCache } from "../utils/shikiHighlighter";
 
 function escapeHtml(s: string) {
     return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -24,19 +23,14 @@ const StaticCodeBlock = ({
 
     useEffect(() => {
         let cancelled = false;
-        getHighlighter().then((highlighter) => {
-            if (cancelled) return;
-            try {
-                setHtml(
-                    highlighter.codeToHtml(code, {
-                        lang: resolveLanguage(language),
-                        theme: theme as BundledTheme,
-                    }),
-                );
-            } catch {
+        highlightWithCache(code, language, theme)
+            .then((highlighted) => {
+                if (cancelled) return;
+                setHtml(highlighted);
+            })
+            .catch(() => {
                 // keep escaped fallback
-            }
-        });
+            });
         return () => {
             cancelled = true;
         };
