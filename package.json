@@ -48,6 +48,7 @@
         "bootstrap": "^5.3.3",
         "codemirror-shiki": "^0.3.0",
         "evergreen-ui": "^7.1.9",
+        "github-slugger": "^2.0.0",
         "katex": "^0.16.11",
         "react-markdown": "^9.0.1",
         "rehype-katex": "^7.0.0",

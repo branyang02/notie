@@ -67,4 +67,144 @@ describe("extractTableOfContents", () => {
             "Real Subsection",
         ]);
     });
+
+    it("suffixes duplicate headings within a section like rehype-slug", () => {
+        const markdown = `# Title
+
+## Section
+
+### Setup
+
+### Setup
+
+### Setup
+`;
+
+        const entries = extractTableOfContents(markdown);
+
+        expect(entries.map((entry) => entry.id)).toEqual([
+            "section",
+            "setup",
+            "setup-1",
+            "setup-2",
+        ]);
+    });
+
+    it("restarts duplicate suffixes at section boundaries (per-tree rehype-slug reset)", () => {
+        // Each `##` heading starts a new markdown section rendered as its
+        // own tree, and rehype-slug resets its slugger per tree, so
+        // duplicate `##` headings all get the unsuffixed slug in the DOM.
+        const markdown = `# Title
+
+## Setup
+
+### Details
+
+## Setup
+
+### Details
+`;
+
+        const entries = extractTableOfContents(markdown);
+
+        expect(entries.map((entry) => entry.id)).toEqual([
+            "setup",
+            "details",
+            "setup",
+            "details",
+        ]);
+    });
+
+    it("slugs special characters exactly like github-slugger", () => {
+        const markdown = `# Title
+
+## C & D
+
+## It's \`code\` (v2)
+
+## Q: what?
+
+## A+B
+`;
+
+        const entries = extractTableOfContents(markdown);
+
+        expect(entries.map((entry) => entry.id)).toEqual([
+            "c--d",
+            "its-code-v2",
+            "q-what",
+            "ab",
+        ]);
+    });
+
+    it("decodes the &nbsp; runs inserted by numbered headings", () => {
+        // MarkdownProcessor's numbered-heading mode rewrites headings to
+        // "2.1&nbsp;&nbsp;&nbsp;Title"; remark decodes the entities to
+        // U+00A0 before rehype-slug slugs the text, and github-slugger
+        // strips U+00A0 entirely.
+        const markdown = `# Title
+
+## 1&nbsp;&nbsp;&nbsp;Section One
+
+### 1.1&nbsp;&nbsp;&nbsp;Subsection
+`;
+
+        const entries = extractTableOfContents(markdown);
+
+        expect(entries).toEqual([
+            {
+                id: "1section-one",
+                level: 2,
+                title: "1   Section One",
+            },
+            {
+                id: "11subsection",
+                level: 3,
+                title: "1.1   Subsection",
+            },
+        ]);
+    });
+
+    it("strips markdown syntax that does not appear in rendered heading text", () => {
+        const markdown = `# Title
+
+## See [the docs](https://example.com) here
+
+## **Bold** and *italic* and ~~gone~~
+
+## Inline <em>html</em> tag
+`;
+
+        const entries = extractTableOfContents(markdown);
+
+        expect(entries.map((entry) => entry.id)).toEqual([
+            "see-the-docs-here",
+            "bold-and-italic-and-gone",
+            "inline-html-tag",
+        ]);
+        expect(entries.map((entry) => entry.title)).toEqual([
+            "See the docs here",
+            "Bold and italic and gone",
+            "Inline html tag",
+        ]);
+    });
+
+    it("counts a level-1 heading toward duplicate suffixes in its own tree", () => {
+        // The `# Title` heading lives in the first section's tree, so a
+        // `###` heading with the same text before the first `##` gets a
+        // `-1` suffix in the DOM.
+        const markdown = `# Overview
+
+### Overview
+
+## Rest
+`;
+
+        const entries = extractTableOfContents(markdown);
+
+        expect(entries.map((entry) => entry.id)).toEqual([
+            "overview-1",
+            "rest",
+        ]);
+    });
 });
