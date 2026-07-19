@@ -16,17 +16,44 @@ pwd && git branch --show-current
 
 If the branch is `main`, stop and switch to the correct working branch.
 
+## Ticket Workflow
+
+Every accepted unit of work should start as a GitHub issue. The orchestra assigns that issue to a small PR team: implementation, testing, and review. The team iterates in one PR, with all findings, fixes, test results, screenshots, and decisions recorded in GitHub PR comments or reviews so humans can read the full history.
+
+```mermaid
+flowchart TD
+    A["Orchestra accepts work"] --> B["Create GitHub issue"]
+    B --> C["Dispatch PR team"]
+    C --> D["Implementation agent"]
+    C --> E["Testing agent"]
+    C --> F["Review agent"]
+    D --> G["Open PR to agent-orchestra"]
+    E --> G
+    F --> G
+    G --> H["Iterate in GitHub PR comments/reviews"]
+    H --> D
+    H --> E
+    H --> F
+    H --> I{"Team PASS?"}
+    I -- "No" --> H
+    I -- "Yes" --> J["Orchestra final check"]
+    J --> K{"Final check PASS?"}
+    K -- "No" --> H
+    K -- "Yes" --> L["Squash merge"]
+```
+
 ## Orchestra Agent
 
 The orchestra agent coordinates the run. It should:
 
-- Maintain an orchestration ledger with tickets, owners, branches, PRs, checks, verdicts, and merge results.
+- Create a GitHub issue for each accepted ticket before dispatch.
+- Maintain an orchestration ledger with issues, owners, branches, PRs, checks, verdicts, and merge results.
 - Deduplicate findings before assigning implementation work.
 - Reject vague, low-value, duplicate, or out-of-scope findings with a short reason.
-- Dispatch implementation, testing, and review agents in parallel where practical.
+- Dispatch a coordinated implementation, testing, and review agent team for each issue.
 - Keep implementation work out of the main checkout.
-- Review every implementation PR before merge.
-- Require checks before merge.
+- Require the PR team to iterate in GitHub PR comments or reviews.
+- Run a final orchestra check before merge.
 - Squash merge accepted PRs into `agent-orchestra`.
 
 The orchestra should not make product code changes itself except for explicit orchestration or emergency repair work.
@@ -39,6 +66,7 @@ Each implementation agent should:
 - Create its own branch and worktree.
 - Create its own environment inside that worktree, including dependencies, local env files, dev server ports, and browser profiles when needed.
 - Keep each PR tightly scoped to an accepted ticket.
+- Link the GitHub issue in the PR body.
 - Include a PR body with problem, solution, tests run, and risk.
 - Run relevant targeted tests plus the standard checks:
 
@@ -61,7 +89,7 @@ Each ticket should have a testing agent between implementation and review. Testi
 - Run the relevant targeted tests and standard checks.
 - Add or request missing regression coverage when the implementation does not prove the fix.
 - Post a GitHub comment with test plan, commands, results, failures, and artifact links.
-- Send failures back to the implementation agent for another iteration before review.
+- Send failures back to the implementation agent in the PR conversation for another iteration before review.
 
 Testing agents should not merge PRs. They should make the reviewer's job smaller by confirming whether the implementation is behaviorally and test-wise ready.
 
@@ -130,7 +158,10 @@ Smoke review comments should state:
 
 GitHub should be the visible conversation record between review and implementation agents.
 
+- Issue links should appear in the PR body.
 - Review findings go on the original PR.
+- Test results go on the PR before review sign-off.
+- Implementation responses and follow-up commits should answer findings in the PR conversation.
 - Follow-up fixes should link back to the finding that caused them.
 - Final status comments should link the follow-up PR and state whether the issue was resolved.
 
@@ -140,6 +171,7 @@ An orchestra run is done only when:
 
 - Every accepted ticket is merged into `agent-orchestra` or rejected with evidence.
 - No PRs targeting `agent-orchestra` remain open unless explicitly documented as blocked or out of scope.
+- Every accepted ticket has a linked GitHub issue.
 - Every merged PR has a visual review, visual re-review, or smoke review comment.
 - `agent-orchestra` is synced with `origin/agent-orchestra`.
 - Fresh final checks pass on `agent-orchestra`:
