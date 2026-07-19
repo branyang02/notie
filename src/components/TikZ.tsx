@@ -1,15 +1,21 @@
 import { Pane } from "evergreen-ui";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "../styles/Notie.module.css";
+
+// TikZJax assets pinned to obsidian-tikzjax commit
+// 1d1f0844bd918e09e7eac081f86a70ba28635301 (main as of 2024-07-13) so that
+// upstream changes cannot break rendering.
+const TIKZJAX_CSS_URL =
+    "https://raw.githubusercontent.com/artisticat1/obsidian-tikzjax/1d1f0844bd918e09e7eac081f86a70ba28635301/styles.css";
+const TIKZJAX_SCRIPT_URL =
+    "https://raw.githubusercontent.com/artisticat1/obsidian-tikzjax/1d1f0844bd918e09e7eac081f86a70ba28635301/tikzjax.js";
 
 let tikzCssPromise: Promise<void> | null = null;
 let tikzScriptPromise: Promise<void> | null = null;
 
 function loadTikzCss(): Promise<void> {
     if (!tikzCssPromise) {
-        tikzCssPromise = fetch(
-            "https://raw.githubusercontent.com/artisticat1/obsidian-tikzjax/main/styles.css",
-        )
+        tikzCssPromise = fetch(TIKZJAX_CSS_URL)
             .then((response) => {
                 if (response.ok) return response.text();
                 throw new Error("Failed to load CSS");
@@ -18,6 +24,11 @@ function loadTikzCss(): Promise<void> {
                 const styleEl = document.createElement("style");
                 styleEl.textContent = cssContent;
                 document.head.appendChild(styleEl);
+            })
+            .catch((error) => {
+                // Do not cache the rejection, so the next mount retries.
+                tikzCssPromise = null;
+                throw error;
             });
     }
 
@@ -26,9 +37,7 @@ function loadTikzCss(): Promise<void> {
 
 function loadTikzScript(): Promise<void> {
     if (!tikzScriptPromise) {
-        tikzScriptPromise = fetch(
-            "https://raw.githubusercontent.com/artisticat1/obsidian-tikzjax/main/tikzjax.js",
-        )
+        tikzScriptPromise = fetch(TIKZJAX_SCRIPT_URL)
             .then((response) => {
                 if (response.ok) return response.text();
                 throw new Error("Failed to load script");
@@ -37,6 +46,11 @@ function loadTikzScript(): Promise<void> {
                 const scriptEl = document.createElement("script");
                 scriptEl.textContent = scriptContent;
                 document.body.appendChild(scriptEl);
+            })
+            .catch((error) => {
+                // Do not cache the rejection, so the next mount retries.
+                tikzScriptPromise = null;
+                throw error;
             });
     }
 
@@ -59,13 +73,14 @@ function tidyTikzSource(tikzSource: string) {
     return lines.join("\n");
 }
 
-function removeTikzScripts(container: HTMLDivElement | null) {
+function clearContainer(container: HTMLDivElement | null) {
     if (!container) return;
 
-    const existingScripts = container.querySelectorAll(
-        'script[type="text/tikz"]',
-    );
-    existingScripts.forEach((script) => script.remove());
+    // Remove both pending text/tikz scripts and previously rendered SVGs so
+    // diagrams do not stack up when the source changes.
+    while (container.firstChild) {
+        container.removeChild(container.firstChild);
+    }
 }
 
 function waitForNextFrame(): Promise<void> {
@@ -78,10 +93,13 @@ function waitForNextFrame(): Promise<void> {
 
 const TikZ = ({ tikzScript }: { tikzScript: string }) => {
     const scriptContainerRef = useRef<HTMLDivElement>(null);
+    const [loadFailed, setLoadFailed] = useState(false);
 
     useEffect(() => {
         const container = scriptContainerRef.current;
         let isCancelled = false;
+
+        setLoadFailed(false);
 
         async function renderTikz() {
             try {
@@ -89,6 +107,7 @@ const TikZ = ({ tikzScript }: { tikzScript: string }) => {
                 await waitForNextFrame();
             } catch (error) {
                 console.error("Failed to load TikZJax", error);
+                if (!isCancelled) setLoadFailed(true);
                 return;
             }
 
@@ -102,7 +121,7 @@ const TikZ = ({ tikzScript }: { tikzScript: string }) => {
 
             // TikZJax registers a MutationObserver after its loader runs, so
             // append only after the loader promise resolves.
-            removeTikzScripts(container);
+            clearContainer(container);
             container.appendChild(scriptEl);
         }
 
@@ -110,20 +129,32 @@ const TikZ = ({ tikzScript }: { tikzScript: string }) => {
 
         return () => {
             isCancelled = true;
-            removeTikzScripts(container);
+            clearContainer(container);
         };
     }, [tikzScript]);
 
     return (
-        <Pane
-            ref={scriptContainerRef}
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            flexGrow={1}
-            maxWidth="100%"
-            className={styles["tikz-drawing"]}
-        ></Pane>
+        <>
+            {loadFailed && (
+                <Pane
+                    maxWidth="100%"
+                    className={styles["diagram-fallback"]}
+                    data-testid="tikz-fallback"
+                >
+                    <div>TikZ rendering failed. Showing source instead.</div>
+                    <pre>{tikzScript}</pre>
+                </Pane>
+            )}
+            <Pane
+                ref={scriptContainerRef}
+                display={loadFailed ? "none" : "flex"}
+                justifyContent="center"
+                alignItems="center"
+                flexGrow={1}
+                maxWidth="100%"
+                className={styles["tikz-drawing"]}
+            ></Pane>
+        </>
     );
 };
 

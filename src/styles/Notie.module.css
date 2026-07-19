@@ -131,6 +131,26 @@
     filter: var(--blog-tikz-style);
 }
 
+/* Fallback shown when TikZ or Desmos assets fail to load. */
+/* Used in TikZ.tsx and DesmosGraph.tsx */
+.diagram-fallback {
+    margin: 16px auto;
+    padding: 10px;
+    border: 1px dashed var(--blog-table-border-color);
+    border-radius: 6px;
+    color: var(--blog-caption-color);
+    font-size: 0.9em;
+}
+
+.diagram-fallback pre {
+    margin: 8px 0 0;
+    padding: 8px;
+    overflow-x: auto;
+    background-color: var(--blog-code-background-color);
+    color: var(--blog-code-color);
+    border-radius: 6px;
+}
+
 .code-blocks {
     font-size: var(--blog-code-font-size);
 }
