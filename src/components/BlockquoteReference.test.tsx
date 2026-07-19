@@ -92,4 +92,45 @@ describe("BlockquoteReference", () => {
         });
         expect(screen.queryByText(/A reusable definition/)).toBeNull();
     });
+
+    it("renders nested #bqref- links inside preview cards as styled references without nested previews", async () => {
+        const nestedMapping: BlockquoteMapping = {
+            ...blockquoteMapping,
+            "thm:second": {
+                blockquoteNumber: "1.2",
+                blockquoteType: "theorem",
+                blockquoteContent:
+                    "Follows from [the definition](#bqref-def:first).",
+            },
+        };
+
+        const { baseElement } = render(
+            <BlockquoteReference
+                href="#bqref-thm:second"
+                blockquoteMapping={nestedMapping}
+                equationMapping={equationMapping}
+                previewBlockquotes
+            />,
+        );
+
+        fireEvent.mouseEnter(screen.getByRole("link", { name: "Theorem 1.2" }));
+
+        // The nested reference resolves to a BlockquoteReference link with
+        // the resolved label, not a plain "the definition" anchor.
+        const nestedLink = await screen.findByRole("link", {
+            name: "Definition 1.1",
+        });
+        expect(nestedLink).toHaveAttribute("href", "#def:first");
+        expect(screen.queryByText("the definition")).toBeNull();
+
+        // The nested reference must not spawn its own preview card on hover
+        // (previewBlockquotes is disabled for nested references).
+        fireEvent.mouseEnter(nestedLink);
+        await waitFor(() => {
+            expect(nestedLink).toHaveTextContent("Definition 1.1");
+        });
+        expect(baseElement.textContent?.includes("A reusable definition")).toBe(
+            false,
+        );
+    });
 });

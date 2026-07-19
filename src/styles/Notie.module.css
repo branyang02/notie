@@ -65,6 +65,9 @@
     font-family: var(--blog-font-family);
     color: var(--blog-text-color);
     overflow-x: hidden;
+    /* Long unbreakable tokens (URLs, hashes) wrap instead of clipping
+       under the overflow-x: hidden above. */
+    overflow-wrap: anywhere;
 }
 
 /* Heading colors */
@@ -132,6 +135,13 @@
 }
 
 /* Table colors */
+.blog-content table {
+    /* Body cells read the theme background so tables look consistent even
+       inside surfaces with their own background (e.g. collapse sections),
+       in both light and dark appearances. */
+    background-color: var(--blog-background-color);
+}
+
 .blog-content th {
     background-color: var(--blog-table-background-color);
 }
@@ -229,6 +239,22 @@
     margin: 16px auto;
 }
 
+/* GFM task list styles (remark-gfm emits .task-list-item on the <li> and
+   .contains-task-list on the list): drop the list marker so checkboxes do
+   not get a double bullet, and align the checkbox with the text. */
+.blog-content ul:global(.contains-task-list) {
+    padding-left: 1em;
+}
+
+.blog-content li:global(.task-list-item) {
+    list-style-type: none;
+}
+
+.blog-content li:global(.task-list-item) input[type="checkbox"] {
+    margin-right: 0.4em;
+    vertical-align: middle;
+}
+
 /* a tag styles for reference and katex */
 
 .blog-content a[data-footnote-ref] {
@@ -237,6 +263,14 @@
 
 .blog-content a[data-footnote-backref] {
     text-decoration: none;
+}
+
+/* GFM footnotes section */
+.blog-content section[data-footnotes] {
+    margin-top: 2em;
+    border-top: 1px solid var(--blog-table-border-color);
+    font-size: 0.9em;
+    color: var(--blog-caption-color);
 }
 
 /* Collapse Section Styles */

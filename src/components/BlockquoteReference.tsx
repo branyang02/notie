@@ -77,6 +77,7 @@ const BlockquoteReference = ({
                     label={label}
                     content={blockquoteContent}
                     blockquoteType={blockquoteType}
+                    blockquoteMapping={blockquoteMapping}
                     equationMapping={equationMapping}
                     previewEquations={previewEquations}
                 />
@@ -101,12 +102,14 @@ const BlockquoteCard = ({
     label,
     content,
     blockquoteType,
+    blockquoteMapping,
     equationMapping,
     previewEquations,
 }: {
     label: string;
     content: string;
     blockquoteType: string;
+    blockquoteMapping: BlockquoteMapping;
     equationMapping: EquationMapping;
     previewEquations?: boolean;
 }) => {
@@ -133,6 +136,21 @@ const BlockquoteCard = ({
                     );
                 }
 
+                if (href.startsWith("#bqref-")) {
+                    // Render nested blockquote references as styled links
+                    // without their own preview so tooltips never nest
+                    // (and never recurse) inside a preview card.
+                    return (
+                        <BlockquoteReference
+                            href={href}
+                            blockquoteMapping={blockquoteMapping}
+                            equationMapping={equationMapping}
+                            previewBlockquotes={false}
+                            previewEquations={previewEquations}
+                        />
+                    );
+                }
+
                 return (
                     <a href={href} {...props}>
                         {children}
@@ -140,7 +158,7 @@ const BlockquoteCard = ({
                 );
             },
         }),
-        [equationMapping, previewEquations],
+        [blockquoteMapping, equationMapping, previewEquations],
     );
 
     return (

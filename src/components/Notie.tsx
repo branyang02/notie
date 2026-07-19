@@ -297,16 +297,15 @@ const Notie: React.FC<NotieProps> = ({
         renderedSectionCount,
     );
 
+    // Skip the TOC column entirely when there is nothing to list (empty
+    // markdown or title-only documents), so a bare "Contents" heading never
+    // renders next to the note.
+    const showToc = config.showTableOfContents && tocEntries.length > 0;
+
     return (
         <Pane className={styles["notie-container"]}>
-            <Pane
-                className={
-                    config.showTableOfContents
-                        ? styles["mw-page-container-inner"]
-                        : ""
-                }
-            >
-                {config.showTableOfContents && (
+            <Pane className={showToc ? styles["mw-page-container-inner"] : ""}>
+                {showToc && (
                     <Pane className={styles["vector-column-start"]}>
                         <NoteToc
                             tocEntries={tocEntries}

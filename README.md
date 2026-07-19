@@ -64,6 +64,10 @@ Please keep the following in mind when using **notie**:
 - **`tikz` blocks load a third-party engine.** TikZ diagrams are rendered by the [TikZJax](https://github.com/artisticat1/obsidian-tikzjax) engine, whose script and stylesheet are fetched at runtime from a pinned third-party URL and executed in the page.
 - **`desmos` blocks load the Desmos API script.** Graphs are rendered by loading the [Desmos](https://www.desmos.com/) calculator API script from Desmos servers at runtime.
 
+## Limitations
+
+- **One themed `Notie` instance per page.** Theming is applied by setting CSS variables (e.g. `--blog-background-color`, `--blog-text-color`) globally on the document root (`:root`). If you render multiple `Notie` components on the same page with different `theme` or `config.theme` values, they will overwrite each other's variables and all instances end up styled by whichever one applied its theme last. Multiple instances are fine as long as they share the same theme configuration.
+
 ## Configuration reference
 
 The `config` prop accepts a `NotieConfig` object. All fields are optional; unspecified fields fall back to the selected theme's defaults.

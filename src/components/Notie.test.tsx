@@ -532,4 +532,17 @@ $\\href{https://example.com}{good}$
             container.querySelector('a[href="https://example.com"]'),
         ).not.toBeNull();
     });
+
+    it("does not render the TOC for empty markdown", () => {
+        render(<Notie markdown="" />);
+
+        expect(screen.queryByRole("navigation")).toBeNull();
+    });
+
+    it("does not render the TOC for title-only documents", () => {
+        render(<Notie markdown={"# Only a Title\n\nSome body text.\n"} />);
+
+        expect(screen.getByText("Some body text.")).toBeInTheDocument();
+        expect(screen.queryByRole("navigation")).toBeNull();
+    });
 });
