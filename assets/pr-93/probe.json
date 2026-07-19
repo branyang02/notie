@@ -1,0 +1,193 @@
+{
+  "url": "http://localhost:5486/",
+  "tocEntries": [
+    {
+      "id": "1see-the-guide-here",
+      "text": "1   See the guide here"
+    },
+    {
+      "id": "11read-the-spec-now",
+      "text": "1.1   Read the spec now"
+    },
+    {
+      "id": "12try-shortcut-form",
+      "text": "1.2   Try shortcut form"
+    },
+    {
+      "id": "13try-shortcut-form",
+      "text": "1.3   Try shortcut form"
+    },
+    {
+      "id": "2inline-docs-mix",
+      "text": "2   Inline docs mix"
+    },
+    {
+      "id": "3setup",
+      "text": "3   Setup"
+    },
+    {
+      "id": "31details",
+      "text": "3.1   Details"
+    },
+    {
+      "id": "4setup",
+      "text": "4   Setup"
+    },
+    {
+      "id": "41details",
+      "text": "4.1   Details"
+    },
+    {
+      "id": "5math--c-v2",
+      "text": "5   Math & C++ (v2)"
+    }
+  ],
+  "clicks": [
+    {
+      "id": "1see-the-guide-here",
+      "tocText": "1   See the guide here",
+      "exists": true,
+      "hash": "#1see-the-guide-here",
+      "tag": "H2",
+      "top": 0,
+      "inViewport": true,
+      "text": "1   See the guide here",
+      "pass": true
+    },
+    {
+      "id": "11read-the-spec-now",
+      "tocText": "1.1   Read the spec now",
+      "exists": true,
+      "hash": "#11read-the-spec-now",
+      "tag": "H3",
+      "top": 0,
+      "inViewport": true,
+      "text": "1.1   Read the spec now",
+      "pass": true
+    },
+    {
+      "id": "12try-shortcut-form",
+      "tocText": "1.2   Try shortcut form",
+      "exists": true,
+      "hash": "#12try-shortcut-form",
+      "tag": "H3",
+      "top": 0,
+      "inViewport": true,
+      "text": "1.2   Try shortcut form",
+      "pass": true
+    },
+    {
+      "id": "13try-shortcut-form",
+      "tocText": "1.3   Try shortcut form",
+      "exists": true,
+      "hash": "#13try-shortcut-form",
+      "tag": "H3",
+      "top": 72,
+      "inViewport": true,
+      "text": "1.3   Try shortcut form",
+      "pass": true
+    },
+    {
+      "id": "2inline-docs-mix",
+      "tocText": "2   Inline docs mix",
+      "exists": true,
+      "hash": "#2inline-docs-mix",
+      "tag": "H2",
+      "top": 163,
+      "inViewport": true,
+      "text": "2   Inline docs mix",
+      "pass": true
+    },
+    {
+      "id": "3setup",
+      "tocText": "3   Setup",
+      "exists": true,
+      "hash": "#3setup",
+      "tag": "H2",
+      "top": 355,
+      "inViewport": true,
+      "text": "3   Setup",
+      "pass": true
+    },
+    {
+      "id": "31details",
+      "tocText": "3.1   Details",
+      "exists": true,
+      "hash": "#31details",
+      "tag": "H3",
+      "top": 452,
+      "inViewport": true,
+      "text": "3.1   Details",
+      "pass": true
+    },
+    {
+      "id": "4setup",
+      "tocText": "4   Setup",
+      "exists": true,
+      "hash": "#4setup",
+      "tag": "H2",
+      "top": 543,
+      "inViewport": true,
+      "text": "4   Setup",
+      "pass": true
+    },
+    {
+      "id": "41details",
+      "tocText": "4.1   Details",
+      "exists": true,
+      "hash": "#41details",
+      "tag": "H3",
+      "top": 640,
+      "inViewport": true,
+      "text": "4.1   Details",
+      "pass": true
+    },
+    {
+      "id": "5math--c-v2",
+      "tocText": "5   Math & C++ (v2)",
+      "exists": true,
+      "hash": "#5math--c-v2",
+      "tag": "H2",
+      "top": 730,
+      "inViewport": true,
+      "text": "5   Math & C++ (v2)",
+      "pass": true
+    }
+  ],
+  "checks": {
+    "collisionTokenProse": true,
+    "collisionTokenInCode": true,
+    "maskLeak": [
+      "NOTIEMASK0",
+      "NOTIEMASK0"
+    ],
+    "fakeHeadingInToc": false,
+    "fakeHeadingAsHeadingEl": 0,
+    "headingTexts": [
+      "Contents",
+      "1   See the guide here",
+      "1.1   Read the spec now",
+      "1.2   Try shortcut form",
+      "1.3   Try shortcut form",
+      "2   Inline docs mix",
+      "3   Setup",
+      "3.1   Details",
+      "4   Setup",
+      "4.1   Details",
+      "5   Math & C++ (v2)"
+    ],
+    "eqnAnchor": true
+  },
+  "allClicksPass": true,
+  "console": [
+    "[debug] [vite] connecting...",
+    "[debug] [vite] connected.",
+    "[info] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold",
+    "[error] Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "[error] Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "[error] Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "[error] Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "[error] Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "[error] Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ]
+}

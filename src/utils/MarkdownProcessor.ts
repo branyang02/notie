@@ -1,5 +1,6 @@
 import { NotieConfig } from "../config/NotieConfig";
 import { maskProtectedRegions } from "./markdownMasking";
+import { extractTocEntriesFromMasked, TocEntry } from "./toc";
 import { BlockquoteMapping, EquationMapping } from "./utils";
 
 export class MarkdownProcessor {
@@ -18,6 +19,7 @@ export class MarkdownProcessor {
         markdownSections: string[];
         equationMapping: EquationMapping;
         blockquoteMapping: BlockquoteMapping;
+        tocEntries: TocEntry[];
     } {
         // Mask fenced/indented code blocks and HTML comments at the document
         // level so that section splitting, equation/blockquote scanning, and
@@ -44,6 +46,15 @@ export class MarkdownProcessor {
                 this.addHeadingNumbersToSections(processedSections);
         }
 
+        // Extract the table of contents from the still-masked text (after
+        // heading numbering, so numbered ids match what rehype-slug sees in
+        // the rendered output). Reusing this pass's mask avoids the second
+        // document-level maskProtectedRegions() call that
+        // extractTableOfContents() would perform on the final content.
+        const tocEntries = extractTocEntriesFromMasked(
+            processedSections.join(""),
+        );
+
         // Restore the original code/comment content before returning.
         const restoredSections = processedSections.map(unmask);
         for (const mapping of Object.values(this.equationMapping)) {
@@ -58,6 +69,7 @@ export class MarkdownProcessor {
             markdownSections: restoredSections,
             equationMapping: this.equationMapping,
             blockquoteMapping: this.blockquoteMapping,
+            tocEntries,
         };
     }
 

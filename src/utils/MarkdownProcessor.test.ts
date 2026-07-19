@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { MarkdownProcessor } from "./MarkdownProcessor";
+import { extractTableOfContents } from "./toc";
 import { FullNotieConfig } from "../config/NotieConfig";
 import { DEFAULT_DESMOS_API_KEY } from "../components/DesmosGraph";
 
@@ -1025,5 +1026,165 @@ $$
         expect(result.equationMapping).toEqual({});
         expect(errorSpy).not.toHaveBeenCalled();
         errorSpy.mockRestore();
+    });
+});
+
+describe("MarkdownProcessor single-pass TOC extraction", () => {
+    const plainConfig: FullNotieConfig = {
+        ...config,
+        theme: { ...config.theme, numberedHeading: false },
+    };
+
+    // A fixture exercising every tricky path the two implementations must
+    // agree on: duplicate headings (within and across sections), a level-1
+    // title consuming a slug in its tree, special characters, markdown
+    // syntax stripping, inline and reference-style links, fake headings in
+    // fences/indented code/comments, and ATX closing sequences.
+    const trickyMarkdown = `# Overview
+
+### Overview
+
+## Setup
+
+### Setup
+
+### Setup
+
+## Setup
+
+### C & D
+
+### It's \`code\` (v2)
+
+### See [the docs](https://example.com) here
+
+### See [the guide][guide] too
+
+### Read [the spec][] now
+
+### Try [shortcut] form
+
+### **Bold** and _flanked_ text
+
+### Closed heading ##
+
+\`\`\`bash
+## fenced fake
+\`\`\`
+
+    ## indented fake
+
+<!-- ## commented fake -->
+
+[guide]: https://example.com/guide
+[the spec]: https://example.com/spec
+[shortcut]: https://example.com/shortcut
+`;
+
+    it("returns tocEntries identical to extractTableOfContents (plain headings)", () => {
+        const result = new MarkdownProcessor(
+            trickyMarkdown,
+            plainConfig,
+        ).process();
+
+        expect(result.tocEntries).toEqual(
+            extractTableOfContents(result.markdownContent),
+        );
+        expect(result.tocEntries.length).toBeGreaterThan(0);
+    });
+
+    it("returns tocEntries identical to extractTableOfContents (numbered headings)", () => {
+        const result = new MarkdownProcessor(trickyMarkdown, config).process();
+
+        expect(result.tocEntries).toEqual(
+            extractTableOfContents(result.markdownContent),
+        );
+        // Numbered ids include the heading number with the &nbsp; run
+        // stripped, matching what rehype-slug produces in the DOM (the
+        // title-section "### Overview" is numbered 0.1).
+        expect(result.tocEntries[0].id).toBe("01overview");
+    });
+
+    it("computes reference-style-link heading slugs like rehype-slug", () => {
+        const result = new MarkdownProcessor(
+            `# Title
+
+## See [the guide][guide] here
+
+## Read [the spec][] now
+
+[guide]: https://example.com/guide
+[the spec]: https://example.com/spec
+`,
+            plainConfig,
+        ).process();
+
+        expect(result.tocEntries.map((entry) => entry.id)).toEqual([
+            "see-the-guide-here",
+            "read-the-spec-now",
+        ]);
+    });
+
+    it("never lists fake headings from code or comments in tocEntries", () => {
+        const result = new MarkdownProcessor(
+            trickyMarkdown,
+            plainConfig,
+        ).process();
+
+        const titles = result.tocEntries.map((entry) => entry.title);
+        expect(titles).not.toContain("fenced fake");
+        expect(titles).not.toContain("indented fake");
+        expect(titles).not.toContain("commented fake");
+    });
+});
+
+describe("MarkdownProcessor masking-token collision", () => {
+    it("round-trips a document containing the literal mask token", () => {
+        // The document contains the exact placeholder shape the masker
+        // would generate (NOTIEMASK0NOTIEMASK), forcing the token base to
+        // grow (base += "X") so tokens cannot collide with content.
+        const literal = "NOTIEMASK0NOTIEMASK";
+        const fence = ["```python", "## fake heading in code", "```"].join(
+            "\n",
+        );
+        const markdown = `# Title
+
+## Section
+
+Literal token in prose: ${literal} stays byte-identical.
+
+${fence}
+
+$$
+\\begin{equation} \\label{eq:collide}
+x = ${literal}
+\\end{equation}
+$$
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        // Byte-identical round-trip of the literal, in prose and math.
+        expect(result.markdownContent).toContain(
+            `Literal token in prose: ${literal} stays byte-identical.`,
+        );
+        expect(result.markdownContent).toContain(`x = ${literal}`);
+        // The masking still worked: the fence is restored verbatim and its
+        // fake heading was neither numbered nor listed in the TOC.
+        expect(result.markdownContent).toContain(fence);
+        expect(result.markdownContent).not.toContain(
+            "&nbsp;&nbsp;&nbsp;fake heading in code",
+        );
+        expect(result.tocEntries.map((entry) => entry.title)).not.toContain(
+            "fake heading in code",
+        );
+        // The equation label is mapped and its stored string round-trips
+        // the literal too.
+        expect(result.equationMapping["eq:collide"].equationNumber).toBe("1.1");
+        expect(result.equationMapping["eq:collide"].equationString).toContain(
+            literal,
+        );
+        // No grown token base (NOTIEMASKX...) leaks into the output.
+        expect(result.markdownContent).not.toMatch(/NOTIEMASKX+\d+/);
     });
 });
