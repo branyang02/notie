@@ -1,0 +1,11 @@
+{
+  "title": "notie",
+  "propsTableText": "Prop Type Description markdown string The Markdown content to be rendered. config NotieConfig (optional) Configuration options for Notie, including table of contents settings, font size, and theme customization. theme NotieThemes (optional) Predefined theme option. Can be default, default dark, Starlit Eclipse, or Starlit Eclipse Light. customComponents CustomComponents (optional) Custom React com",
+  "cfgSnippetHasDesmosKey": true,
+  "bqSectionMentionsAll8": true,
+  "bqrefLinks": [],
+  "codeRunnerNoteVisible": true,
+  "desmosNoteVisible": true,
+  "atxNoteVisible": true,
+  "tocEntryCount": 30
+}
