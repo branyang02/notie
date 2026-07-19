@@ -26,7 +26,14 @@ export class MarkdownProcessor {
             this.markdownContent,
         );
 
-        const sections = this.splitIntoSections(maskedText);
+        // Normalize single-line `$$\begin{...}...\end{...}$$` display
+        // environments into the canonical multi-line form BEFORE section
+        // splitting and equation scanning, so the renderer (remark-math)
+        // and the equation mapping agree on what is display math.
+        const normalizedText =
+            this.normalizeSingleLineDisplayEnvironments(maskedText);
+
+        const sections = this.splitIntoSections(normalizedText);
         let processedSections = sections.map((section, i) => {
             section = i === 0 ? section : this.wrapInDiv(section, i); // Do not process the first section under Title
             return this.processSection(section, i);
@@ -70,6 +77,48 @@ export class MarkdownProcessor {
                 const numbering = counters.slice(0, level + 1).join(".");
                 return `${hashes} ${numbering}&nbsp;&nbsp;&nbsp;${title}`;
             }),
+        );
+    }
+
+    /**
+     * Rewrites display-math environments written on a single line, e.g.
+     *
+     *     $$\begin{equation}\label{eq:a} y = 1 \end{equation}$$
+     *
+     * into the canonical multi-line form
+     *
+     *     $$
+     *     \begin{equation}\label{eq:a} y = 1 \end{equation}
+     *     $$
+     *
+     * remark-math v6 parses a one-line `$$...$$` as INLINE math, so KaTeX
+     * rejects the display-only `equation`/`align` environments with a red
+     * ParseError and never creates the `eqn-X.Y` anchor — while the
+     * equation scanner still maps the `\label`, leaving `\eqref` links
+     * dangling. Normalizing before section splitting and scanning keeps
+     * the renderer and the mapping in agreement. Multi-line forms are
+     * untouched, and this runs on MASKED text, so code blocks and HTML
+     * comments can never be corrupted.
+     */
+    private normalizeSingleLineDisplayEnvironments(content: string): string {
+        const singleLinePattern =
+            /^([ \t]*)\$\$[ \t]*(\\begin\{(equation|align)\}.*?\\end\{\3\})[ \t]*\$\$[ \t]*$/gm;
+        return content.replace(
+            singleLinePattern,
+            (_match, indent, body, env) => {
+                let normalizedBody = body;
+                if (env === "align") {
+                    // The align scanner (processAlignEnvironment) is
+                    // line-based: it skips \begin/\end delimiter lines and
+                    // numbers one row per line, so put the delimiters on
+                    // their own lines and break rows at `\\`.
+                    normalizedBody = body
+                        .replace(/\\begin\{align\}[ \t]*/, "\\begin{align}\n")
+                        .replace(/[ \t]*\\end\{align\}$/, "\n\\end{align}")
+                        .replace(/\\\\[ \t]*/g, "\\\\\n");
+                }
+                return `${indent}$$\n${normalizedBody}\n$$`;
+            },
         );
     }
 
@@ -147,9 +196,11 @@ export class MarkdownProcessor {
     }
 
     private processEquations(content: string, sectionIndex: number): string {
-        // Matches both multi-line ($$\n\begin{...}...) and single-line
-        // ($$\begin{...}...\end{...}$$) display environments, with optional
-        // whitespace between the delimiters and the environment.
+        // Matches display environments with optional whitespace between the
+        // `$$` delimiters and the environment. Single-line forms have
+        // already been normalized to multi-line by
+        // normalizeSingleLineDisplayEnvironments(), so each equation is
+        // seen exactly once here.
         const equationPattern =
             /\$\$\s*\\begin\{(equation|align)\}[\s\S]*?\\end\{\1\}\s*\$\$/g;
         const equations = content.match(equationPattern);

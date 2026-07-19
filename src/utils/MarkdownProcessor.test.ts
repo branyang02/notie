@@ -364,6 +364,72 @@ $$\\begin{equation}\\label{eq:a} x = 1 \\end{equation}$$
         );
     });
 
+    it("normalizes single-line equation environments to multi-line display math", () => {
+        const markdown = `# Title
+
+## Section
+
+$$\\begin{equation}\\label{eq:x} y = 1 \\end{equation}$$
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        // The label is mapped...
+        expect(result.equationMapping["eq:x"]).toBeDefined();
+        expect(result.equationMapping["eq:x"].equationNumber).toBe("1.1");
+        // ...and the returned content contains the canonical multi-line
+        // form (so remark-math parses it as display math), not the
+        // single-line form (which remark-math treats as inline math and
+        // KaTeX rejects with "{equation} can be used only in display
+        // mode").
+        expect(result.markdownContent).toContain(
+            "$$\n\\begin{equation}\\label{eq:x} y = 1 \\end{equation}\n$$",
+        );
+        expect(result.markdownContent).not.toContain(
+            "$$\\begin{equation}\\label{eq:x} y = 1 \\end{equation}$$",
+        );
+        expect(result.markdownContent).toBe(result.markdownSections.join(""));
+    });
+
+    it("normalizes single-line align environments to multi-line display math", () => {
+        const markdown = `# Title
+
+## Section
+
+$$\\begin{align}a &= 1 \\label{eq:a1} \\\\ b &= 2 \\label{eq:a2}\\end{align}$$
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        // Each align row is numbered exactly once, in order.
+        expect(result.equationMapping["eq:a1"].equationNumber).toBe("1.1");
+        expect(result.equationMapping["eq:a2"].equationNumber).toBe("1.2");
+        // The delimiters and rows land on their own lines.
+        expect(result.markdownContent).toContain(
+            "$$\n\\begin{align}\na &= 1 \\label{eq:a1} \\\\\nb &= 2 \\label{eq:a2}\n\\end{align}\n$$",
+        );
+        expect(result.markdownContent).not.toContain("$$\\begin{align}");
+    });
+
+    it("does not normalize single-line environments inside fenced code blocks", () => {
+        const singleLine =
+            "$$\\begin{equation}\\label{eq:in-code} y = 1 \\end{equation}$$";
+        const markdown = `# Title
+
+## Section
+
+\`\`\`tex
+${singleLine}
+\`\`\`
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        expect(result.equationMapping).toEqual({});
+        // The code block content is restored verbatim, still single-line.
+        expect(result.markdownContent).toContain(singleLine);
+    });
+
     it("counts single-line and multi-line equations in document order", () => {
         const markdown = `# Title
 
