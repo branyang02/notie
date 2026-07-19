@@ -16,19 +16,8 @@ const NavMobileMenu = ({ tabs }: { tabs: string[] }) => {
     const navigate = useNavigate();
 
     const handleSelect = (tab: string) => {
-        let path: string;
-
-        switch (tab) {
-            case "Home":
-                path = "/";
-                break;
-            case "Relevant Coursework":
-                path = "/coursework";
-                break;
-            default:
-                path = `/${tab.toLowerCase().replace(/\s+/g, "")}`;
-                break;
-        }
+        const path =
+            tab === "Home" ? "/" : `/${tab.toLowerCase().replace(/\s+/g, "")}`;
 
         navigate(path);
     };
@@ -77,19 +66,10 @@ const NavButton = ({
     };
 
     const handleClick = () => {
-        let path: string;
-
-        switch (label) {
-            case "Home":
-                path = "/";
-                break;
-            case "Relevant Coursework":
-                path = "/coursework";
-                break;
-            default:
-                path = `/${label.toLowerCase().replace(/\s+/g, "")}`;
-                break;
-        }
+        const path =
+            label === "Home"
+                ? "/"
+                : `/${label.toLowerCase().replace(/\s+/g, "")}`;
 
         navigate(path);
     };

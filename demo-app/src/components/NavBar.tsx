@@ -72,7 +72,11 @@ const NavBar = () => {
                                 { label: "Starlit Eclipse Light" },
                             ]}
                             itemToString={(item) => (item ? item.label : "")}
-                            onChange={(selected) => setTheme(selected.label)}
+                            onChange={(selected) => {
+                                if (selected?.label) {
+                                    setTheme(selected.label);
+                                }
+                            }}
                         />
                     </Pane>
                     {isMobile ? (
