@@ -168,17 +168,28 @@ export function useNotieConfig(
         }
     }, [userTheme]);
 
-    const mergedConfig = useMemo(
-        () => ({
+    // NotieConfig is plain, JSON-serializable data (strings/booleans), so a
+    // structural signature keeps the merged config referentially stable even
+    // when consumers pass a new inline `config={{...}}` object every render.
+    // Without this, a new config object identity would re-run the markdown
+    // processing pipeline in consumers on every parent render.
+    const userConfigSignature =
+        userConfig === undefined ? undefined : JSON.stringify(userConfig);
+
+    const mergedConfig = useMemo(() => {
+        const structuralUserConfig: NotieConfig | undefined =
+            userConfigSignature === undefined
+                ? undefined
+                : JSON.parse(userConfigSignature);
+        return {
             ...defaultNotieConfig,
-            ...userConfig,
+            ...structuralUserConfig,
             theme: {
                 ...selectedTheme,
-                ...userConfig?.theme,
+                ...structuralUserConfig?.theme,
             },
-        }),
-        [userConfig, selectedTheme],
-    );
+        };
+    }, [userConfigSignature, selectedTheme]);
 
     useEffect(() => {
         const root = document.documentElement;
@@ -286,29 +297,26 @@ export function useNotieConfig(
             mergedConfig.theme.tocMarker ? "true" : "false",
         );
 
-        // Handle custom font
-        const url = mergedConfig.theme.customFontUrl;
-        if (url) {
+        // Handle custom fonts: append a <link> for each configured font URL
+        // (main content and TOC) and remove all of them on cleanup.
+        const fontUrls = [
+            mergedConfig.theme.customFontUrl,
+            mergedConfig.theme.tocCustomFontUrl,
+        ].filter((fontUrl): fontUrl is string => Boolean(fontUrl));
+
+        const fontLinks = fontUrls.map((fontUrl) => {
             const fontLink = document.createElement("link");
-            fontLink.href = url;
+            fontLink.href = fontUrl;
             fontLink.rel = "stylesheet";
             document.head.appendChild(fontLink);
+            return fontLink;
+        });
 
-            return () => {
+        return () => {
+            fontLinks.forEach((fontLink) => {
                 document.head.removeChild(fontLink);
-            };
-        }
-        const tocUrl = mergedConfig.theme.tocCustomFontUrl;
-        if (tocUrl) {
-            const tocFontLink = document.createElement("link");
-            tocFontLink.href = tocUrl;
-            tocFontLink.rel = "stylesheet";
-            document.head.appendChild(tocFontLink);
-
-            return () => {
-                document.head.removeChild(tocFontLink);
-            };
-        }
+            });
+        };
     }, [mergedConfig]);
 
     return mergedConfig;
