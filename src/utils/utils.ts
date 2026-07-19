@@ -1,3 +1,10 @@
+// Used in MarkdownRenderer.tsx for `execute-<language>` fenced code blocks.
+// Strips only the leading "execute-" prefix so multi-part language names
+// (e.g. "execute-objective-c") are preserved intact.
+export function parseExecuteLanguage(language: string): string {
+    return language.replace(/^execute-/, "");
+}
+
 export interface BlockquoteMapping {
     [label: string]: {
         blockquoteNumber: string;

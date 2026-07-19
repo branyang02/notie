@@ -6,7 +6,11 @@ import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { katexOptions } from "../utils/katexOptions";
-import { BlockquoteMapping, EquationMapping } from "../utils/utils";
+import {
+    BlockquoteMapping,
+    EquationMapping,
+    parseExecuteLanguage,
+} from "../utils/utils";
 import BlockquoteReference from "./BlockquoteReference";
 import CodeBlock from "./CodeBlock";
 import DesmosGraph from "./DesmosGraph";
@@ -222,8 +226,11 @@ const MarkdownRenderer: React.FC<{
                                 <LazyRender minHeight={260}>
                                     <CodeBlock
                                         initialCode={code}
-                                        language={language.split("-").pop()}
+                                        language={parseExecuteLanguage(
+                                            language,
+                                        )}
                                         theme={config.theme.liveCodeTheme}
+                                        codeRunnerUrl={config.codeRunnerUrl}
                                     />
                                 </LazyRender>
                             );
@@ -287,6 +294,7 @@ const MarkdownRenderer: React.FC<{
             }),
             [
                 blockquoteMapping,
+                config.codeRunnerUrl,
                 config.previewBlockquotes,
                 config.previewEquations,
                 config.theme.liveCodeTheme,
