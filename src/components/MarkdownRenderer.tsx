@@ -257,6 +257,7 @@ const MarkdownRenderer: React.FC<{
                                     <DesmosGraph
                                         graphScript={code}
                                         appearance={config.theme.appearance}
+                                        apiKey={config.desmosApiKey}
                                     />
                                 </LazyRender>
                             );
@@ -331,6 +332,7 @@ const MarkdownRenderer: React.FC<{
             [
                 blockquoteMapping,
                 config.codeRunnerUrl,
+                config.desmosApiKey,
                 config.previewBlockquotes,
                 config.previewEquations,
                 config.theme.appearance,

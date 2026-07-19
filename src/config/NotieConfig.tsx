@@ -48,6 +48,12 @@ export interface NotieConfig {
     fontSize?: CSSStyleDeclaration["fontSize"];
     /** Base URL of the code-runner service used by executable code blocks. */
     codeRunnerUrl?: string;
+    /**
+     * Desmos calculator API key used by ```desmos code blocks. Defaults to
+     * the built-in demo key, which logs a warning that it is not licensed
+     * for commercial use.
+     */
+    desmosApiKey?: string;
     theme?: Theme;
 }
 

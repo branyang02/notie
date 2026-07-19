@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { DEFAULT_CODE_RUNNER_URL } from "../service/api";
+import { DEFAULT_DESMOS_API_KEY } from "../components/DesmosGraph";
 import {
     FullNotieConfig,
     FullTheme,
@@ -192,6 +193,7 @@ const defaultNotieConfig: FullNotieConfig = {
     tocTitle: "Contents",
     fontSize: "1rem",
     codeRunnerUrl: DEFAULT_CODE_RUNNER_URL,
+    desmosApiKey: DEFAULT_DESMOS_API_KEY,
     theme: defaultTheme,
 };
 

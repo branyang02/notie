@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { MarkdownProcessor } from "./MarkdownProcessor";
 import { FullNotieConfig } from "../config/NotieConfig";
+import { DEFAULT_DESMOS_API_KEY } from "../components/DesmosGraph";
 
 const config: FullNotieConfig = {
     showTableOfContents: true,
@@ -9,6 +10,7 @@ const config: FullNotieConfig = {
     tocTitle: "Contents",
     fontSize: "1rem",
     codeRunnerUrl: "https://api.brandonyifanyang.com",
+    desmosApiKey: DEFAULT_DESMOS_API_KEY,
     theme: {
         appearance: "light",
         backgroundColor: "#fff",
