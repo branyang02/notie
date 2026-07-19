@@ -45,6 +45,8 @@ export interface NotieConfig {
     previewBlockquotes?: boolean;
     tocTitle?: string;
     fontSize?: CSSStyleDeclaration["fontSize"];
+    /** Base URL of the code-runner service used by executable code blocks. */
+    codeRunnerUrl?: string;
     theme?: Theme;
 }
 
