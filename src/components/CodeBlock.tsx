@@ -37,6 +37,20 @@ const CodeBlock = ({
 }) => {
     const runCodeRef = useRef<() => void>(() => {});
 
+    // Detect the platform in an effect so that server-side rendering (where
+    // `navigator` is undefined) and the first client render agree on the
+    // markup (Ctrl icon), avoiding SSR crashes and hydration mismatches.
+    const [isMac, setIsMac] = useState(false);
+
+    useEffect(() => {
+        if (
+            typeof navigator !== "undefined" &&
+            navigator.platform?.includes("Mac")
+        ) {
+            setIsMac(true);
+        }
+    }, []);
+
     const runKeymap = useMemo(
         () =>
             Prec.highest(
@@ -218,7 +232,7 @@ const CodeBlock = ({
                                     alignItems: "center",
                                 }}
                             >
-                                {navigator.platform.includes("Mac") ? (
+                                {isMac ? (
                                     <KeyCommandIcon size={12} />
                                 ) : (
                                     <KeyControlIcon size={12} />

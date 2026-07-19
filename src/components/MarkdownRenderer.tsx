@@ -53,8 +53,18 @@ function textFromReactNode(node: React.ReactNode): string {
     return "";
 }
 
+/**
+ * Returns the number of sections rendered on the first render pass.
+ *
+ * This intentionally returns the same value on the server and on the client
+ * so that server-rendered markup matches the first client render during
+ * hydration. Previously the server rendered every section while the client
+ * started with `INITIAL_SECTION_COUNT`, which guaranteed a hydration
+ * mismatch. The trade-off is that SSR output now only contains the initial
+ * sections; the remaining sections are revealed progressively after
+ * hydration, exactly as on a client-only render.
+ */
 function getInitialSectionCount(sectionCount: number): number {
-    if (typeof window === "undefined") return sectionCount;
     return Math.min(INITIAL_SECTION_COUNT, sectionCount);
 }
 
@@ -262,10 +272,32 @@ const MarkdownRenderer: React.FC<{
                                     </InlineAlert>
                                 );
                             }
-                            const jsonString = code.replace(/(\w+):/g, '"$1":');
-                            const componentConfig = JSON.parse(
-                                jsonString,
-                            ) as CustomComponentFormat;
+                            let componentConfig: CustomComponentFormat;
+                            try {
+                                const jsonString = code.replace(
+                                    /(\w+):/g,
+                                    '"$1":',
+                                );
+                                const parsed: unknown = JSON.parse(jsonString);
+                                if (
+                                    typeof parsed !== "object" ||
+                                    parsed === null ||
+                                    typeof (parsed as CustomComponentFormat)
+                                        .componentName !== "string"
+                                ) {
+                                    throw new Error(
+                                        "Missing componentName in component configuration.",
+                                    );
+                                }
+                                componentConfig =
+                                    parsed as CustomComponentFormat;
+                            } catch {
+                                return (
+                                    <InlineAlert intent="danger">
+                                        Invalid component configuration.
+                                    </InlineAlert>
+                                );
+                            }
 
                             const CustomComponent =
                                 customComponents[componentConfig.componentName];
