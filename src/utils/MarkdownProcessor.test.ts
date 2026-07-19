@@ -751,3 +751,279 @@ $$
         expect(result.equationMapping["eq:after"].equationNumber).toBe("1.1");
     });
 });
+
+describe("MarkdownProcessor gather/alignat environments", () => {
+    it("maps labels in gather environments per row", () => {
+        const markdown = `# Title
+
+## Section
+
+$$
+\\begin{gather}
+a = 1 \\\\
+b = 2 \\label{eq:gather-second}
+\\end{gather}
+$$
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        // KaTeX numbers each gather row, so the labeled second row is 1.2.
+        expect(result.equationMapping["eq:gather-second"].equationNumber).toBe(
+            "1.2",
+        );
+    });
+
+    it("keeps an equation after a gather in sync with KaTeX numbering", () => {
+        const markdown = `# Title
+
+## Section
+
+$$
+\\begin{gather}
+a = 1 \\label{eq:g1} \\\\
+b = 2
+\\end{gather}
+$$
+
+$$
+\\begin{equation} \\label{eq:after-gather}
+c = 3
+\\end{equation}
+$$
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        // The gather consumes numbers 1.1 and 1.2 (KaTeX numbers every
+        // gather row), so the following equation is 1.3, not 1.2.
+        expect(result.equationMapping["eq:g1"].equationNumber).toBe("1.1");
+        expect(result.equationMapping["eq:after-gather"].equationNumber).toBe(
+            "1.3",
+        );
+    });
+
+    it("honors \\nonumber in gather rows", () => {
+        const markdown = `# Title
+
+## Section
+
+$$
+\\begin{gather}
+a = 1 \\nonumber \\\\
+b = 2 \\label{eq:gather-real}
+\\end{gather}
+$$
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        expect(result.equationMapping["eq:gather-real"].equationNumber).toBe(
+            "1.1",
+        );
+    });
+
+    it("maps labels in alignat environments with an argument", () => {
+        const markdown = `# Title
+
+## Section
+
+$$
+\\begin{alignat}{2}
+a &= 1 &\\quad b &= 2 \\label{eq:aa1} \\\\
+c &= 3 &\\quad d &= 4 \\label{eq:aa2}
+\\end{alignat}
+$$
+
+$$
+\\begin{equation} \\label{eq:after-alignat}
+e = 5
+\\end{equation}
+$$
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        expect(result.equationMapping["eq:aa1"].equationNumber).toBe("1.1");
+        expect(result.equationMapping["eq:aa2"].equationNumber).toBe("1.2");
+        expect(result.equationMapping["eq:after-alignat"].equationNumber).toBe(
+            "1.3",
+        );
+    });
+
+    it("normalizes single-line gather environments to multi-line display math", () => {
+        const markdown = `# Title
+
+## Section
+
+$$\\begin{gather}a = 1 \\\\ b = 2 \\label{eq:sg}\\end{gather}$$
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        expect(result.equationMapping["eq:sg"].equationNumber).toBe("1.2");
+        expect(result.markdownContent).toContain(
+            "$$\n\\begin{gather}\na = 1 \\\\\nb = 2 \\label{eq:sg}\n\\end{gather}\n$$",
+        );
+        expect(result.markdownContent).not.toContain("$$\\begin{gather}");
+    });
+
+    it("normalizes single-line alignat environments keeping the argument", () => {
+        const markdown = `# Title
+
+## Section
+
+$$\\begin{alignat}{2}a &= 1 \\label{eq:sa}\\end{alignat}$$
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        expect(result.equationMapping["eq:sa"].equationNumber).toBe("1.1");
+        expect(result.markdownContent).toContain(
+            "$$\n\\begin{alignat}{2}\na &= 1 \\label{eq:sa}\n\\end{alignat}\n$$",
+        );
+        expect(result.markdownContent).not.toContain("$$\\begin{alignat}");
+    });
+
+    it("counts a nested block inside a gather row once", () => {
+        const markdown = `# Title
+
+## Section
+
+$$
+\\begin{gather}
+f(x) = \\begin{cases}
+1 & x > 0 \\\\
+0 & x \\le 0
+\\end{cases} \\label{eq:gcases} \\\\
+g(x) = 2 \\label{eq:gafter}
+\\end{gather}
+$$
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        expect(result.equationMapping["eq:gcases"].equationNumber).toBe("1.1");
+        expect(result.equationMapping["eq:gafter"].equationNumber).toBe("1.2");
+    });
+});
+
+describe("MarkdownProcessor title-section policy", () => {
+    it("warns and skips mapping for a labeled equation in the title section", () => {
+        const errorSpy = vi
+            .spyOn(console, "error")
+            .mockImplementation(() => {});
+        const markdown = `# Title
+
+Some intro text.
+
+$$
+\\begin{equation} \\label{eq:title}
+x = 1
+\\end{equation}
+$$
+
+## Section One
+
+$$
+\\begin{equation} \\label{eq:real}
+y = 2
+\\end{equation}
+$$
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        // No broken 0.x entry is created for the title-section label...
+        expect(result.equationMapping["eq:title"]).toBeUndefined();
+        // ...a console.error names the label and explains the policy...
+        expect(errorSpy).toHaveBeenCalledWith(
+            expect.stringContaining('"eq:title"'),
+        );
+        expect(errorSpy).toHaveBeenCalledWith(
+            expect.stringContaining("title section"),
+        );
+        // ...and section 1 numbering is unaffected.
+        expect(result.equationMapping["eq:real"].equationNumber).toBe("1.1");
+        errorSpy.mockRestore();
+    });
+
+    it("warns for labeled gather rows in the title section too", () => {
+        const errorSpy = vi
+            .spyOn(console, "error")
+            .mockImplementation(() => {});
+        const markdown = `# Title
+
+$$
+\\begin{gather}
+a = 1 \\label{eq:tg1} \\\\
+b = 2 \\label{eq:tg2}
+\\end{gather}
+$$
+
+## Section
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        expect(result.equationMapping).toEqual({});
+        expect(errorSpy).toHaveBeenCalledWith(
+            expect.stringContaining('"eq:tg1"'),
+        );
+        expect(errorSpy).toHaveBeenCalledWith(
+            expect.stringContaining('"eq:tg2"'),
+        );
+        errorSpy.mockRestore();
+    });
+
+    it("warns and skips mapping for a labeled blockquote in the title section", () => {
+        const errorSpy = vi
+            .spyOn(console, "error")
+            .mockImplementation(() => {});
+        const markdown = `# Title
+
+<blockquote class="definition" id="def:title">
+Title definition.
+</blockquote>
+
+## Section One
+
+<blockquote class="definition" id="def:real">
+Real definition.
+</blockquote>
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        expect(result.blockquoteMapping["def:title"]).toBeUndefined();
+        expect(errorSpy).toHaveBeenCalledWith(
+            expect.stringContaining('"def:title"'),
+        );
+        expect(result.blockquoteMapping["def:real"].blockquoteNumber).toBe(
+            "1.1",
+        );
+        errorSpy.mockRestore();
+    });
+
+    it("does not warn for unlabeled title-section equations", () => {
+        const errorSpy = vi
+            .spyOn(console, "error")
+            .mockImplementation(() => {});
+        const markdown = `# Title
+
+$$
+\\begin{equation}
+x = 1
+\\end{equation}
+$$
+
+## Section
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        expect(result.equationMapping).toEqual({});
+        expect(errorSpy).not.toHaveBeenCalled();
+        errorSpy.mockRestore();
+    });
+});

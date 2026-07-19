@@ -101,20 +101,30 @@ export class MarkdownProcessor {
      * comments can never be corrupted.
      */
     private normalizeSingleLineDisplayEnvironments(content: string): string {
+        // `alignat` takes a mandatory argument (\begin{alignat}{2}); the
+        // optional `\{\d+\}` after the environment name allows it without
+        // disturbing the \3 back-reference that pairs \begin with \end.
         const singleLinePattern =
-            /^([ \t]*)\$\$[ \t]*(\\begin\{(equation|align)\}.*?\\end\{\3\})[ \t]*\$\$[ \t]*$/gm;
+            /^([ \t]*)\$\$[ \t]*(\\begin\{(equation|align|gather|alignat)\}(?:\{\d+\})?.*?\\end\{\3\})[ \t]*\$\$[ \t]*$/gm;
         return content.replace(
             singleLinePattern,
             (_match, indent, body, env) => {
                 let normalizedBody = body;
-                if (env === "align") {
-                    // The align scanner (processAlignEnvironment) is
+                if (env !== "equation") {
+                    // The multi-row scanner (processAlignEnvironment) is
                     // line-based: it skips \begin/\end delimiter lines and
                     // numbers one row per line, so put the delimiters on
-                    // their own lines and break rows at `\\`.
+                    // their own lines and break rows at `\\`. This applies
+                    // to every per-row environment (align, gather, alignat).
                     normalizedBody = body
-                        .replace(/\\begin\{align\}[ \t]*/, "\\begin{align}\n")
-                        .replace(/[ \t]*\\end\{align\}$/, "\n\\end{align}")
+                        .replace(
+                            /\\begin\{(align|gather|alignat)\}(\{\d+\})?[ \t]*/,
+                            "\\begin{$1}$2\n",
+                        )
+                        .replace(
+                            /[ \t]*\\end\{(align|gather|alignat)\}$/,
+                            "\n\\end{$1}",
+                        )
                         .replace(/\\\\[ \t]*/g, "\\\\\n");
                 }
                 return `${indent}$$\n${normalizedBody}\n$$`;
@@ -134,6 +144,18 @@ export class MarkdownProcessor {
         sectionContent: string,
         sectionIndex: number,
     ): string {
+        // The title section (index 0, everything before the first `##`) is
+        // not wrapped in a `.sections` div, so the DOM labeler in Notie.tsx
+        // (which only walks `.sections` divs, numbering them 1.x upward)
+        // never creates `eqn-0.y` anchors or blockquote numbers for it.
+        // Scanning it would produce mapping entries like `0.1` that point
+        // at nonexistent anchors, so it is skipped entirely; any labels
+        // found there get a console.error instead of a broken entry.
+        if (sectionIndex === 0) {
+            this.warnTitleSectionLabels(sectionContent);
+            return sectionContent;
+        }
+
         // Code blocks and HTML comments are already masked at the document
         // level (see process()), so the scanners below never see them.
         const finalContent = this.processEquations(
@@ -142,6 +164,43 @@ export class MarkdownProcessor {
         );
         this.processBlockquotes(sectionContent, sectionIndex);
         return finalContent;
+    }
+
+    /**
+     * Warns about `\label`s inside display-math environments in the title
+     * section (before the first `##` heading). Equations there render, but
+     * KaTeX numbering anchors (`eqn-X.Y`) are only assigned inside
+     * `.sections` divs starting at section 1, so references to these labels
+     * can never resolve — the labels are reported and left unmapped.
+     */
+    private warnTitleSectionLabels(content: string): void {
+        const equationPattern =
+            /\$\$\s*\\begin\{(equation|align|gather|alignat)\}(?:\{\d+\})?[\s\S]*?\\end\{\1\}\s*\$\$/g;
+        let match;
+        while ((match = equationPattern.exec(content)) !== null) {
+            const labelPattern = /\\label\{(.*?)\}/g;
+            let labelMatch;
+            while ((labelMatch = labelPattern.exec(match[0])) !== null) {
+                console.error(
+                    `Label "${labelMatch[1]}" is defined in the title section ` +
+                        `(before the first "##" heading). Equations there are not ` +
+                        `numbered (numbering starts in section 1), so references to ` +
+                        `this label are unsupported and will not resolve. Move the ` +
+                        `equation into a "##" section to reference it.`,
+                );
+            }
+        }
+
+        const blockquoteIdPattern = /<blockquote\b[^>]*\bid="([^"]+)"[^>]*>/g;
+        while ((match = blockquoteIdPattern.exec(content)) !== null) {
+            console.error(
+                `Blockquote id "${match[1]}" is defined in the title section ` +
+                    `(before the first "##" heading). Blockquotes there are not ` +
+                    `numbered (numbering starts in section 1), so references to ` +
+                    `this id are unsupported and will not resolve. Move the ` +
+                    `blockquote into a "##" section to reference it.`,
+            );
+        }
     }
 
     private processBlockquotes(content: string, sectionIndex: number): void {
@@ -201,27 +260,32 @@ export class MarkdownProcessor {
         // already been normalized to multi-line by
         // normalizeSingleLineDisplayEnvironments(), so each equation is
         // seen exactly once here.
+        // `alignat` takes a mandatory argument (\begin{alignat}{2}); the
+        // optional `\{\d+\}` allows it while the \1 back-reference still
+        // pairs \begin{env} with the matching \end{env}.
         const equationPattern =
-            /\$\$\s*\\begin\{(equation|align)\}[\s\S]*?\\end\{\1\}\s*\$\$/g;
-        const equations = content.match(equationPattern);
+            /\$\$\s*\\begin\{(equation|align|gather|alignat)\}(?:\{\d+\})?[\s\S]*?\\end\{\1\}\s*\$\$/g;
         let currEquationNumber = 1;
 
-        if (equations) {
-            equations.forEach((equation) => {
-                if (equation.includes("\\begin{align}")) {
-                    currEquationNumber = this.processAlignEnvironment(
-                        equation,
-                        sectionIndex,
-                        currEquationNumber,
-                    );
-                } else {
-                    currEquationNumber = this.processEquationEnvironment(
-                        equation,
-                        sectionIndex,
-                        currEquationNumber,
-                    );
-                }
-            });
+        let match;
+        while ((match = equationPattern.exec(content)) !== null) {
+            const equation = match[0];
+            const env = match[1];
+            if (env === "equation") {
+                currEquationNumber = this.processEquationEnvironment(
+                    equation,
+                    sectionIndex,
+                    currEquationNumber,
+                );
+            } else {
+                // align, gather, and alignat are all numbered per row by
+                // KaTeX, so they share the line-based per-row scanner.
+                currEquationNumber = this.processAlignEnvironment(
+                    equation,
+                    sectionIndex,
+                    currEquationNumber,
+                );
+            }
         }
 
         return content;
@@ -298,8 +362,7 @@ export class MarkdownProcessor {
     private isAlignEnvironmentDelimiter(line: string): boolean {
         return (
             line.includes("$$") ||
-            line.includes("\\begin{align}") ||
-            line.includes("\\end{align}") ||
+            /\\(begin|end)\{(align|gather|alignat)\}/.test(line) ||
             /^\s*$/.test(line)
         );
     }
