@@ -217,7 +217,7 @@ const Notie: React.FC<NotieProps> = ({
                         <NoteToc
                             tocEntries={tocEntries}
                             activeId={activeId}
-                            config={config}
+                            tocTitle={config.tocTitle}
                             onNavigate={handleTocNavigate}
                         />
                     </Pane>

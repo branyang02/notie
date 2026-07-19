@@ -55,6 +55,49 @@ describe("CodeHeader", () => {
         expect(screen.getByText("Copy Code")).toBeInTheDocument();
     });
 
+    it("announces 'Copied to clipboard' via an aria-live status region", async () => {
+        const writeText = vi.fn(() => Promise.resolve());
+        stubClipboard(writeText);
+
+        render(<CodeHeader language="python" code="print('hello')" />);
+
+        const status = screen.getByRole("status");
+        expect(status).toHaveAttribute("aria-live", "polite");
+        expect(status).toHaveTextContent("");
+
+        fireEvent.click(screen.getByRole("button", { name: /copy code/i }));
+        await act(async () => {
+            await Promise.resolve();
+        });
+
+        expect(status).toHaveTextContent("Copied to clipboard");
+
+        act(() => {
+            vi.advanceTimersByTime(2000);
+        });
+
+        expect(status).toHaveTextContent("");
+    });
+
+    it("keeps a stable 'Copy code' accessible name while showing 'Copied!'", async () => {
+        const writeText = vi.fn(() => Promise.resolve());
+        stubClipboard(writeText);
+
+        render(<CodeHeader language="python" code="print('hello')" />);
+
+        fireEvent.click(screen.getByRole("button", { name: /copy code/i }));
+        await act(async () => {
+            await Promise.resolve();
+        });
+
+        // The visible label switches to "Copied!", but the accessible name
+        // stays stable via aria-label.
+        expect(
+            screen.getByRole("button", { name: /copy code/i }),
+        ).toBeInTheDocument();
+        expect(screen.getByText("Copied!")).toBeInTheDocument();
+    });
+
     it("does not show 'Copied!' when the clipboard write rejects", async () => {
         const writeText = vi.fn(() => Promise.reject(new Error("denied")));
         stubClipboard(writeText);

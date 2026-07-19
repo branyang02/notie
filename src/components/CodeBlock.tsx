@@ -215,6 +215,7 @@ const CodeBlock = ({
                             appearance="minimal"
                             icon={ResetIcon}
                             intent="danger"
+                            aria-label="Reset code"
                             onClick={resetEditor}
                         />
                     </Pane>
@@ -224,6 +225,7 @@ const CodeBlock = ({
                             appearance="primary"
                             intent="success"
                             isLoading={isLoading}
+                            aria-label="Run code (Cmd/Ctrl+Enter)"
                             onClick={runCodeAsync}
                         >
                             <span
@@ -232,12 +234,20 @@ const CodeBlock = ({
                                     alignItems: "center",
                                 }}
                             >
-                                {isMac ? (
-                                    <KeyCommandIcon size={12} />
-                                ) : (
-                                    <KeyControlIcon size={12} />
-                                )}
-                                <KeyEnterIcon size={12} />
+                                <span
+                                    aria-hidden="true"
+                                    style={{
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    {isMac ? (
+                                        <KeyCommandIcon size={12} />
+                                    ) : (
+                                        <KeyControlIcon size={12} />
+                                    )}
+                                    <KeyEnterIcon size={12} />
+                                </span>
                                 <span style={{ marginLeft: 4 }}>
                                     {"Run Code"}
                                 </span>

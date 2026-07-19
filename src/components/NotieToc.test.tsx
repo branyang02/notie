@@ -1,10 +1,9 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
-import { NotieConfig } from "../config/NotieConfig";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { TocEntry } from "../utils/toc";
 import NotieToc from "./NotieToc";
 
-const config: NotieConfig = { tocTitle: "Contents" };
+const tocTitle = "Contents";
 
 const tocEntries: TocEntry[] = [
     { id: "first-section", level: 2, title: "First Section" },
@@ -12,10 +11,46 @@ const tocEntries: TocEntry[] = [
     { id: "deep-section", level: 4, title: "Deep Section" },
 ];
 
+function stubMatchMedia(matches: boolean) {
+    vi.stubGlobal(
+        "matchMedia",
+        vi.fn((query: string) => ({
+            matches,
+            media: query,
+            onchange: null,
+            addListener: vi.fn(),
+            removeListener: vi.fn(),
+            addEventListener: vi.fn(),
+            removeEventListener: vi.fn(),
+            dispatchEvent: vi.fn(),
+        })),
+    );
+}
+
+const originalScrollTo = HTMLElement.prototype.scrollTo;
+
+function stubElementScrollTo() {
+    const scrollTo = vi.fn();
+    // The property is defined as writable (but not configurable) in the test
+    // setup, so replace it with plain assignment.
+    HTMLElement.prototype.scrollTo = scrollTo;
+    return scrollTo;
+}
+
 describe("NotieToc", () => {
+    afterEach(() => {
+        HTMLElement.prototype.scrollTo = originalScrollTo;
+        vi.unstubAllGlobals();
+        vi.restoreAllMocks();
+    });
+
     it("renders the title and one link per entry", () => {
         render(
-            <NotieToc tocEntries={tocEntries} activeId="" config={config} />,
+            <NotieToc
+                tocEntries={tocEntries}
+                activeId=""
+                tocTitle={tocTitle}
+            />,
         );
 
         expect(
@@ -33,12 +68,28 @@ describe("NotieToc", () => {
         ]);
     });
 
+    it("renders the TOC title as an <h2>, not an <h1>", () => {
+        render(
+            <NotieToc
+                tocEntries={tocEntries}
+                activeId=""
+                tocTitle={tocTitle}
+            />,
+        );
+
+        const heading = screen.getByRole("heading", { name: "Contents" });
+        expect(heading.tagName).toBe("H2");
+        expect(
+            screen.queryByRole("heading", { level: 1 }),
+        ).not.toBeInTheDocument();
+    });
+
     it("applies the active class only to the active entry", () => {
         render(
             <NotieToc
                 tocEntries={tocEntries}
                 activeId="nested-section"
-                config={config}
+                tocTitle={tocTitle}
             />,
         );
 
@@ -59,7 +110,7 @@ describe("NotieToc", () => {
             <NotieToc
                 tocEntries={tocEntries}
                 activeId=""
-                config={config}
+                tocTitle={tocTitle}
                 onNavigate={onNavigate}
             />,
         );
@@ -75,7 +126,11 @@ describe("NotieToc", () => {
 
     it("indents entries proportionally to their heading level", () => {
         render(
-            <NotieToc tocEntries={tocEntries} activeId="" config={config} />,
+            <NotieToc
+                tocEntries={tocEntries}
+                activeId=""
+                tocTitle={tocTitle}
+            />,
         );
 
         const listItems = screen.getAllByRole("listitem");
@@ -84,5 +139,39 @@ describe("NotieToc", () => {
             "1em",
             "2em",
         ]);
+    });
+
+    it("scrolls the TOC container with behavior 'auto' when reduced motion is preferred", () => {
+        stubMatchMedia(true);
+        const scrollTo = stubElementScrollTo();
+
+        render(
+            <NotieToc
+                tocEntries={tocEntries}
+                activeId="first-section"
+                tocTitle={tocTitle}
+            />,
+        );
+
+        expect(scrollTo).toHaveBeenCalledWith(
+            expect.objectContaining({ behavior: "auto" }),
+        );
+    });
+
+    it("scrolls the TOC container smoothly without a reduced motion preference", () => {
+        stubMatchMedia(false);
+        const scrollTo = stubElementScrollTo();
+
+        render(
+            <NotieToc
+                tocEntries={tocEntries}
+                activeId="first-section"
+                tocTitle={tocTitle}
+            />,
+        );
+
+        expect(scrollTo).toHaveBeenCalledWith(
+            expect.objectContaining({ behavior: "smooth" }),
+        );
     });
 });

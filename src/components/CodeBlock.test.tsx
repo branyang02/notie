@@ -75,3 +75,45 @@ describe("CodeBlock", () => {
         });
     });
 });
+
+describe("CodeBlock accessibility", () => {
+    afterEach(() => {
+        restorePlatform();
+    });
+
+    it("exposes an accessible name on the reset button", () => {
+        render(
+            <CodeBlock
+                initialCode={'print("hello")'}
+                language="python"
+                theme="github-light"
+            />,
+        );
+
+        expect(
+            screen.getByRole("button", { name: /reset code/i }),
+        ).toBeInTheDocument();
+    });
+
+    it("exposes an accessible name on the run button and hides the decorative key icons", () => {
+        const { container } = render(
+            <CodeBlock
+                initialCode={'print("hello")'}
+                language="python"
+                theme="github-light"
+            />,
+        );
+
+        expect(
+            screen.getByRole("button", { name: /run code/i }),
+        ).toBeInTheDocument();
+
+        const hiddenIconGroup = container.querySelector(
+            'button [aria-hidden="true"]',
+        );
+        expect(hiddenIconGroup).not.toBeNull();
+        expect(hiddenIconGroup?.querySelectorAll("svg").length).toBeGreaterThan(
+            0,
+        );
+    });
+});
