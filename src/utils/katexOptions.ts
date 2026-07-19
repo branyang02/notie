@@ -8,7 +8,19 @@
  */
 const ALLOWED_HREF_PROTOCOLS = ["http", "https", "mailto", "_relative"];
 
+/**
+ * Color used by KaTeX to render invalid LaTeX source when `throwOnError` is
+ * disabled. A distinct red keeps broken math visible during authoring
+ * without blowing up the whole page render.
+ */
+const KATEX_ERROR_COLOR = "#cc0000";
+
 export const katexOptions = {
+    // Never throw on malformed LaTeX: a single bad equation should render
+    // as visibly-flagged red source text instead of crashing the entire
+    // markdown render tree.
+    throwOnError: false,
+    errorColor: KATEX_ERROR_COLOR,
     macros: {
         "\\eqref": "\\href{\\#pre-eqn-eqref:#1}{}",
         "\\ref": "\\href{\\#pre-eqn-ref:#1}{}",
