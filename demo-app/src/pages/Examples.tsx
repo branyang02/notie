@@ -55,7 +55,8 @@ const Examples = () => {
                     date: date,
                 });
             }
-            notesData.sort((b, a) => sortNotesByDate(a.date, b.date));
+            // sortNotesByDate compares ascending; reverse args for newest-first order.
+            notesData.sort((a, b) => sortNotesByDate(b.date, a.date));
             setNotesMetaData(notesData);
             setLoading(false);
         }
