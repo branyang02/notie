@@ -18,7 +18,12 @@ const OUT = "/tmp/notie-visual-review/pr-91";
     await page.waitForTimeout(2500); // let equation labeler effects settle
 
     const probe = await page.evaluate(() => {
-        const result = { sections: [], eqnNums: [], eqrefs: [], titleSection: {} };
+        const result = {
+            sections: [],
+            eqnNums: [],
+            eqrefs: [],
+            titleSection: {},
+        };
 
         // All KaTeX-assigned equation numbers in DOM order, with ids.
         document.querySelectorAll(".eqn-num").forEach((el) => {
@@ -75,7 +80,9 @@ const OUT = "/tmp/notie-visual-review/pr-91";
     const failures = [];
     for (const r of probe.eqrefs) {
         if (!r.anchorExists)
-            failures.push(`eqref ${r.href}: anchor MISSING (link text ${r.linkText})`);
+            failures.push(
+                `eqref ${r.href}: anchor MISSING (link text ${r.linkText})`,
+            );
         else if (r.linkText !== r.anchorText)
             failures.push(
                 `eqref ${r.href}: link text "${r.linkText}" != DOM eqn-num "${r.anchorText}"`,
