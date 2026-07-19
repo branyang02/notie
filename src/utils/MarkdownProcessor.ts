@@ -1,4 +1,5 @@
 import { NotieConfig } from "../config/NotieConfig";
+import { maskProtectedRegions } from "./markdownMasking";
 import { BlockquoteMapping, EquationMapping } from "./utils";
 
 export class MarkdownProcessor {
@@ -18,26 +19,36 @@ export class MarkdownProcessor {
         equationMapping: EquationMapping;
         blockquoteMapping: BlockquoteMapping;
     } {
-        const sections = this.splitIntoSections();
-        const processedSections = sections.map((section, i) => {
+        // Mask fenced/indented code blocks and HTML comments at the document
+        // level so that section splitting, equation/blockquote scanning, and
+        // heading numbering never see their contents.
+        const { maskedText, unmask } = maskProtectedRegions(
+            this.markdownContent,
+        );
+
+        const sections = this.splitIntoSections(maskedText);
+        let processedSections = sections.map((section, i) => {
             section = i === 0 ? section : this.wrapInDiv(section, i); // Do not process the first section under Title
             return this.processSection(section, i);
         });
 
         if (this.config.theme?.numberedHeading) {
-            const numberedSections =
+            processedSections =
                 this.addHeadingNumbersToSections(processedSections);
-            return {
-                markdownContent: numberedSections.join(""),
-                markdownSections: numberedSections,
-                equationMapping: this.equationMapping,
-                blockquoteMapping: this.blockquoteMapping,
-            };
+        }
+
+        // Restore the original code/comment content before returning.
+        const restoredSections = processedSections.map(unmask);
+        for (const mapping of Object.values(this.equationMapping)) {
+            mapping.equationString = unmask(mapping.equationString);
+        }
+        for (const mapping of Object.values(this.blockquoteMapping)) {
+            mapping.blockquoteContent = unmask(mapping.blockquoteContent);
         }
 
         return {
-            markdownContent: processedSections.join(""),
-            markdownSections: processedSections,
+            markdownContent: restoredSections.join(""),
+            markdownSections: restoredSections,
             equationMapping: this.equationMapping,
             blockquoteMapping: this.blockquoteMapping,
         };
@@ -62,8 +73,8 @@ export class MarkdownProcessor {
         );
     }
 
-    private splitIntoSections(): string[] {
-        return this.markdownContent.split(/(?=^##\s)/gm).filter(Boolean);
+    private splitIntoSections(content: string): string[] {
+        return content.split(/(?=^##\s)/gm).filter(Boolean);
     }
 
     private wrapInDiv(content: string, sectionIndex: number): string {
@@ -74,14 +85,14 @@ export class MarkdownProcessor {
         sectionContent: string,
         sectionIndex: number,
     ): string {
-        const { modifiedContent, codeBlocks } =
-            this.extractCodeBlocks(sectionContent);
+        // Code blocks and HTML comments are already masked at the document
+        // level (see process()), so the scanners below never see them.
         const finalContent = this.processEquations(
-            modifiedContent,
+            sectionContent,
             sectionIndex,
         );
-        this.processBlockquotes(modifiedContent, sectionIndex);
-        return this.reinsertCodeBlocks(finalContent, codeBlocks);
+        this.processBlockquotes(sectionContent, sectionIndex);
+        return finalContent;
     }
 
     private processBlockquotes(content: string, sectionIndex: number): void {
@@ -133,8 +144,11 @@ export class MarkdownProcessor {
     }
 
     private processEquations(content: string, sectionIndex: number): string {
+        // Matches both multi-line ($$\n\begin{...}...) and single-line
+        // ($$\begin{...}...\end{...}$$) display environments, with optional
+        // whitespace between the delimiters and the environment.
         const equationPattern =
-            /\$\$\n(?:\s*\\begin\{(equation|align)\}[\s\S]*?\n\s*\\end\{\1\}\s*\$\$)/g;
+            /\$\$\s*\\begin\{(equation|align)\}[\s\S]*?\\end\{\1\}\s*\$\$/g;
         const equations = content.match(equationPattern);
         let currEquationNumber = 1;
 
@@ -255,25 +269,5 @@ export class MarkdownProcessor {
                 };
             }
         }
-    }
-
-    private extractCodeBlocks(content: string): {
-        modifiedContent: string;
-        codeBlocks: string[];
-    } {
-        const codeBlockPattern = /```[\s\S]*?```/g;
-        const codeBlocks: string[] = [];
-        const modifiedContent = content.replace(codeBlockPattern, (match) => {
-            codeBlocks.push(match);
-            return `CODE_BLOCK_${codeBlocks.length - 1}`;
-        });
-        return { modifiedContent, codeBlocks };
-    }
-
-    private reinsertCodeBlocks(content: string, codeBlocks: string[]): string {
-        return content.replace(
-            /CODE_BLOCK_(\d+)/g,
-            (_, index) => codeBlocks[Number(index)],
-        );
     }
 }

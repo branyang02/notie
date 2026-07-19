@@ -1,3 +1,5 @@
+import { maskProtectedRegions } from "./markdownMasking";
+
 export interface TocEntry {
     id: string;
     level: number;
@@ -19,7 +21,11 @@ export function extractTableOfContents(markdownContent: string): TocEntry[] {
     const pattern = /^#+ (.*)$/gm;
     let match;
 
-    while ((match = pattern.exec(markdownContent)) !== null) {
+    // Mask code blocks and HTML comments so that `#` lines inside them are
+    // never mistaken for headings.
+    const { maskedText } = maskProtectedRegions(markdownContent);
+
+    while ((match = pattern.exec(maskedText)) !== null) {
         const [fullMatch, title] = match;
         const level = fullMatch.match(/^#+/)?.[0].length || 0;
         if (level === 1) continue;
