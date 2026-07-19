@@ -245,7 +245,10 @@ const MarkdownRenderer: React.FC<{
                         if (language === "desmos") {
                             return (
                                 <LazyRender minHeight={400}>
-                                    <DesmosGraph graphScript={code} />
+                                    <DesmosGraph
+                                        graphScript={code}
+                                        appearance={config.theme.appearance}
+                                    />
                                 </LazyRender>
                             );
                         }
@@ -297,6 +300,7 @@ const MarkdownRenderer: React.FC<{
                 config.codeRunnerUrl,
                 config.previewBlockquotes,
                 config.previewEquations,
+                config.theme.appearance,
                 config.theme.liveCodeTheme,
                 config.theme.staticCodeTheme,
                 customComponents,
