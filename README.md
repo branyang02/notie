@@ -26,9 +26,11 @@ Then, import the `Notie` component in your React application:
 ```tsx
 import { Notie } from "notie-markdown";
 
-const Example = () => (
-  <Notie markdown="# Hello World\nThis is a Markdown content." />
-);
+const markdown = `# Hello World
+
+This is a Markdown content.`;
+
+const Example = () => <Notie markdown={markdown} />;
 ```
 
 The `Notie` component is used to render Markdown content. It accepts the following props:
@@ -52,6 +54,82 @@ Check out the [tutorial](https://notie-markdown.vercel.app/tutorial) for more de
   - **Automatic Equation Numbering**: Automatically number equations and refer to them in your notes.
 - **Blockquote References**: Label definitions, theorems, lemmas, algorithms, and problems with an `id`, then reference them anywhere in the document with hover-preview tooltips.
 - **Customizable Themes**: Customize the appearance of your notes with different themes.
+
+## Security
+
+Please keep the following in mind when using **notie**:
+
+- **Raw HTML is rendered by design.** notie uses [rehype-raw](https://github.com/rehypejs/rehype-raw) so that HTML embedded in your Markdown (e.g. `<img>`, `<div class="caption">`) renders as-is. This means Markdown is treated as trusted input — do **not** feed untrusted, user-supplied Markdown to the `Notie` component without sanitizing it first, as it can inject arbitrary HTML (including scripts and event handlers) into your page.
+- **`execute-` code blocks send code to a remote execution endpoint.** Live-executable code blocks (e.g. ` ```execute-python `) submit the code to the code execution endpoint over the network when the user clicks Run. The endpoint can be overridden via `config.codeRunnerUrl`. Be mindful of what code is sent, and point the endpoint at infrastructure you control if you have privacy or availability requirements.
+- **`tikz` blocks load a third-party engine.** TikZ diagrams are rendered by the [TikZJax](https://github.com/artisticat1/obsidian-tikzjax) engine, whose script and stylesheet are fetched at runtime from a pinned third-party URL and executed in the page.
+- **`desmos` blocks load the Desmos API script.** Graphs are rendered by loading the [Desmos](https://www.desmos.com/) calculator API script from Desmos servers at runtime.
+
+## Configuration reference
+
+The `config` prop accepts a `NotieConfig` object. All fields are optional; unspecified fields fall back to the selected theme's defaults.
+
+| Option               | Type      | Description                                                          |
+| -------------------- | --------- | -------------------------------------------------------------------- |
+| `showTableOfContents`| `boolean` | Show or hide the table of contents sidebar.                          |
+| `tocTitle`           | `string`  | Title displayed above the table of contents.                         |
+| `previewEquations`   | `boolean` | Show a hover preview when referencing numbered equations.            |
+| `previewBlockquotes` | `boolean` | Show a hover preview when referencing labeled blockquotes.           |
+| `fontSize`           | `string`  | Base font size for the rendered notes (any CSS `font-size` value).   |
+| `theme`              | `Theme`   | Fine-grained theme overrides (see below).                            |
+
+### `Theme` options
+
+| Option                     | Type                       | Description                                                       |
+| -------------------------- | -------------------------- | ----------------------------------------------------------------- |
+| `appearance`               | `"light" \| "dark"`        | Base appearance the theme builds on.                              |
+| `backgroundColor`          | CSS color                  | Page background color.                                            |
+| `fontFamily`               | CSS font-family            | Font family for note text.                                        |
+| `customFontUrl`            | `string`                   | URL of a stylesheet providing the custom font.                    |
+| `titleColor`               | CSS color                  | Color of the note title.                                          |
+| `textColor`                | CSS color                  | Color of body text.                                               |
+| `linkColor`                | CSS color                  | Link color.                                                       |
+| `linkHoverColor`           | CSS color                  | Link color on hover.                                              |
+| `linkUnderline`            | `boolean`                  | Underline links.                                                  |
+| `tocFontFamily`            | CSS font-family            | Font family for the table of contents.                            |
+| `tocCustomFontUrl`         | `string`                   | URL of a stylesheet providing the TOC font.                       |
+| `tocColor`                 | CSS color                  | TOC link color.                                                   |
+| `tocHoverColor`            | CSS color                  | TOC link color on hover.                                          |
+| `tocUnderline`             | `boolean`                  | Underline TOC links.                                              |
+| `codeColor`                | CSS color                  | Inline code text color.                                           |
+| `codeBackgroundColor`      | CSS color                  | Inline code background color.                                     |
+| `codeHeaderColor`          | CSS color                  | Code block header background color.                               |
+| `codeFontSize`             | CSS font-size              | Code font size.                                                   |
+| `codeCopyButtonHoverColor` | CSS color                  | Copy button hover color in code blocks.                           |
+| `staticCodeTheme`          | Shiki theme name           | Syntax highlighting theme for static code blocks.                 |
+| `liveCodeTheme`            | Shiki theme name           | Syntax highlighting theme for live (editable) code blocks.        |
+| `collapseSectionColor`     | CSS color                  | Color of the collapsible section controls.                        |
+| `katexSize`                | CSS font-size              | Font size for KaTeX math.                                         |
+| `tableBorderColor`         | CSS color                  | Table border color.                                               |
+| `tableBackgroundColor`     | CSS color                  | Table background color.                                           |
+| `captionColor`             | CSS color                  | Caption text color.                                               |
+| `subtitleColor`            | CSS color                  | Subtitle text color.                                              |
+| `tikZstyle`                | `"inverted" \| "default"`  | Render TikZ diagrams normally or color-inverted (for dark themes).|
+| `blockquoteStyle`          | `"default" \| "latex"`     | Blockquote styling; `"latex"` renders LaTeX-style theorem boxes.   |
+| `numberedHeading`          | `boolean`                  | Automatically number section headings.                            |
+| `tocMarker`                | `boolean`                  | Show the active-section marker in the table of contents.          |
+
+Example:
+
+```tsx
+<Notie
+  markdown={markdown}
+  config={{
+    showTableOfContents: true,
+    tocTitle: "Contents",
+    fontSize: "16px",
+    theme: {
+      appearance: "dark",
+      blockquoteStyle: "latex",
+      numberedHeading: true,
+    },
+  }}
+/>
+```
 
 ## Showcase
 

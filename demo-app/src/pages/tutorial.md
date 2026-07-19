@@ -2,7 +2,7 @@
 
 <div class="subtitle">
 
-Updated for [v1.3](https://github.com/branyang02/notie/tree/a89c10cb3ad6201971f7e89fa24b58c3b6f96633).
+Updated for [v1.4](https://github.com/branyang02/notie).
 
 </div>
 
@@ -21,9 +21,11 @@ Then, import the `Notie` component in your React application:
 ```tsx
 import { Notie } from "notie-markdown";
 
-const Example = () => (
-  <Notie markdown="# Hello World\nThis is a Markdown content." />
-);
+const markdown = `# Hello World
+
+This is a Markdown content.`;
+
+const Example = () => <Notie markdown={markdown} />;
 ```
 
 The `Notie` component has the following props:
@@ -826,15 +828,15 @@ $$
 You can include images in your markdown file using the following syntax:
 
 ```markdown
-![Alt text](https://via.placeholder.com/150)
+![Alt text](https://placehold.co/150)
 ```
 
-![Alt text](https://via.placeholder.com/150)
+![Alt text](https://placehold.co/150)
 
 You can also make the images smaller by using HTML attributes:
 
 ```markdown
-<img src="https://via.placeholder.com/150" alt="placeholder" style="display: block; max-height: 30%; max-width: 30%;">
+<img src="https://placehold.co/150" alt="placeholder" style="display: block; max-height: 30%; max-width: 30%;">
 
 <div class="caption">
 
@@ -843,7 +845,7 @@ This is a placeholder image.
 </div>
 ```
 
-<img src="https://via.placeholder.com/150" alt="placeholder" style="display: block; max-height: 30%; max-width: 30%;">
+<img src="https://placehold.co/150" alt="placeholder" style="display: block; max-height: 30%; max-width: 30%;">
 
 <div class="caption">
 
