@@ -56,47 +56,62 @@ describe("Notie progressive reveal coalescing", () => {
         globalThis.IntersectionObserver = OriginalIntersectionObserver;
     });
 
-    it("coalesces observer rebuilds and DOM numbering across a burst of section reveals", async () => {
-        const { container } = render(
-            <Notie
-                markdown={buildMarkdown()}
-                config={{ theme: { blockquoteStyle: "latex" } }}
-            />,
-        );
+    // Generous test timeout: progressive reveal ticks + KaTeX rendering can
+    // be slow on CI runners (the vitest default of 5s has proven flaky).
+    it(
+        "coalesces observer rebuilds and DOM numbering across a burst of section reveals",
+        { timeout: 30000 },
+        async () => {
+            const { container } = render(
+                <Notie
+                    markdown={buildMarkdown()}
+                    config={{ theme: { blockquoteStyle: "latex" } }}
+                />,
+            );
 
-        // Sections are revealed progressively; wait for the last one.
-        await waitFor(() => {
+            // Sections are revealed progressively (one setTimeout(16) fallback
+            // tick per section in jsdom); slower CI runners can take well over
+            // the default 1s waitFor timeout for all reveals plus KaTeX
+            // rendering, so wait generously.
+            await waitFor(
+                () => {
+                    expect(
+                        screen.getByText(`Body of section ${SECTION_COUNT}.`),
+                    ).toBeInTheDocument();
+                },
+                { timeout: 10000 },
+            );
+
+            // Final numbering must settle shortly after the last reveal (the
+            // rescan is debounced with a short trailing delay).
+            await waitFor(
+                () => {
+                    expect(
+                        container.querySelector(`#eqn-${SECTION_COUNT}\\.1`),
+                    ).toHaveTextContent(`(${SECTION_COUNT}.1)`);
+                },
+                { timeout: 10000 },
+            );
+            expect(container.querySelector("#eqn-1\\.1")).toHaveTextContent(
+                "(1.1)",
+            );
             expect(
-                screen.getByText(`Body of section ${SECTION_COUNT}.`),
-            ).toBeInTheDocument();
-        });
-
-        // Final numbering must settle shortly after the last reveal (the
-        // rescan is debounced with a short trailing delay).
-        await waitFor(() => {
+                container.querySelector(
+                    `[blockquote-definition-number="Definition ${SECTION_COUNT}.1"]`,
+                ),
+            ).not.toBeNull();
             expect(
-                container.querySelector(`#eqn-${SECTION_COUNT}\\.1`),
-            ).toHaveTextContent(`(${SECTION_COUNT}.1)`);
-        });
-        expect(container.querySelector("#eqn-1\\.1")).toHaveTextContent(
-            "(1.1)",
-        );
-        expect(
-            container.querySelector(
-                `[blockquote-definition-number="Definition ${SECTION_COUNT}.1"]`,
-            ),
-        ).not.toBeNull();
-        expect(
-            container.querySelector(
-                '[blockquote-definition-number="Definition 1.1"]',
-            ),
-        ).not.toBeNull();
+                container.querySelector(
+                    '[blockquote-definition-number="Definition 1.1"]',
+                ),
+            ).not.toBeNull();
 
-        // The heading IntersectionObserver must be rebuilt only a handful of
-        // times (initial sync run + coalesced trailing runs), not once per
-        // revealed section.
-        expect(observerConstructions).toBeGreaterThan(0);
-        expect(observerConstructions).toBeLessThanOrEqual(3);
-        expect(observerConstructions).toBeLessThan(SECTION_COUNT);
-    });
+            // The heading IntersectionObserver must be rebuilt only a handful of
+            // times (initial sync run + coalesced trailing runs), not once per
+            // revealed section.
+            expect(observerConstructions).toBeGreaterThan(0);
+            expect(observerConstructions).toBeLessThanOrEqual(3);
+            expect(observerConstructions).toBeLessThan(SECTION_COUNT);
+        },
+    );
 });
