@@ -16,7 +16,46 @@ vi.mock("shiki/engine/javascript", () => ({
 import {
     __configureHighlightCacheForTests,
     highlightWithCache,
+    LANGUAGE_MAP,
+    resolveLanguage,
 } from "./shikiHighlighter";
+
+describe("resolveLanguage", () => {
+    it("maps common aliases to their canonical language", () => {
+        expect(resolveLanguage("py")).toBe("python");
+        expect(resolveLanguage("c++")).toBe("cpp");
+        expect(resolveLanguage("js")).toBe("javascript");
+        expect(resolveLanguage("ts")).toBe("typescript");
+        expect(resolveLanguage("sh")).toBe("bash");
+        expect(resolveLanguage("shell")).toBe("bash");
+        expect(resolveLanguage("md")).toBe("markdown");
+    });
+
+    it("passes canonical names through unchanged", () => {
+        expect(resolveLanguage("python")).toBe("python");
+        expect(resolveLanguage("cpp")).toBe("cpp");
+        expect(resolveLanguage("rust")).toBe("rust");
+    });
+
+    it("is case-insensitive", () => {
+        expect(resolveLanguage("Python")).toBe("python");
+        expect(resolveLanguage("C++")).toBe("cpp");
+        expect(resolveLanguage("JSON")).toBe("json");
+    });
+
+    it("falls back to text for unknown or empty languages", () => {
+        expect(resolveLanguage("klingon")).toBe("text");
+        expect(resolveLanguage("")).toBe("text");
+    });
+
+    it("only maps to languages that resolveLanguage can produce", () => {
+        // Every alias target must itself be a canonical entry so the
+        // highlighter never receives an unloaded language id.
+        for (const target of Object.values(LANGUAGE_MAP)) {
+            expect(resolveLanguage(target)).toBe(target);
+        }
+    });
+});
 
 describe("highlightWithCache", () => {
     beforeEach(() => {
