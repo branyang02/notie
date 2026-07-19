@@ -118,13 +118,18 @@ assets/pr-<number>/
 
 - Commit the artifacts to the PR branch that produced them.
 - Use small, curated artifacts: screenshots, short logs, probe JSON, or concise markdown summaries.
-- For inline screenshots in GitHub comments, use a raw GitHub URL pinned to the artifact commit SHA when possible:
+- Embed screenshots inline in GitHub comments using repo-relative paths:
 
 ```md
-![description](https://raw.githubusercontent.com/branyang02/notie/<commit-sha>/assets/pr-<number>/<file>.png)
+![description](assets/pr-<number>/<file>.png)
 ```
 
-- For text artifacts, link to the GitHub blob URL for the same commit.
+- Only screenshots should be embedded inline. For text artifacts, use relative links:
+
+```md
+[probe output](assets/pr-<number>/probe.json)
+```
+
 - If the PR number does not exist yet, open a draft PR early or stage artifacts under a ticket-named directory and rename it to `assets/pr-<number>/` before posting final comments.
 
 ## Visual Review Protocol
@@ -138,7 +143,7 @@ Visual review agents should:
 - Use their own browser process, context, or profile.
 - Save and push review artifacts under `assets/pr-<number>/`.
 - Capture screenshots, console logs, network notes when relevant, and DOM/probe outputs.
-- Post a GitHub comment with setup, steps, observations, verdict, and artifact links. Render screenshots inline when useful.
+- Post a GitHub comment with setup, steps, observations, verdict, inline screenshot markdown, and relative artifact links.
 
 Agents should not serialize all browser work through one shared browser lock. Independent PR teams should be able to inspect frontends concurrently.
 
