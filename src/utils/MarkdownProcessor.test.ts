@@ -414,3 +414,135 @@ Beta theorem.
         expect(result.markdownContent).toBe(result.markdownSections.join(""));
     });
 });
+
+describe("MarkdownProcessor align-environment numbering", () => {
+    it("skips \\nonumber lines so later labels match KaTeX numbering", () => {
+        const markdown = `# Title
+
+## Section
+
+$$
+\\begin{align}
+a &= 1 \\nonumber \\\\
+b &= 2 \\label{eq:c}
+\\end{align}
+$$
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        // KaTeX gives the \nonumber line no number, so eq:c is the first
+        // numbered equation: 1.1, not 1.2.
+        expect(result.equationMapping["eq:c"].equationNumber).toBe("1.1");
+    });
+
+    it("numbers labeled lines around a \\nonumber line consecutively", () => {
+        const markdown = `# Title
+
+## Section
+
+$$
+\\begin{align}
+a &= 1 \\label{eq:a} \\\\
+b &= 2 \\nonumber \\\\
+c &= 3 \\label{eq:b}
+\\end{align}
+$$
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        expect(result.equationMapping["eq:a"].equationNumber).toBe("1.1");
+        expect(result.equationMapping["eq:b"].equationNumber).toBe("1.2");
+    });
+
+    it("treats \\notag the same as \\nonumber", () => {
+        const markdown = `# Title
+
+## Section
+
+$$
+\\begin{align}
+a &= 1 \\notag \\\\
+b &= 2 \\label{eq:c}
+\\end{align}
+$$
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        expect(result.equationMapping["eq:c"].equationNumber).toBe("1.1");
+    });
+
+    it("warns and skips mapping when \\label and \\nonumber share a line", () => {
+        const errorSpy = vi
+            .spyOn(console, "error")
+            .mockImplementation(() => {});
+        const markdown = `# Title
+
+## Section
+
+$$
+\\begin{align}
+a &= 1 \\label{eq:ghost} \\nonumber \\\\
+b &= 2 \\label{eq:real}
+\\end{align}
+$$
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        expect(result.equationMapping["eq:ghost"]).toBeUndefined();
+        expect(result.equationMapping["eq:real"].equationNumber).toBe("1.1");
+        expect(errorSpy).toHaveBeenCalledWith(
+            expect.stringContaining("eq:ghost"),
+        );
+        errorSpy.mockRestore();
+    });
+
+    it("counts a nested multi-line block as a single equation line", () => {
+        const markdown = `# Title
+
+## Section
+
+$$
+\\begin{align}
+f(x) &= \\begin{cases}
+1 & x > 0 \\\\
+0 & x \\le 0
+\\end{cases} \\label{eq:cases} \\\\
+g(x) &= 2 \\label{eq:after}
+\\end{align}
+$$
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        // The whole cases block is one align row: eq:cases is 1.1 and the
+        // following row is 1.2 (existing nested-block behavior preserved).
+        expect(result.equationMapping["eq:cases"].equationNumber).toBe("1.1");
+        expect(result.equationMapping["eq:after"].equationNumber).toBe("1.2");
+    });
+
+    it("skips a nested multi-line block marked \\nonumber", () => {
+        const markdown = `# Title
+
+## Section
+
+$$
+\\begin{align}
+f(x) &= \\begin{cases}
+1 & x > 0 \\\\
+0 & x \\le 0
+\\end{cases} \\nonumber \\\\
+g(x) &= 2 \\label{eq:after}
+\\end{align}
+$$
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        // The unnumbered cases block consumes no number, so eq:after is 1.1.
+        expect(result.equationMapping["eq:after"].equationNumber).toBe("1.1");
+    });
+});

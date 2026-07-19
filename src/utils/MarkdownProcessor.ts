@@ -193,18 +193,29 @@ export class MarkdownProcessor {
             } else if (insideBlock) {
                 if (this.isBlockEnd(line)) {
                     blockContent += line;
-                    this.handleLabel(
-                        line,
-                        blockContent,
-                        sectionIndex,
-                        currEquationNumber,
-                    );
-                    currEquationNumber++;
+                    // KaTeX does not assign an equation number (no
+                    // `.eqn-num` span) to rows containing \nonumber or
+                    // \notag, so such rows must not consume a number here
+                    // either — otherwise every mapping after them drifts
+                    // off by one from the DOM numbering.
+                    if (this.isUnnumberedLine(blockContent)) {
+                        this.warnIfLabeledUnnumbered(blockContent);
+                    } else {
+                        this.handleLabel(
+                            line,
+                            blockContent,
+                            sectionIndex,
+                            currEquationNumber,
+                        );
+                        currEquationNumber++;
+                    }
                     insideBlock = false;
                     blockContent = "";
                 } else {
                     blockContent += line + "\n";
                 }
+            } else if (this.isUnnumberedLine(line)) {
+                this.warnIfLabeledUnnumbered(line);
             } else {
                 this.handleLabel(line, line, sectionIndex, currEquationNumber);
                 currEquationNumber++;
@@ -212,6 +223,22 @@ export class MarkdownProcessor {
         }
 
         return currEquationNumber;
+    }
+
+    private isUnnumberedLine(content: string): boolean {
+        return /\\nonumber\b|\\notag\b/.test(content);
+    }
+
+    private warnIfLabeledUnnumbered(content: string): void {
+        const labelText = content.match(/\\label\{(.*?)\}/)?.[1];
+        if (labelText) {
+            console.error(
+                `Label "${labelText}" is attached to an unnumbered equation line ` +
+                    `(\\nonumber/\\notag). KaTeX renders no number for this line, so ` +
+                    `no mapping entry was created and references to this label will ` +
+                    `not resolve to a visible equation number.`,
+            );
+        }
     }
 
     private isAlignEnvironmentDelimiter(line: string): boolean {
