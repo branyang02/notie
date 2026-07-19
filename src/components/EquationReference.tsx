@@ -4,6 +4,7 @@ import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { katexOptions } from "../utils/katexOptions";
+import { sanitizeUrl } from "../utils/sanitizeUrl";
 import {
     EquationMapping,
     extractEquationInfo,
@@ -67,6 +68,7 @@ const EquationCard = ({ equationString }: { equationString: string }) => {
             <ReactMarkdown
                 remarkPlugins={[remarkGfm, remarkMath]}
                 rehypePlugins={[[rehypeKatex, katexOptions]]}
+                urlTransform={sanitizeUrl}
             >
                 {processedEquationString}
             </ReactMarkdown>
