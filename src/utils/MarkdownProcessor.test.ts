@@ -8,6 +8,7 @@ const config: FullNotieConfig = {
     previewBlockquotes: true,
     tocTitle: "Contents",
     fontSize: "1rem",
+    codeRunnerUrl: "https://api.brandonyifanyang.com",
     theme: {
         appearance: "light",
         backgroundColor: "#fff",

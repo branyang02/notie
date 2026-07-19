@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from "react";
+import { DEFAULT_CODE_RUNNER_URL } from "../service/api";
 import {
     FullNotieConfig,
     FullTheme,
@@ -148,6 +149,7 @@ const defaultNotieConfig: FullNotieConfig = {
     previewBlockquotes: true,
     tocTitle: "Contents",
     fontSize: "1rem",
+    codeRunnerUrl: DEFAULT_CODE_RUNNER_URL,
     theme: defaultTheme,
 };
 
