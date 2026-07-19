@@ -92,6 +92,17 @@
     text-decoration: underline;
 }
 
+/* Distinct keyboard focus indicators */
+.blog-content a:focus-visible {
+    outline: 2px solid var(--blog-link-color);
+    outline-offset: 2px;
+}
+
+.blog-content summary:focus-visible {
+    outline: 2px solid var(--blog-link-color);
+    outline-offset: 2px;
+}
+
 /* inline code colors */
 .blog-content code:not([class]):not(.code-blocks code) {
     padding: 0.2em 0.4em;

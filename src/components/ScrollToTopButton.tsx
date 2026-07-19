@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpIcon, Button, Pane } from "evergreen-ui";
+import { preferredScrollBehavior } from "../utils/motion";
 
 const ScrollToTopButton = () => {
     const [isVisible, setIsVisible] = useState(false);
@@ -9,7 +10,7 @@ const ScrollToTopButton = () => {
     const scrollToTop = () => {
         window.scrollTo({
             top: 0,
-            behavior: "smooth",
+            behavior: preferredScrollBehavior(),
         });
     };
 
@@ -38,8 +39,20 @@ const ScrollToTopButton = () => {
         };
     }, []);
 
-    return isVisible ? (
-        <Pane display="flex" justifyContent="center">
+    // Keep the button mounted and toggle visibility with CSS so keyboard
+    // focus is not lost when it hides. `visibility: hidden` also removes the
+    // button from the tab order while hidden.
+    return (
+        <Pane
+            display="flex"
+            justifyContent="center"
+            style={{
+                visibility: isVisible ? "visible" : "hidden",
+                opacity: isVisible ? 1 : 0,
+                transition: "opacity 0.2s ease, visibility 0.2s ease",
+            }}
+            aria-hidden={!isVisible}
+        >
             <Pane
                 zIndex={1000}
                 position="fixed"
@@ -54,12 +67,13 @@ const ScrollToTopButton = () => {
                     onClick={scrollToTop}
                     iconBefore={ArrowUpIcon}
                     borderRadius={50}
+                    tabIndex={isVisible ? 0 : -1}
                 >
                     Scroll to Top
                 </Button>
             </Pane>
         </Pane>
-    ) : null;
+    );
 };
 
 export default ScrollToTopButton;

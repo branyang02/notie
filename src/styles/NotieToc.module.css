@@ -25,8 +25,10 @@
     text-decoration: underline;
 }
 
-.note-toc h1 {
+.note-toc h2 {
     color: var(--blog-title-color);
+    /* Preserve the visual size the TOC title had as an <h1>. */
+    font-size: 2em;
 }
 
 .note-toc hr {
@@ -47,6 +49,12 @@
 
 .note-toc a:focus {
     text-decoration: underline;
+}
+
+/* Distinct keyboard focus indicator */
+.note-toc a:focus-visible {
+    outline: 2px solid var(--note-toc-color);
+    outline-offset: 2px;
 }
 
 .note-toc a.active {

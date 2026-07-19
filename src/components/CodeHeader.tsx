@@ -1,6 +1,7 @@
 import { Pane, Button, ClipboardIcon, TickCircleIcon } from "evergreen-ui";
 import { useEffect, useRef, useState } from "react";
 import styles from "../styles/Notie.module.css";
+import "../styles/notie-global.css";
 
 const CodeHeader = ({ language, code }: { language: string; code: string }) => {
     const [isCopied, setIsCopied] = useState(false);
@@ -73,10 +74,14 @@ const CodeHeader = ({ language, code }: { language: string; code: string }) => {
                 paddingY={1}
                 paddingX={8}
                 color="inherit"
+                aria-label="Copy code"
                 className={styles["copy-button"]}
             >
                 {isCopied ? "Copied!" : "Copy Code"}
             </Button>
+            <span role="status" aria-live="polite" className="sr-only">
+                {isCopied ? "Copied to clipboard" : ""}
+            </span>
         </Pane>
     );
 };
