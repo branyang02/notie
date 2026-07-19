@@ -20,7 +20,7 @@ import { InlineAlert } from "evergreen-ui";
 import LazyRender from "./LazyRender";
 import StaticCodeBlock from "./StaticCodeBlock";
 import TikZ from "./TikZ";
-import { FullNotieConfig } from "../config/NotieConfig";
+import { CustomComponents, FullNotieConfig } from "../config/NotieConfig";
 
 type CodeProps = React.HTMLAttributes<HTMLElement> & {
     node?: unknown;
@@ -31,7 +31,7 @@ type CodeProps = React.HTMLAttributes<HTMLElement> & {
 
 type CustomComponentFormat = {
     componentName: string;
-};
+} & Record<string, unknown>;
 
 type AnchorProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
     node?: unknown;
@@ -102,9 +102,7 @@ const MarkdownRenderer: React.FC<{
     config: FullNotieConfig;
     equationMapping: EquationMapping;
     blockquoteMapping: BlockquoteMapping;
-    customComponents?: {
-        [key: string]: () => JSX.Element;
-    };
+    customComponents?: CustomComponents;
     renderAllToken?: number;
     onRenderedSectionsChange?: (renderedSectionCount: number) => void;
 }> = React.memo(
@@ -303,7 +301,9 @@ const MarkdownRenderer: React.FC<{
                                 customComponents[componentConfig.componentName];
 
                             if (CustomComponent) {
-                                return <CustomComponent />;
+                                return (
+                                    <CustomComponent config={componentConfig} />
+                                );
                             } else {
                                 return (
                                     <InlineAlert intent="danger">

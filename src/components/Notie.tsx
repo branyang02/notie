@@ -15,7 +15,11 @@ import ScrollToTopButton from "./ScrollToTopButton";
 import NoteToc from "./NotieToc";
 import MarkdownRenderer from "./MarkdownRenderer";
 import { MarkdownProcessor } from "../utils/MarkdownProcessor";
-import { NotieConfig, NotieThemes } from "../config/NotieConfig";
+import {
+    CustomComponents,
+    NotieConfig,
+    NotieThemes,
+} from "../config/NotieConfig";
 import { useNotieConfig } from "../utils/useNotieConfig";
 import { useShallowStableObject } from "../utils/useShallowStableObject";
 import { extractTableOfContents } from "../utils/toc";
@@ -24,9 +28,7 @@ export interface NotieProps {
     markdown: string;
     config?: NotieConfig;
     theme?: NotieThemes;
-    customComponents?: {
-        [key: string]: () => JSX.Element;
-    };
+    customComponents?: CustomComponents;
 }
 
 /**
