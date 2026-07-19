@@ -52,7 +52,8 @@ export const runCode = async (
         });
 
         if (!response.ok) {
-            let message = `HTTP ${response.status} ${response.statusText}`.trim();
+            let message =
+                `HTTP ${response.status} ${response.statusText}`.trim();
             const contentType = response.headers.get("content-type") ?? "";
             if (contentType.includes("application/json")) {
                 try {

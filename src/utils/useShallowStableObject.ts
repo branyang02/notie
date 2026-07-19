@@ -12,7 +12,8 @@ function isShallowEqual<T extends Record<string, unknown>>(
     if (aKeys.length !== bKeys.length) return false;
 
     return aKeys.every(
-        (key) => Object.prototype.hasOwnProperty.call(b, key) && a[key] === b[key],
+        (key) =>
+            Object.prototype.hasOwnProperty.call(b, key) && a[key] === b[key],
     );
 }
 

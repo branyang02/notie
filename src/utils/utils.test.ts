@@ -8,9 +8,7 @@ describe("parseExecuteLanguage", () => {
     });
 
     it("preserves multi-part language names", () => {
-        expect(parseExecuteLanguage("execute-objective-c")).toBe(
-            "objective-c",
-        );
+        expect(parseExecuteLanguage("execute-objective-c")).toBe("objective-c");
         expect(parseExecuteLanguage("execute-c-sharp")).toBe("c-sharp");
     });
 

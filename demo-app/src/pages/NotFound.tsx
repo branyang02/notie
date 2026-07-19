@@ -23,10 +23,7 @@ const NotFound = () => {
             </Heading>
             <Paragraph color={darkMode ? "white" : "default"}>
                 The page you are looking for does not exist.{" "}
-                <Link
-                    to="/"
-                    style={{ color: darkMode ? "white" : "#3366FF" }}
-                >
+                <Link to="/" style={{ color: darkMode ? "white" : "#3366FF" }}>
                     Go back home
                 </Link>
             </Paragraph>
