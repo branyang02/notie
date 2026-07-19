@@ -245,6 +245,7 @@ const Examples = () => {
                     <Link
                         href="https://github.com/branyang02/notie/tree/main/demo-app/src/assets"
                         target="_blank"
+                        rel="noopener noreferrer"
                         color={darkMode ? "white" : "blue"}
                     >
                         here.
@@ -255,6 +256,7 @@ const Examples = () => {
                     <Link
                         href="https://www.brandonyifanyang.com/notes"
                         target="_blank"
+                        rel="noopener noreferrer"
                         color={darkMode ? "white" : "blue"}
                     >
                         www.brandonyifanyang.com/notes.
