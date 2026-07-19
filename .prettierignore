@@ -5,3 +5,6 @@ dist-ssr
 *.local
 node_modules/*
 .github/*
+# Evidence artifacts committed by PR review agents (screenshots, probe JSON).
+# Verbatim captures; must not be reformatted by prettier.
+assets/
