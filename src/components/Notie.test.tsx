@@ -265,6 +265,108 @@ Third section.
         });
     });
 
+    it("gives every TOC entry an id that exists in the rendered DOM (tricky headings)", () => {
+        const { container } = render(
+            <Notie
+                markdown={`# Demo
+
+## Tricky Headings
+
+### C & D
+
+### It's \`code\` (v2)
+
+### Setup
+
+### Setup
+
+### See [the docs](https://example.com) here
+
+### **Bold** heading
+`}
+            />,
+        );
+
+        const toc = screen.getByRole("navigation", { name: /contents/i });
+        const ids = Array.from(toc.querySelectorAll("a[href^='#']")).map(
+            (link) => link.getAttribute("href")!.slice(1),
+        );
+
+        expect(ids).toEqual([
+            "tricky-headings",
+            "c--d",
+            "its-code-v2",
+            "setup",
+            "setup-1",
+            "see-the-docs-here",
+            "bold-heading",
+        ]);
+
+        const content = container.querySelector(
+            "[class*='blog-content']",
+        ) as HTMLElement;
+        for (const id of ids) {
+            expect(
+                content.querySelector(`[id="${CSS.escape(id)}"]`),
+                `expected a rendered element with id "${id}"`,
+            ).not.toBeNull();
+        }
+    });
+
+    it("gives every TOC entry an id that exists in the DOM with numbered headings", async () => {
+        const { container } = render(
+            <Notie
+                markdown={`# Demo
+
+## Setup
+
+### Install
+
+## Setup
+
+### Install
+
+## C & D
+`}
+                config={{ theme: { numberedHeading: true } }}
+            />,
+        );
+
+        const toc = screen.getByRole("navigation", { name: /contents/i });
+        const ids = Array.from(toc.querySelectorAll("a[href^='#']")).map(
+            (link) => link.getAttribute("href")!.slice(1),
+        );
+        expect(ids).toEqual([
+            "1setup",
+            "11install",
+            "2setup",
+            "21install",
+            "3c--d",
+        ]);
+
+        // Force all sections to render (Notie renders large notes
+        // progressively) by navigating to the last TOC entry.
+        const lastLink = within(toc)
+            .getAllByRole("link")
+            .find(
+                (link) =>
+                    link.getAttribute("href") === `#${ids[ids.length - 1]}`,
+            )!;
+        fireEvent.click(lastLink);
+
+        const content = container.querySelector(
+            "[class*='blog-content']",
+        ) as HTMLElement;
+        await waitFor(() => {
+            for (const id of ids) {
+                expect(
+                    content.querySelector(`[id="${CSS.escape(id)}"]`),
+                    `expected a rendered element with id "${id}"`,
+                ).not.toBeNull();
+            }
+        });
+    });
+
     it("rerenders when markdown content changes", () => {
         const { rerender } = render(
             <Notie markdown={"# Original\n\n## Section\n\nOriginal body."} />,
