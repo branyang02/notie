@@ -1,0 +1,123 @@
+{
+  "sections": [
+    {
+      "id": "section-1",
+      "eqnNums": [
+        {
+          "id": "eqn-1.1",
+          "text": "(1.1)"
+        },
+        {
+          "id": "eqn-1.2",
+          "text": "(1.2)"
+        },
+        {
+          "id": "eqn-1.3",
+          "text": "(1.3)"
+        },
+        {
+          "id": "eqn-1.4",
+          "text": "(1.4)"
+        },
+        {
+          "id": "eqn-1.5",
+          "text": "(1.5)"
+        }
+      ]
+    },
+    {
+      "id": "section-2",
+      "eqnNums": [
+        {
+          "id": "eqn-2.1",
+          "text": "(2.1)"
+        }
+      ]
+    }
+  ],
+  "eqnNums": [
+    {
+      "id": null,
+      "text": "",
+      "inSections": false
+    },
+    {
+      "id": "eqn-1.1",
+      "text": "(1.1)",
+      "inSections": true
+    },
+    {
+      "id": "eqn-1.2",
+      "text": "(1.2)",
+      "inSections": true
+    },
+    {
+      "id": "eqn-1.3",
+      "text": "(1.3)",
+      "inSections": true
+    },
+    {
+      "id": "eqn-1.4",
+      "text": "(1.4)",
+      "inSections": true
+    },
+    {
+      "id": "eqn-1.5",
+      "text": "(1.5)",
+      "inSections": true
+    },
+    {
+      "id": "eqn-2.1",
+      "text": "(2.1)",
+      "inSections": true
+    }
+  ],
+  "eqrefs": [
+    {
+      "href": "#eqn-1.2",
+      "linkText": "(1.2)",
+      "anchorExists": true,
+      "anchorText": "(1.2)"
+    },
+    {
+      "href": "#eqn-1.3",
+      "linkText": "(1.3)",
+      "anchorExists": true,
+      "anchorText": "(1.3)"
+    },
+    {
+      "href": "#eqn-1.4",
+      "linkText": "(1.4)",
+      "anchorExists": true,
+      "anchorText": "(1.4)"
+    },
+    {
+      "href": "#eqn-1.5",
+      "linkText": "(1.5)",
+      "anchorExists": true,
+      "anchorText": "(1.5)"
+    },
+    {
+      "href": "#eqn-1.3",
+      "linkText": "(1.3)",
+      "anchorExists": true,
+      "anchorText": "(1.3)"
+    },
+    {
+      "href": "#eqn-2.1",
+      "linkText": "(2.1)",
+      "anchorExists": true,
+      "anchorText": "(2.1)"
+    }
+  ],
+  "titleSection": {
+    "zeroAnchors": [],
+    "eqnNumsBeforeFirstSection": 1
+  },
+  "failures": [],
+  "verdict": "PASS",
+  "consoleErrors": [
+    "[error] Label \"eq:title-sec\" is defined in the title section (before the first \"##\" heading). Equations there are not numbered (numbering starts in section 1), so references to this label are unsupported and will not resolve. Move the equation into a \"##\" section to reference it.",
+    "[error] Label \"eq:title-sec\" is defined in the title section (before the first \"##\" heading). Equations there are not numbered (numbering starts in section 1), so references to this label are unsupported and will not resolve. Move the equation into a \"##\" section to reference it."
+  ]
+}
