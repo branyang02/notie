@@ -34,7 +34,11 @@ describe("useShallowStableObject", () => {
         const { result, rerender } = renderHook(
             ({ value }: { value: Record<string, unknown> | undefined }) =>
                 useShallowStableObject(value),
-            { initialProps: { value: { Widget: widget } as Record<string, unknown> } },
+            {
+                initialProps: {
+                    value: { Widget: widget } as Record<string, unknown>,
+                },
+            },
         );
 
         const first = result.current;

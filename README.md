@@ -68,50 +68,50 @@ Please keep the following in mind when using **notie**:
 
 The `config` prop accepts a `NotieConfig` object. All fields are optional; unspecified fields fall back to the selected theme's defaults.
 
-| Option               | Type      | Description                                                          |
-| -------------------- | --------- | -------------------------------------------------------------------- |
-| `showTableOfContents`| `boolean` | Show or hide the table of contents sidebar.                          |
-| `tocTitle`           | `string`  | Title displayed above the table of contents.                         |
-| `previewEquations`   | `boolean` | Show a hover preview when referencing numbered equations.            |
-| `previewBlockquotes` | `boolean` | Show a hover preview when referencing labeled blockquotes.           |
-| `fontSize`           | `string`  | Base font size for the rendered notes (any CSS `font-size` value).   |
-| `theme`              | `Theme`   | Fine-grained theme overrides (see below).                            |
+| Option                | Type      | Description                                                        |
+| --------------------- | --------- | ------------------------------------------------------------------ |
+| `showTableOfContents` | `boolean` | Show or hide the table of contents sidebar.                        |
+| `tocTitle`            | `string`  | Title displayed above the table of contents.                       |
+| `previewEquations`    | `boolean` | Show a hover preview when referencing numbered equations.          |
+| `previewBlockquotes`  | `boolean` | Show a hover preview when referencing labeled blockquotes.         |
+| `fontSize`            | `string`  | Base font size for the rendered notes (any CSS `font-size` value). |
+| `theme`               | `Theme`   | Fine-grained theme overrides (see below).                          |
 
 ### `Theme` options
 
-| Option                     | Type                       | Description                                                       |
-| -------------------------- | -------------------------- | ----------------------------------------------------------------- |
-| `appearance`               | `"light" \| "dark"`        | Base appearance the theme builds on.                              |
-| `backgroundColor`          | CSS color                  | Page background color.                                            |
-| `fontFamily`               | CSS font-family            | Font family for note text.                                        |
-| `customFontUrl`            | `string`                   | URL of a stylesheet providing the custom font.                    |
-| `titleColor`               | CSS color                  | Color of the note title.                                          |
-| `textColor`                | CSS color                  | Color of body text.                                               |
-| `linkColor`                | CSS color                  | Link color.                                                       |
-| `linkHoverColor`           | CSS color                  | Link color on hover.                                              |
-| `linkUnderline`            | `boolean`                  | Underline links.                                                  |
-| `tocFontFamily`            | CSS font-family            | Font family for the table of contents.                            |
-| `tocCustomFontUrl`         | `string`                   | URL of a stylesheet providing the TOC font.                       |
-| `tocColor`                 | CSS color                  | TOC link color.                                                   |
-| `tocHoverColor`            | CSS color                  | TOC link color on hover.                                          |
-| `tocUnderline`             | `boolean`                  | Underline TOC links.                                              |
-| `codeColor`                | CSS color                  | Inline code text color.                                           |
-| `codeBackgroundColor`      | CSS color                  | Inline code background color.                                     |
-| `codeHeaderColor`          | CSS color                  | Code block header background color.                               |
-| `codeFontSize`             | CSS font-size              | Code font size.                                                   |
-| `codeCopyButtonHoverColor` | CSS color                  | Copy button hover color in code blocks.                           |
-| `staticCodeTheme`          | Shiki theme name           | Syntax highlighting theme for static code blocks.                 |
-| `liveCodeTheme`            | Shiki theme name           | Syntax highlighting theme for live (editable) code blocks.        |
-| `collapseSectionColor`     | CSS color                  | Color of the collapsible section controls.                        |
-| `katexSize`                | CSS font-size              | Font size for KaTeX math.                                         |
-| `tableBorderColor`         | CSS color                  | Table border color.                                               |
-| `tableBackgroundColor`     | CSS color                  | Table background color.                                           |
-| `captionColor`             | CSS color                  | Caption text color.                                               |
-| `subtitleColor`            | CSS color                  | Subtitle text color.                                              |
-| `tikZstyle`                | `"inverted" \| "default"`  | Render TikZ diagrams normally or color-inverted (for dark themes).|
-| `blockquoteStyle`          | `"default" \| "latex"`     | Blockquote styling; `"latex"` renders LaTeX-style theorem boxes.   |
-| `numberedHeading`          | `boolean`                  | Automatically number section headings.                            |
-| `tocMarker`                | `boolean`                  | Show the active-section marker in the table of contents.          |
+| Option                     | Type                      | Description                                                        |
+| -------------------------- | ------------------------- | ------------------------------------------------------------------ |
+| `appearance`               | `"light" \| "dark"`       | Base appearance the theme builds on.                               |
+| `backgroundColor`          | CSS color                 | Page background color.                                             |
+| `fontFamily`               | CSS font-family           | Font family for note text.                                         |
+| `customFontUrl`            | `string`                  | URL of a stylesheet providing the custom font.                     |
+| `titleColor`               | CSS color                 | Color of the note title.                                           |
+| `textColor`                | CSS color                 | Color of body text.                                                |
+| `linkColor`                | CSS color                 | Link color.                                                        |
+| `linkHoverColor`           | CSS color                 | Link color on hover.                                               |
+| `linkUnderline`            | `boolean`                 | Underline links.                                                   |
+| `tocFontFamily`            | CSS font-family           | Font family for the table of contents.                             |
+| `tocCustomFontUrl`         | `string`                  | URL of a stylesheet providing the TOC font.                        |
+| `tocColor`                 | CSS color                 | TOC link color.                                                    |
+| `tocHoverColor`            | CSS color                 | TOC link color on hover.                                           |
+| `tocUnderline`             | `boolean`                 | Underline TOC links.                                               |
+| `codeColor`                | CSS color                 | Inline code text color.                                            |
+| `codeBackgroundColor`      | CSS color                 | Inline code background color.                                      |
+| `codeHeaderColor`          | CSS color                 | Code block header background color.                                |
+| `codeFontSize`             | CSS font-size             | Code font size.                                                    |
+| `codeCopyButtonHoverColor` | CSS color                 | Copy button hover color in code blocks.                            |
+| `staticCodeTheme`          | Shiki theme name          | Syntax highlighting theme for static code blocks.                  |
+| `liveCodeTheme`            | Shiki theme name          | Syntax highlighting theme for live (editable) code blocks.         |
+| `collapseSectionColor`     | CSS color                 | Color of the collapsible section controls.                         |
+| `katexSize`                | CSS font-size             | Font size for KaTeX math.                                          |
+| `tableBorderColor`         | CSS color                 | Table border color.                                                |
+| `tableBackgroundColor`     | CSS color                 | Table background color.                                            |
+| `captionColor`             | CSS color                 | Caption text color.                                                |
+| `subtitleColor`            | CSS color                 | Subtitle text color.                                               |
+| `tikZstyle`                | `"inverted" \| "default"` | Render TikZ diagrams normally or color-inverted (for dark themes). |
+| `blockquoteStyle`          | `"default" \| "latex"`    | Blockquote styling; `"latex"` renders LaTeX-style theorem boxes.   |
+| `numberedHeading`          | `boolean`                 | Automatically number section headings.                             |
+| `tocMarker`                | `boolean`                 | Show the active-section marker in the table of contents.           |
 
 Example:
 
