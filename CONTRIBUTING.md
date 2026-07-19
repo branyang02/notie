@@ -31,7 +31,7 @@ npm run dev
 
 The main **notie** project is located in the root directory, while the **demo-app** is located in the `demo-app` directory. The **demo-app** serves as the example application for the **notie** library, and it is deployed at [https://notie-markdown.vercel.app/](https://notie-markdown.vercel.app/).
 
-When `npm run dev` is run under the root directory, the application that is served is `src/dev/App.tsx`. This file is the main entry point for the development server. `src/dev/markdown-files` contains the markdown files that are rendered by the application. This is a minimal developing application that is used when developing the **notie** library.
+When `npm run dev` is run under the root directory, the application that is served is `src/dev/App.tsx`. This file is the main entry point for the development server. `src/dev/test.md` is the markdown file that is rendered by the application. This is a minimal developing application that is used when developing the **notie** library.
 
 When testing the **notie** library in a real-world application, you can use the `demo-app` directory. First, build the **notie** library under the root directory:
 
