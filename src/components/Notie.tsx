@@ -17,6 +17,7 @@ import MarkdownRenderer from "./MarkdownRenderer";
 import { MarkdownProcessor } from "../utils/MarkdownProcessor";
 import { NotieConfig, NotieThemes } from "../config/NotieConfig";
 import { useNotieConfig } from "../utils/useNotieConfig";
+import { useShallowStableObject } from "../utils/useShallowStableObject";
 import { extractTableOfContents } from "../utils/toc";
 
 export interface NotieProps {
@@ -32,9 +33,16 @@ const Notie: React.FC<NotieProps> = ({
     markdown,
     config: userConfig,
     theme = "default",
-    customComponents,
+    customComponents: userCustomComponents,
 }) => {
     const config = useNotieConfig(userConfig, theme);
+    // `customComponents` values are functions, so we cannot stabilize them
+    // structurally (e.g. via JSON). Instead, reuse the previous object
+    // identity when the object stays shallowly equal (same keys, same
+    // function references), so inline `customComponents={{...}}` literals do
+    // not invalidate memoized children on every parent render. Consumers who
+    // pass freshly created functions each render still opt out of memoization.
+    const customComponents = useShallowStableObject(userCustomComponents);
     const {
         markdownContent,
         markdownSections,
