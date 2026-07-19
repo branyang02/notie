@@ -25,9 +25,7 @@ describe("runCode", () => {
     });
 
     it("uses the default endpoint when no baseUrl is provided", async () => {
-        fetchMock.mockResolvedValue(
-            jsonResponse({ output: "hi", image: "" }),
-        );
+        fetchMock.mockResolvedValue(jsonResponse({ output: "hi", image: "" }));
 
         const result = await runCode("print('hi')", "python");
 
@@ -46,9 +44,7 @@ describe("runCode", () => {
     });
 
     it("uses a custom endpoint when baseUrl is provided", async () => {
-        fetchMock.mockResolvedValue(
-            jsonResponse({ output: "ok", image: "" }),
-        );
+        fetchMock.mockResolvedValue(jsonResponse({ output: "ok", image: "" }));
 
         await runCode("print('hi')", "python", {
             baseUrl: "https://runner.example.com",
