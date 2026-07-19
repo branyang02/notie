@@ -361,11 +361,11 @@ Suppose we have two processes, `A` and `B`, and a timer interrupt every `10ms`. 
 - **Process**: an instance of a program in execution.
 - **Thread**: a process can have multiple threads of execution. Threads share the same **virtual address space**, but have their own **program registers**, **program counter**, condition codes, etc.
 
-![](https://static.javatpoint.com/difference/images/process-vs-thread3.png)
+![](https://upload.wikimedia.org/wikipedia/commons/a/a5/Multithreaded_process.svg)
 
 <div class="caption">
 
-Threads within the same process share the same virtual address space but have their own program registers, program counter, condition codes, etc. (Source: javapoint, <a href="https://www.javatpoint.com/process-vs-thread">Process Vs. Thread</a>)
+Threads within the same process share the same virtual address space but have their own program registers, program counter, condition codes, etc. (Source: <a href="https://commons.wikimedia.org/wiki/File:Multithreaded_process.svg" target="_blank" rel="noopener noreferrer">Cburnett, Wikimedia Commons</a>, CC BY-SA 3.0)
 
 </div>
 
@@ -2504,10 +2504,10 @@ Secure communication over an insecure channel involves safeguarding the data aga
 - **Active Attacks:**
   - **Machine-in-the-middle Attack:** An attacker intercepts, alters, or injects messages between Machine A and Machine B.
 
-![](https://images.shiksha.com/mediadata/ugcDocuments/images/wordpressImages/2023_02_MicrosoftTeams-image-304.jpg)
+![](https://upload.wikimedia.org/wikipedia/commons/e/e7/Man_in_the_middle_attack.svg)
 
 <div
-    class="caption"> Source: <a href="https://www.shiksha.com/online-courses/articles/difference-between-active-and-passive-attacks/">Difference Between Active and Passive Attacks</a>
+    class="caption"> A machine-in-the-middle attack: the attacker (Mallory) intercepts and relays messages between Alice and Bob. (Source: <a href="https://commons.wikimedia.org/wiki/File:Man_in_the_middle_attack.svg" target="_blank" rel="noopener noreferrer">Miraceti, Wikimedia Commons</a>, CC BY-SA 3.0)
 
 </div>
 
@@ -3490,6 +3490,6 @@ The notes taken from the course _CS 3130 Spring 2024_ by Charles Reiss are licen
 Yifan (Brandon) Yang, Released under the CC BY-NC-SA 4.0 License.
 
 </div>
-<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
+<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
     <img src="https://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-sa.png" alt="CC BY-NC-SA 4.0" style="display: block; max-height: 10%; max-width: 10%; margin-top: 0px" >
 </a>

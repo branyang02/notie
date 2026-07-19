@@ -1,0 +1,38 @@
+{
+  "reviewer": "independent review pass",
+  "route": "/examples/cso2",
+  "port": 5499,
+  "failedImageResponses": [],
+  "brokenImgElements": [],
+  "javatpointReferences": [],
+  "shikshaReferences": [],
+  "wikimediaReplacements": [
+    {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Multithreaded_process.svg",
+      "naturalWidth": 450,
+      "complete": true
+    },
+    {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/e/e7/Man_in_the_middle_attack.svg",
+      "naturalWidth": 1052,
+      "complete": true
+    }
+  ],
+  "targetBlankLinks": [
+    {
+      "href": "https://commons.wikimedia.org/wiki/File:Multithreaded_process.svg",
+      "rel": "noopener noreferrer"
+    },
+    {
+      "href": "https://commons.wikimedia.org/wiki/File:Man_in_the_middle_attack.svg",
+      "rel": "noopener noreferrer"
+    },
+    {
+      "href": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "rel": "noopener noreferrer"
+    }
+  ],
+  "targetBlankMissingNoopener": [],
+  "consoleErrors": [],
+  "totalImages": 33
+}
