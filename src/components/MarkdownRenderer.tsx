@@ -6,6 +6,7 @@ import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { katexOptions } from "../utils/katexOptions";
+import { sanitizeUrl } from "../utils/sanitizeUrl";
 import {
     BlockquoteMapping,
     EquationMapping,
@@ -332,6 +333,7 @@ const MarkdownSection = React.memo(
             remarkPlugins={[remarkGfm, remarkMath]}
             rehypePlugins={[[rehypeKatex, katexOptions], rehypeRaw, rehypeSlug]}
             components={components}
+            urlTransform={sanitizeUrl}
         >
             {markdownContent}
         </ReactMarkdown>

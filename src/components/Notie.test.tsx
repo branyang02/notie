@@ -295,4 +295,53 @@ New third section.
             screen.queryByText("New third section."),
         ).not.toBeInTheDocument();
     });
+
+    it("strips javascript: URLs from markdown links", () => {
+        const { container } = render(
+            <Notie
+                markdown={`# Demo
+
+[click me](javascript:alert(1))
+
+[obfuscated](JaVaScRiPt:alert(1))
+
+[safe](https://example.com)
+
+[anchor](#some-anchor)
+`}
+            />,
+        );
+
+        for (const anchor of Array.from(container.querySelectorAll("a"))) {
+            const href = anchor.getAttribute("href") ?? "";
+            expect(href.toLowerCase()).not.toContain("javascript:");
+        }
+
+        const safeLink = screen.getByRole("link", { name: "safe" });
+        expect(safeLink).toHaveAttribute("href", "https://example.com");
+        const anchorLink = screen.getByRole("link", { name: "anchor" });
+        expect(anchorLink).toHaveAttribute("href", "#some-anchor");
+    });
+
+    it("does not render javascript: hrefs from KaTeX \\href commands", () => {
+        const { container } = render(
+            <Notie
+                markdown={`# Demo
+
+$\\href{javascript:alert(1)}{evil}$
+
+$\\href{https://example.com}{good}$
+`}
+            />,
+        );
+
+        for (const anchor of Array.from(container.querySelectorAll("a"))) {
+            const href = anchor.getAttribute("href") ?? "";
+            expect(href.toLowerCase()).not.toContain("javascript:");
+        }
+
+        expect(
+            container.querySelector('a[href="https://example.com"]'),
+        ).not.toBeNull();
+    });
 });
