@@ -62,7 +62,8 @@ export function __configureHighlightCacheForTests(
 }
 
 /**
- * Highlight `code`, memoizing the resulting HTML per (theme, lang, code).
+ * Highlight `code`, memoizing the resulting HTML per (theme, resolved
+ * lang, code).
  * Static code blocks remount on section re-renders with identical inputs,
  * so caching avoids repeating the dominant codeToHtml cost.
  */
@@ -71,7 +72,10 @@ export async function highlightWithCache(
     lang: string,
     theme: string,
 ): Promise<string> {
-    const key = `${theme}|${lang}|${code}`;
+    // Key on the resolved language so aliases (e.g. "py" and "python")
+    // share a cache entry instead of highlighting the same code twice.
+    const resolvedLang = resolveLanguage(lang);
+    const key = `${theme}|${resolvedLang}|${code}`;
     const cached = highlightCache.get(key);
     if (cached !== undefined) {
         // Refresh recency: move the entry to the end of iteration order.
@@ -81,7 +85,7 @@ export async function highlightWithCache(
     }
     const highlighter = await getHighlighter();
     const html = highlighter.codeToHtml(code, {
-        lang: resolveLanguage(lang),
+        lang: resolvedLang,
         theme: theme as BundledTheme,
     });
     highlightCache.set(key, html);

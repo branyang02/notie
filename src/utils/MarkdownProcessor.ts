@@ -266,6 +266,16 @@ export class MarkdownProcessor {
         sectionIndex: number,
         currEquationNumber: number,
     ): number {
+        // KaTeX assigns no equation number (no `.eqn-num` span) to an
+        // equation environment containing \nonumber or \notag, so it must
+        // not consume a number here either — otherwise every mapping after
+        // it drifts off by one from the DOM numbering (same rule as the
+        // align path above).
+        if (this.isUnnumberedLine(equation)) {
+            this.warnIfLabeledUnnumbered(equation);
+            return currEquationNumber;
+        }
+
         const label = equation.match(/\\label\{(.*?)\}/g)?.[0];
         if (label) {
             // extract between \begin{equation} and \end{equation}

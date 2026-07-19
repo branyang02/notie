@@ -589,6 +589,78 @@ $$
         expect(result.equationMapping["eq:after"].equationNumber).toBe("1.2");
     });
 
+    it("warns and skips mapping for an equation environment with \\label and \\nonumber", () => {
+        const errorSpy = vi
+            .spyOn(console, "error")
+            .mockImplementation(() => {});
+        const markdown = `# Title
+
+## Section
+
+$$
+\\begin{equation} \\label{eq:ghost} \\nonumber
+a = 1
+\\end{equation}
+$$
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        expect(result.equationMapping["eq:ghost"]).toBeUndefined();
+        expect(errorSpy).toHaveBeenCalledWith(
+            expect.stringContaining("eq:ghost"),
+        );
+        errorSpy.mockRestore();
+    });
+
+    it("does not let a \\nonumber equation environment consume a number", () => {
+        const markdown = `# Title
+
+## Section
+
+$$
+\\begin{equation} \\nonumber
+a = 1
+\\end{equation}
+$$
+
+$$
+\\begin{equation} \\label{eq:real}
+b = 2
+\\end{equation}
+$$
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        // KaTeX gives the \nonumber equation no number, so eq:real is the
+        // first numbered equation: 1.1, not 1.2.
+        expect(result.equationMapping["eq:real"].equationNumber).toBe("1.1");
+    });
+
+    it("treats \\notag in an equation environment the same as \\nonumber", () => {
+        const markdown = `# Title
+
+## Section
+
+$$
+\\begin{equation} \\notag
+a = 1
+\\end{equation}
+$$
+
+$$
+\\begin{equation} \\label{eq:real}
+b = 2
+\\end{equation}
+$$
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        expect(result.equationMapping["eq:real"].equationNumber).toBe("1.1");
+    });
+
     it("skips a nested multi-line block marked \\nonumber", () => {
         const markdown = `# Title
 

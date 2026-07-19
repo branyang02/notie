@@ -5,12 +5,64 @@ import {
     waitFor,
     within,
 } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Notie from "./Notie";
 
 describe("Notie", () => {
     beforeEach(() => {
         window.history.replaceState(null, "", "/");
+    });
+
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    it("scrolls to a debounce-labeled equation anchor targeted by the URL hash", async () => {
+        // Equation ids (eqn-X.Y) are assigned by a coalesced DOM-labeling
+        // effect that trails the last progressive reveal by a short
+        // debounce, so the pending-scroll effect must retry until the
+        // anchor exists instead of giving up on its first run.
+        window.history.replaceState(null, "", "/#eqn-3.1");
+        const scrollSpy = vi.spyOn(HTMLElement.prototype, "scrollIntoView");
+
+        render(
+            <Notie
+                markdown={`# Demo
+
+## One
+
+First section.
+
+## Two
+
+Second section.
+
+## Three
+
+$$
+\\begin{equation} \\label{eq:last}
+z = 3
+\\end{equation}
+$$
+`}
+            />,
+        );
+
+        // The target lives in a not-yet-revealed section, and its id only
+        // appears after the post-reveal labeling debounce.
+        expect(document.getElementById("eqn-3.1")).toBeNull();
+
+        await waitFor(
+            () => {
+                expect(scrollSpy).toHaveBeenCalled();
+            },
+            { timeout: 3000 },
+        );
+
+        const scrolledElement = scrollSpy.mock
+            .contexts[0] as unknown as HTMLElement;
+        expect(scrolledElement.id).toBe("eqn-3.1");
+        expect(window.location.hash).toBe("#eqn-3.1");
     });
 
     it("renders markdown, TOC, equations, blockquote references, and custom components", async () => {

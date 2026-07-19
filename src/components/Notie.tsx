@@ -169,14 +169,42 @@ const Notie: React.FC<NotieProps> = ({
     useEffect(() => {
         if (!pendingScrollId || typeof window === "undefined") return;
 
-        const target = document.getElementById(pendingScrollId);
-        if (!target) return;
+        const scrollToTarget = (target: Element) => {
+            target.scrollIntoView();
+            if (window.location.hash !== `#${pendingScrollId}`) {
+                window.history.pushState(null, "", `#${pendingScrollId}`);
+            }
+            setPendingScrollId(null);
+        };
 
-        target.scrollIntoView();
-        if (window.location.hash !== `#${pendingScrollId}`) {
-            window.history.pushState(null, "", `#${pendingScrollId}`);
+        const target = document.getElementById(pendingScrollId);
+        if (target) {
+            scrollToTarget(target);
+            return;
         }
-        setPendingScrollId(null);
+
+        // The target may not exist yet even after every section has been
+        // revealed: anchor ids such as `eqn-X.Y` are assigned by the
+        // coalesced DOM-labeling effects above, which trail the final
+        // `renderedSectionCount` update by a short debounce. Since this
+        // effect gets no further dependency changes at that point, poll
+        // briefly for the anchor instead of giving up, bounded so an id
+        // that never materializes cannot poll forever.
+        const RETRY_INTERVAL_MS = 80;
+        const RETRY_TIMEOUT_MS = 2000;
+        const deadline = Date.now() + RETRY_TIMEOUT_MS;
+        let timeoutId: number | undefined;
+        const retry = () => {
+            const retryTarget = document.getElementById(pendingScrollId);
+            if (retryTarget) {
+                scrollToTarget(retryTarget);
+                return;
+            }
+            if (Date.now() >= deadline) return;
+            timeoutId = window.setTimeout(retry, RETRY_INTERVAL_MS);
+        };
+        timeoutId = window.setTimeout(retry, RETRY_INTERVAL_MS);
+        return () => window.clearTimeout(timeoutId);
     }, [pendingScrollId, renderedSectionCount]);
 
     // Effect to observe headings and update activeId. Coalesced so that a
