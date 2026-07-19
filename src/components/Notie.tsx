@@ -22,7 +22,6 @@ import {
 } from "../config/NotieConfig";
 import { useNotieConfig } from "../utils/useNotieConfig";
 import { useShallowStableObject } from "../utils/useShallowStableObject";
-import { extractTableOfContents } from "../utils/toc";
 
 export interface NotieProps {
     markdown: string;
@@ -123,14 +122,13 @@ const Notie: React.FC<NotieProps> = ({
         markdownSections,
         equationMapping,
         blockquoteMapping,
+        // Computed by the processor from its own masked pass over the
+        // document, so the whole text is masked exactly once per process().
+        tocEntries,
     } = useMemo(() => {
         const processor = new MarkdownProcessor(markdown, config);
         return processor.process();
     }, [markdown, config]);
-    const tocEntries = useMemo(
-        () => extractTableOfContents(markdownContent),
-        [markdownContent],
-    );
     const contentRef = useRef<HTMLDivElement>(null);
     const [activeId, setActiveId] = useState<string>("");
     const [renderedSectionCount, setRenderedSectionCount] = useState(0);

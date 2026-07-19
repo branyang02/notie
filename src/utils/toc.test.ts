@@ -189,6 +189,70 @@ describe("extractTableOfContents", () => {
         ]);
     });
 
+    it("strips reference-style links to their text like rendered output", () => {
+        const markdown = `# Title
+
+## See [the guide][guide] here
+
+## Read [the spec][] now
+
+## Try [shortcut] form
+
+[guide]: https://example.com/guide
+[the spec]: https://example.com/spec
+[shortcut]: https://example.com/shortcut
+`;
+
+        const entries = extractTableOfContents(markdown);
+
+        expect(entries.map((entry) => entry.id)).toEqual([
+            "see-the-guide-here",
+            "read-the-spec-now",
+            "try-shortcut-form",
+        ]);
+        expect(entries.map((entry) => entry.title)).toEqual([
+            "See the guide here",
+            "Read the spec now",
+            "Try shortcut form",
+        ]);
+    });
+
+    it("drops reference-style images from heading text", () => {
+        const markdown = `# Title
+
+## Logo ![alt text][logo] heading
+
+## Plain ![icon] heading
+
+[logo]: https://example.com/logo.png
+[icon]: https://example.com/icon.png
+`;
+
+        const entries = extractTableOfContents(markdown);
+
+        expect(entries.map((entry) => entry.id)).toEqual([
+            "logo--heading",
+            "plain--heading",
+        ]);
+    });
+
+    it("keeps footnote references in heading text intact", () => {
+        // [^1] is a footnote reference, not a shortcut link; github-slugger
+        // keeps the caret out but remark renders the marker, so the bracket
+        // content must not be treated as link text.
+        const markdown = `# Title
+
+## Heading with footnote [^1]
+
+[^1]: The footnote.
+`;
+
+        const entries = extractTableOfContents(markdown);
+
+        expect(entries).toHaveLength(1);
+        expect(entries[0].title).toBe("Heading with footnote [^1]");
+    });
+
     it("counts a level-1 heading toward duplicate suffixes in its own tree", () => {
         // The `# Title` heading lives in the first section's tree, so a
         // `###` heading with the same text before the first `##` gets a

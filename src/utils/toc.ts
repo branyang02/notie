@@ -43,6 +43,21 @@ function headingRenderedText(rawTitle: string): string {
             .replace(/\s+#+\s*$/, "") // ATX closing sequence: "## Foo ##"
             .replace(/!\[[^\]]*\]\([^)]*\)/g, "") // images render no text
             .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1") // links -> link text
+            // Reference-style images render no text either: ![alt][ref],
+            // collapsed ![alt][], and shortcut ![alt]. Must run before the
+            // reference-link replaces below so the `!` is consumed too.
+            .replace(/!\[[^\]]*\](?:\[[^\]]*\])?/g, "")
+            // Reference-style links keep their text: [text][ref] and
+            // collapsed [text][]. Footnote references ([^1]) are not
+            // links, so ^-prefixed brackets are left untouched.
+            .replace(/\[(?!\^)([^\]]*)\]\[[^\]]*\]/g, "$1")
+            // Shortcut reference links: bare [text] -> text. remark only
+            // resolves these when a matching [text]: definition exists in
+            // the same section tree, but github-slugger strips brackets
+            // from unresolved literals anyway, so the slug matches either
+            // way. Footnote references ([^1]) are not links and must
+            // survive untouched.
+            .replace(/\[(?!\^)([^\]]*)\]/g, "$1")
             .replace(/<[^>]*>/g, "") // inline HTML tags
             .replace(/`+/g, "") // code-span markers
             .replace(/\*+/g, "") // emphasis / strong markers
@@ -54,14 +69,20 @@ function headingRenderedText(rawTitle: string): string {
     ).trim();
 }
 
-export function extractTableOfContents(markdownContent: string): TocEntry[] {
+/**
+ * Core TOC extraction over text whose protected regions (code blocks and
+ * HTML comments) have ALREADY been masked, so `#` lines inside them are
+ * never mistaken for headings.
+ *
+ * This is the single shared implementation behind both
+ * `extractTableOfContents` (which masks the raw document itself) and
+ * `MarkdownProcessor.process()` (which reuses its own document-level mask
+ * pass instead of masking a second time).
+ */
+export function extractTocEntriesFromMasked(maskedText: string): TocEntry[] {
     const entries: TocEntry[] = [];
     const pattern = /^(#+) (.*)$/gm;
     let match;
-
-    // Mask code blocks and HTML comments so that `#` lines inside them are
-    // never mistaken for headings.
-    const { maskedText } = maskProtectedRegions(markdownContent);
 
     // Use the same slugger as rehype-slug so TOC ids match the ids that end
     // up in the DOM, including `-1`, `-2`, ... suffixes for duplicates.
@@ -89,4 +110,11 @@ export function extractTableOfContents(markdownContent: string): TocEntry[] {
     }
 
     return entries;
+}
+
+export function extractTableOfContents(markdownContent: string): TocEntry[] {
+    // Mask code blocks and HTML comments so that `#` lines inside them are
+    // never mistaken for headings.
+    const { maskedText } = maskProtectedRegions(markdownContent);
+    return extractTocEntriesFromMasked(maskedText);
 }

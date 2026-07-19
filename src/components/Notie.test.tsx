@@ -394,6 +394,52 @@ Third section.
         }
     });
 
+    it("gives every TOC entry an id that exists in the DOM for reference-style-link headings", () => {
+        const { container } = render(
+            <Notie
+                markdown={`# Demo
+
+## Reference Links
+
+### See [the guide][guide] here
+
+### Read [the spec][] now
+
+### Try [shortcut] form
+
+### Try [shortcut] form
+
+[guide]: https://example.com/guide
+[the spec]: https://example.com/spec
+[shortcut]: https://example.com/shortcut
+`}
+            />,
+        );
+
+        const toc = screen.getByRole("navigation", { name: /contents/i });
+        const ids = Array.from(toc.querySelectorAll("a[href^='#']")).map(
+            (link) => link.getAttribute("href")!.slice(1),
+        );
+
+        expect(ids).toEqual([
+            "reference-links",
+            "see-the-guide-here",
+            "read-the-spec-now",
+            "try-shortcut-form",
+            "try-shortcut-form-1",
+        ]);
+
+        const content = container.querySelector(
+            "[class*='blog-content']",
+        ) as HTMLElement;
+        for (const id of ids) {
+            expect(
+                content.querySelector(`[id="${CSS.escape(id)}"]`),
+                `expected a rendered element with id "${id}"`,
+            ).not.toBeNull();
+        }
+    });
+
     it("gives every TOC entry an id that exists in the DOM with numbered headings", async () => {
         const { container } = render(
             <Notie
