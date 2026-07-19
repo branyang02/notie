@@ -1,0 +1,10 @@
+{
+  "anchorAriaLabel": "Equation 1.2",
+  "insideAriaHiddenKatexHtml": true,
+  "mathmlAlternativePresent": true,
+  "mathmlAnnotation": "\\eqref{eq:cases}",
+  "firstFocusedEquationLink": {
+    "href": "#eqn-1.2",
+    "ariaLabel": "Equation 1.2"
+  }
+}
