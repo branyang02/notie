@@ -125,6 +125,35 @@ See [definition](#bqref-def:first).
         expect(blockquoteReference).toHaveTextContent("Definition 1.1");
     });
 
+    it("renders single-line equation environments as display math with a working eqref anchor", () => {
+        const { container } = render(
+            <Notie
+                markdown={`# Demo
+
+## First Section
+
+$$\\begin{equation}\\label{eq:x} y = 1 \\end{equation}$$
+
+See $\\eqref{eq:x}$.
+`}
+            />,
+        );
+
+        // remark-math must parse the normalized equation as display math:
+        // a katex-display block and no red ParseError ("{equation} can be
+        // used only in display mode").
+        expect(container.querySelector(".katex-display")).toBeInTheDocument();
+        expect(container.querySelector(".katex-error")).not.toBeInTheDocument();
+
+        // The eqref link resolves to a real equation anchor in the DOM,
+        // not a dangling href.
+        const equationReference = container.querySelector('a[href="#eqn-1.1"]');
+        expect(equationReference).toHaveTextContent("(1.1)");
+        expect(container.querySelector("#eqn-1\\.1")).toHaveTextContent(
+            "(1.1)",
+        );
+    });
+
     it("renders equation references whose labels contain underscores", () => {
         const { container } = render(
             <Notie
