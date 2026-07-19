@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { type ExtraProps } from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
@@ -21,13 +21,12 @@ import LazyRender from "./LazyRender";
 import StaticCodeBlock from "./StaticCodeBlock";
 import TikZ from "./TikZ";
 import { CustomComponents, FullNotieConfig } from "../config/NotieConfig";
+import type { Element as HastElement, ElementContent } from "hast";
 
-type CodeProps = React.HTMLAttributes<HTMLElement> & {
-    node?: unknown;
-    inline?: boolean;
-    className?: string;
-    children?: React.ReactNode;
-};
+type PreProps = React.HTMLAttributes<HTMLPreElement> &
+    ExtraProps & {
+        children?: React.ReactNode;
+    };
 
 type CustomComponentFormat = {
     componentName: string;
@@ -37,6 +36,50 @@ type AnchorProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
     node?: unknown;
     children?: React.ReactNode;
 };
+
+/**
+ * Returns the sole `<code>` element child of a `<pre>` hast node, or `null`
+ * when the `<pre>` does not look like a markdown code block (react-markdown
+ * always renders a fenced or indented code block as a `<pre>` wrapping
+ * exactly one `<code>` element).
+ */
+function getCodeChild(node: HastElement | undefined): HastElement | null {
+    if (!node) return null;
+    const meaningfulChildren = node.children.filter(
+        (child) =>
+            !(child.type === "text" && child.value.trim() === "") &&
+            child.type !== "comment",
+    );
+    if (meaningfulChildren.length !== 1) return null;
+    const [child] = meaningfulChildren;
+    if (child.type !== "element" || child.tagName !== "code") return null;
+    return child;
+}
+
+/** Extracts the `language-*` token from a hast `<code>` element, if any. */
+function getCodeLanguage(codeNode: HastElement): string {
+    const className = codeNode.properties?.className;
+    const classes = Array.isArray(className)
+        ? className.map(String)
+        : typeof className === "string"
+          ? className.split(/\s+/)
+          : [];
+    const languageClass = classes.find((cls) => cls.startsWith("language-"));
+    return languageClass ? languageClass.slice("language-".length) : "";
+}
+
+/** Concatenates the text content of a hast subtree. */
+function textFromHast(nodes: ElementContent[]): string {
+    let text = "";
+    for (const node of nodes) {
+        if (node.type === "text") {
+            text += node.value;
+        } else if (node.type === "element") {
+            text += textFromHast(node.children);
+        }
+    }
+    return text;
+}
 
 const INITIAL_SECTION_COUNT = 2;
 
@@ -220,16 +263,24 @@ const MarkdownRenderer: React.FC<{
                         </a>
                     );
                 },
-                code({ inline, className, children, ...props }: CodeProps) {
-                    const match = /\w+/.exec(className || "");
+                // react-markdown v9 removed the `inline` prop from the
+                // `code` component. The v9-idiomatic way to detect block
+                // code is structural: every fenced/indented code block is
+                // rendered as a `<pre>` wrapping exactly one `<code>`,
+                // while inline code is a bare `<code>` (never inside a
+                // custom `pre`). Implementing `pre` therefore captures all
+                // block code — including classless fences (``` with no info
+                // string), which have no `language-*` class and previously
+                // fell through to the plain inline branch.
+                pre({ node, children, ...props }: PreProps) {
+                    const codeNode = getCodeChild(node);
 
-                    if (!inline && match) {
-                        const language =
-                            className?.split("language-").pop() || "";
-                        const content = Array.isArray(children)
-                            ? children.join("")
-                            : children;
-                        const code = String(content).replace(/\n$/, "");
+                    if (codeNode) {
+                        const language = getCodeLanguage(codeNode);
+                        const code = textFromHast(codeNode.children).replace(
+                            /\n$/,
+                            "",
+                        );
                         if (language.includes("execute-")) {
                             return (
                                 <LazyRender minHeight={260}>
@@ -313,6 +364,10 @@ const MarkdownRenderer: React.FC<{
                                 );
                             }
                         }
+                        // Classless fences reach here with language "";
+                        // resolveLanguage maps unknown languages to "text",
+                        // so they get the same StaticCodeBlock chrome as
+                        // tagged fences.
                         return (
                             <StaticCodeBlock
                                 code={code}
@@ -320,13 +375,13 @@ const MarkdownRenderer: React.FC<{
                                 theme={config.theme.staticCodeTheme}
                             />
                         );
-                    } else {
-                        return (
-                            <code className={className} {...props}>
-                                {children}
-                            </code>
-                        );
                     }
+
+                    // Not a markdown code block (e.g. raw <pre> HTML passed
+                    // through rehype-raw): render the <pre> untouched.
+                    // Inline code never hits this component — it renders via
+                    // the default `code` handling as a plain <code>.
+                    return <pre {...props}>{children}</pre>;
                 },
             }),
             [
