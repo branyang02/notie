@@ -9,6 +9,7 @@ const config: FullNotieConfig = {
     tocTitle: "Contents",
     fontSize: "1rem",
     codeRunnerUrl: "https://api.brandonyifanyang.com",
+    desmosApiKey: "dcb31709b452b1cf9dc26972add0fda6",
     theme: {
         appearance: "light",
         backgroundColor: "#fff",

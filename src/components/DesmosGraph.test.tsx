@@ -96,6 +96,91 @@ describe("DesmosGraph", () => {
         expect(destroy).toHaveBeenCalledTimes(1);
     });
 
+    // Intercept injected <script> tags: record their src and fire onload
+    // (defining window.Desmos just before, like the real script would).
+    function interceptScriptInjection() {
+        const scriptSrcs: string[] = [];
+        const appendChild = vi
+            .spyOn(document.head, "appendChild")
+            .mockImplementation(((node: Node) => {
+                if (node instanceof HTMLScriptElement) {
+                    scriptSrcs.push(node.src);
+                    setTimeout(() => {
+                        stubDesmos();
+                        node.onload?.(new Event("load"));
+                    }, 0);
+                }
+                return node;
+            }) as typeof document.head.appendChild);
+        return { scriptSrcs, appendChild };
+    }
+
+    it("loads the Desmos script with the default demo API key", async () => {
+        const DesmosGraph = await importDesmosGraph();
+        const { scriptSrcs, appendChild } = interceptScriptInjection();
+
+        render(<DesmosGraph graphScript="y=x" />);
+
+        await waitFor(() => {
+            expect(scriptSrcs).toHaveLength(1);
+        });
+        expect(scriptSrcs[0]).toBe(
+            "https://www.desmos.com/api/v1.9/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6",
+        );
+
+        appendChild.mockRestore();
+    });
+
+    it("loads the Desmos script with a custom API key", async () => {
+        const DesmosGraph = await importDesmosGraph();
+        const { scriptSrcs, appendChild } = interceptScriptInjection();
+
+        render(<DesmosGraph graphScript="y=x" apiKey="my-custom-key" />);
+
+        await waitFor(() => {
+            expect(scriptSrcs).toHaveLength(1);
+        });
+        expect(scriptSrcs[0]).toBe(
+            "https://www.desmos.com/api/v1.9/calculator.js?apiKey=my-custom-key",
+        );
+
+        appendChild.mockRestore();
+    });
+
+    it("caches the script loader per API key", async () => {
+        const DesmosGraph = await importDesmosGraph();
+
+        // Record injected scripts but never fire onload, so the loader
+        // promises stay pending and caching behavior is observable.
+        const scriptSrcs: string[] = [];
+        const appendChild = vi
+            .spyOn(document.head, "appendChild")
+            .mockImplementation(((node: Node) => {
+                if (node instanceof HTMLScriptElement) {
+                    scriptSrcs.push(node.src);
+                }
+                return node;
+            }) as typeof document.head.appendChild);
+
+        render(
+            <>
+                <DesmosGraph graphScript="y=x" apiKey="key-a" />
+                <DesmosGraph graphScript="y=x^2" apiKey="key-a" />
+                <DesmosGraph graphScript="y=x^3" apiKey="key-b" />
+            </>,
+        );
+
+        await waitFor(() => {
+            expect(scriptSrcs).toHaveLength(2);
+        });
+        expect(scriptSrcs).toEqual([
+            "https://www.desmos.com/api/v1.9/calculator.js?apiKey=key-a",
+            "https://www.desmos.com/api/v1.9/calculator.js?apiKey=key-b",
+        ]);
+
+        appendChild.mockRestore();
+    });
+
     it("renders a fallback when the Desmos script fails to load", async () => {
         const DesmosGraph = await importDesmosGraph();
 

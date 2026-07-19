@@ -5,16 +5,25 @@ import styles from "../styles/Notie.module.css";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const Desmos: any;
 
-let desmosScriptPromise: Promise<void> | null = null;
+/**
+ * Desmos's public demo API key. Calculators loaded with it log a warning
+ * that it is not licensed for commercial use; consumers can supply their
+ * own key via `NotieConfig.desmosApiKey`.
+ */
+export const DEFAULT_DESMOS_API_KEY = "dcb31709b452b1cf9dc26972add0fda6";
 
-function loadDesmosScript(): Promise<void> {
+// One cached loader promise per API key: different keys use different
+// script URLs, so they must not share a cache entry.
+const desmosScriptPromises = new Map<string, Promise<void>>();
+
+function loadDesmosScript(apiKey: string): Promise<void> {
     if (typeof Desmos !== "undefined") return Promise.resolve();
 
-    if (!desmosScriptPromise) {
-        desmosScriptPromise = new Promise<void>((resolve, reject) => {
+    let scriptPromise = desmosScriptPromises.get(apiKey);
+    if (!scriptPromise) {
+        scriptPromise = new Promise<void>((resolve, reject) => {
             const scriptEl = document.createElement("script");
-            scriptEl.src =
-                "https://www.desmos.com/api/v1.9/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6";
+            scriptEl.src = `https://www.desmos.com/api/v1.9/calculator.js?apiKey=${encodeURIComponent(apiKey)}`;
             scriptEl.async = true;
             scriptEl.onload = () => resolve();
             scriptEl.onerror = () =>
@@ -22,22 +31,29 @@ function loadDesmosScript(): Promise<void> {
             document.head.appendChild(scriptEl);
         }).catch((error) => {
             // Do not cache the rejection, so the next mount retries.
-            desmosScriptPromise = null;
+            desmosScriptPromises.delete(apiKey);
             throw error;
         });
+        desmosScriptPromises.set(apiKey, scriptPromise);
     }
 
-    return desmosScriptPromise;
+    return scriptPromise;
 }
 
 export interface DesmosGraphProps {
     graphScript: string;
     appearance?: "light" | "dark";
+    /**
+     * Desmos calculator API key. Defaults to the built-in demo key, which
+     * logs a warning that it is not licensed for commercial use.
+     */
+    apiKey?: string;
 }
 
 const DesmosGraph = ({
     graphScript,
     appearance = "light",
+    apiKey = DEFAULT_DESMOS_API_KEY,
 }: DesmosGraphProps) => {
     const calculatorRef = useRef<HTMLDivElement | null>(null);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -49,7 +65,7 @@ const DesmosGraph = ({
 
         setLoadFailed(false);
 
-        loadDesmosScript()
+        loadDesmosScript(apiKey)
             .then(() => {
                 if (cancelled) return;
                 if (calculatorRef.current && !calculatorInstance.current) {
@@ -72,7 +88,7 @@ const DesmosGraph = ({
             calculatorInstance.current = null;
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [appearance]);
+    }, [appearance, apiKey]);
 
     // Update the calculator when graphScript changes
     useEffect(() => {
