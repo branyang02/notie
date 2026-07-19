@@ -29,6 +29,79 @@ export interface NotieProps {
     };
 }
 
+/**
+ * Trailing delay applied to full-document DOM rescans while sections are
+ * being progressively revealed. Must stay short (<= 100ms) so equation and
+ * blockquote numbers are never visibly stale after the last reveal.
+ */
+const REVEAL_RESCAN_DELAY_MS = 50;
+
+const NEVER_RAN = Symbol("never-ran");
+
+/**
+ * Runs `effect` like `useEffect`, but coalesces bursts of
+ * `renderedSectionCount` changes caused by progressive section reveal.
+ *
+ * `MarkdownRenderer` reveals sections one at a time (one idle callback per
+ * section), and the heading observer plus equation/blockquote numbering
+ * effects each rescan the whole document on every reveal — O(N^2) work over
+ * the reveal sequence for large documents. This hook instead:
+ *
+ * - runs `effect` synchronously whenever `syncKey` changes (including on
+ *   mount), so numbering and observers are correct immediately for the
+ *   initially rendered content and after document updates;
+ * - debounces `renderedSectionCount` changes with a short trailing delay,
+ *   so a burst of reveals triggers a single rescan shortly after the last
+ *   one.
+ *
+ * `effect` may return a cleanup function (e.g. to disconnect an
+ * IntersectionObserver); it is invoked before the next run and on unmount.
+ */
+function useCoalescedRevealEffect(
+    effect: () => void | (() => void),
+    syncKey: unknown,
+    renderedSectionCount: number,
+) {
+    const effectRef = useRef(effect);
+    useEffect(() => {
+        effectRef.current = effect;
+    });
+
+    const cleanupRef = useRef<(() => void) | null>(null);
+    const previousSyncKeyRef = useRef<unknown>(NEVER_RAN);
+
+    const runEffect = useCallback(() => {
+        cleanupRef.current?.();
+        const cleanup = effectRef.current();
+        cleanupRef.current = typeof cleanup === "function" ? cleanup : null;
+    }, []);
+
+    useEffect(() => {
+        // `renderedSectionCount` is intentionally an effect trigger rather
+        // than an input: each progressive reveal restarts the trailing
+        // debounce below.
+        void renderedSectionCount;
+
+        if (!Object.is(previousSyncKeyRef.current, syncKey)) {
+            previousSyncKeyRef.current = syncKey;
+            runEffect();
+            return;
+        }
+
+        const timeoutId = window.setTimeout(runEffect, REVEAL_RESCAN_DELAY_MS);
+        return () => window.clearTimeout(timeoutId);
+    }, [runEffect, syncKey, renderedSectionCount]);
+
+    // Run the last effect cleanup (e.g. disconnect the observer) on unmount.
+    useEffect(
+        () => () => {
+            cleanupRef.current?.();
+            cleanupRef.current = null;
+        },
+        [],
+    );
+}
+
 const Notie: React.FC<NotieProps> = ({
     markdown,
     config: userConfig,
@@ -104,33 +177,41 @@ const Notie: React.FC<NotieProps> = ({
         setPendingScrollId(null);
     }, [pendingScrollId, renderedSectionCount]);
 
-    // Effect to observe headings and update activeId
-    useEffect(() => {
-        if (!contentRef.current) return;
-        const observerOptions = {
-            rootMargin: "0px 0px -90% 0px",
-            threshold: 0,
-        };
+    // Effect to observe headings and update activeId. Coalesced so that a
+    // burst of progressive section reveals rebuilds the observer once at the
+    // end instead of once per revealed section.
+    useCoalescedRevealEffect(
+        useCallback(() => {
+            if (!contentRef.current) return;
+            const observerOptions = {
+                rootMargin: "0px 0px -90% 0px",
+                threshold: 0,
+            };
 
-        const headings = contentRef.current.querySelectorAll(
-            "h1, h2, h3, h4, h5, h6",
-        );
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    const id = entry.target.id;
-                    setActiveId((current) => (current === id ? current : id));
-                }
-            });
-        }, observerOptions);
+            const headings = contentRef.current.querySelectorAll(
+                "h1, h2, h3, h4, h5, h6",
+            );
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        setActiveId((current) =>
+                            current === id ? current : id,
+                        );
+                    }
+                });
+            }, observerOptions);
 
-        headings.forEach((heading) => observer.observe(heading));
+            headings.forEach((heading) => observer.observe(heading));
 
-        return () => observer.disconnect();
-    }, [markdownContent, renderedSectionCount]);
+            return () => observer.disconnect();
+        }, []),
+        markdownContent,
+        renderedSectionCount,
+    );
 
-    // Effect to auto label equation numbers
-    useEffect(() => {
+    // Effect to auto label equation numbers. Coalesced: see above.
+    const labelEquationNumbers = useCallback(() => {
         if (!contentRef.current) return;
         const sections = contentRef.current.getElementsByClassName("sections");
 
@@ -147,10 +228,16 @@ const Notie: React.FC<NotieProps> = ({
                 eqn.textContent = `(${sectionIndex + 1}.${eqnIndex + 1})`;
             }
         }
-    }, [markdownContent, renderedSectionCount]);
+    }, []);
+    useCoalescedRevealEffect(
+        labelEquationNumbers,
+        markdownContent,
+        renderedSectionCount,
+    );
 
-    // Effect to auto label Definitions, Theorems, Lemmas, only for LaTeX style
-    useEffect(() => {
+    // Effect to auto label Definitions, Theorems, Lemmas, only for LaTeX
+    // style. Coalesced: see above.
+    const labelLatexBlockquotes = useCallback(() => {
         if (config.theme.blockquoteStyle !== "latex") return;
         if (!contentRef.current) return;
         const sections = contentRef.current.getElementsByClassName("sections");
@@ -201,7 +288,14 @@ const Notie: React.FC<NotieProps> = ({
                 }
             });
         }
-    }, [config.theme.blockquoteStyle, markdownContent, renderedSectionCount]);
+    }, [config.theme.blockquoteStyle]);
+    useCoalescedRevealEffect(
+        labelLatexBlockquotes,
+        // Re-run synchronously when either the document content or the
+        // blockquote style changes (string sync keys compare by value).
+        `${config.theme.blockquoteStyle}\n${markdownContent}`,
+        renderedSectionCount,
+    );
 
     return (
         <Pane className={styles["notie-container"]}>
