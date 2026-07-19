@@ -103,6 +103,9 @@ export class MarkdownProcessor {
             "lemma",
             "algorithm",
             "problem",
+            "proof",
+            "note",
+            "important",
         ];
         const counts: Record<string, number> = {};
 

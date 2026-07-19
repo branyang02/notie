@@ -149,6 +149,92 @@ See [Algorithm](#bqref-alg:critic-target).
         expect(container.querySelector(".katex-error")).not.toBeInTheDocument();
     });
 
+    it("resolves references to proof and note blockquotes with numbers", () => {
+        render(
+            <Notie
+                markdown={`# Demo
+
+## First Section
+
+<blockquote class="proof" id="proof:main">
+Proof body.
+</blockquote>
+
+<blockquote class="note" id="note:main">
+Note body.
+</blockquote>
+
+See [proof](#bqref-proof:main) and [note](#bqref-note:main).
+`}
+            />,
+        );
+
+        const proofReference = screen
+            .getAllByRole("link")
+            .find((link) => link.getAttribute("href") === "#proof:main");
+        expect(proofReference).toHaveTextContent("Proof 1.1");
+
+        const noteReference = screen
+            .getAllByRole("link")
+            .find((link) => link.getAttribute("href") === "#note:main");
+        expect(noteReference).toHaveTextContent("Note 1.1");
+    });
+
+    it("sets dark blockquote CSS variables and themes preview cards in dark mode", async () => {
+        const { baseElement } = render(
+            <Notie
+                markdown={`# Demo
+
+## First Section
+
+<blockquote class="definition" id="def:dark">
+Dark definition.
+</blockquote>
+
+See [definition](#bqref-def:dark).
+`}
+                theme="default dark"
+            />,
+        );
+
+        // Dark appearance swaps the blockquote variables on the root element.
+        const rootStyle = document.documentElement.style;
+        expect(rootStyle.getPropertyValue("--blog-bq-definition-bg")).toBe(
+            "rgba(120, 220, 80, 0.14)",
+        );
+        expect(rootStyle.getPropertyValue("--blog-bq-definition-label")).toBe(
+            "#6ee76a",
+        );
+        expect(rootStyle.getPropertyValue("--blog-bq-shadow")).toContain(
+            "rgba(0, 0, 0, 0.5)",
+        );
+
+        // The preview card consumes the same variables and inherits the
+        // theme text color, so its content stays readable in dark mode.
+        const definitionReference = screen.getByRole("link", {
+            name: "Definition 1.1",
+        });
+        fireEvent.mouseEnter(definitionReference);
+
+        await waitFor(() => {
+            expect(
+                within(baseElement).getByText("Definition 1.1."),
+            ).toBeInTheDocument();
+        });
+
+        const card = within(baseElement)
+            .getByText("Definition 1.1.")
+            .closest("div") as HTMLElement;
+        expect(card.style.backgroundImage).toContain(
+            "var(--blog-bq-definition-bg",
+        );
+        expect(card.style.color).toBe("var(--blog-text-color)");
+        const cardLabel = within(baseElement).getByText("Definition 1.1.");
+        expect(cardLabel.style.color).toContain(
+            "var(--blog-bq-definition-label",
+        );
+    });
+
     it("renders large notes progressively while preserving TOC navigation", async () => {
         render(
             <Notie

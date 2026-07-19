@@ -19,32 +19,30 @@ interface BlockquoteStyle {
     labelColor: string;
 }
 
-const BLOCKQUOTE_STYLES: Record<string, BlockquoteStyle> = {
-    definition: {
-        background: "rgba(174, 247, 126, 0.2)",
-        labelColor: "#31dd2e",
-    },
-    proof: { background: "rgba(174, 247, 126, 0.2)", labelColor: "#31dd2e" },
-    theorem: { background: "rgba(126, 174, 247, 0.2)", labelColor: "#486bd5" },
-    lemma: { background: "rgba(126, 174, 247, 0.2)", labelColor: "#486bd5" },
-    algorithm: {
-        background: "rgba(126, 174, 247, 0.2)",
-        labelColor: "#486bd5",
-    },
-    problem: { background: "rgba(126, 174, 247, 0.2)", labelColor: "#486bd5" },
-    important: {
-        background: "rgba(247, 126, 126, 0.2)",
-        labelColor: "#dd2e2e",
-    },
-    note: {
-        background: "rgb(255 253 0 / 19%)",
-        labelColor: "lch(86 109.24 91.22)",
-    },
-};
+// The preview card shares the theme-aware CSS variables that style
+// blockquotes in notie-global.css (set per appearance in useNotieConfig).
+// Lemmas share the theorem colors, mirroring the blockquote CSS rules.
+const blockquoteStyleFor = (blockquoteType: string): BlockquoteStyle => {
+    const knownTypes = [
+        "definition",
+        "proof",
+        "equation",
+        "theorem",
+        "lemma",
+        "algorithm",
+        "problem",
+        "important",
+        "note",
+    ];
+    let variableType = knownTypes.includes(blockquoteType)
+        ? blockquoteType
+        : "theorem";
+    if (variableType === "lemma") variableType = "theorem";
 
-const DEFAULT_STYLE: BlockquoteStyle = {
-    background: "rgba(126, 174, 247, 0.2)",
-    labelColor: "#486bd5",
+    return {
+        background: `var(--blog-bq-${variableType}-bg, rgba(126, 174, 247, 0.2))`,
+        labelColor: `var(--blog-bq-${variableType}-label, #486bd5)`,
+    };
 };
 
 const BlockquoteReference = ({
@@ -112,7 +110,7 @@ const BlockquoteCard = ({
     equationMapping: EquationMapping;
     previewEquations?: boolean;
 }) => {
-    const style = BLOCKQUOTE_STYLES[blockquoteType] ?? DEFAULT_STYLE;
+    const style = blockquoteStyleFor(blockquoteType);
     const strippedContent = content.replace(/\\label\{[^}]*\}/g, "");
     const components = useMemo(
         () => ({
@@ -148,7 +146,13 @@ const BlockquoteCard = ({
     return (
         <div
             style={{
-                background: style.background,
+                // Layer the translucent type tint over the theme background
+                // so the card matches in-page blockquotes in both light and
+                // dark appearances (the tooltip surface color never shows
+                // through).
+                backgroundColor: "var(--blog-background-color)",
+                backgroundImage: `linear-gradient(${style.background}, ${style.background})`,
+                color: "var(--blog-text-color)",
                 borderRadius: "5px",
                 paddingLeft: "0.8rem",
                 paddingRight: "0.8rem",
