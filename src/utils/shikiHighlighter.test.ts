@@ -93,6 +93,22 @@ describe("highlightWithCache", () => {
         expect(codeToHtml).toHaveBeenCalledTimes(2);
     });
 
+    it("shares one cache entry across language aliases", async () => {
+        const first = await highlightWithCache(
+            "print('hi')",
+            "py",
+            "github-dark",
+        );
+        const second = await highlightWithCache(
+            "print('hi')",
+            "python",
+            "github-dark",
+        );
+
+        expect(first).toBe(second);
+        expect(codeToHtml).toHaveBeenCalledTimes(1);
+    });
+
     it("re-highlights when the code differs", async () => {
         await highlightWithCache("a", "python", "github-dark");
         await highlightWithCache("b", "python", "github-dark");
