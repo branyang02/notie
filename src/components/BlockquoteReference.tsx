@@ -62,7 +62,14 @@ const BlockquoteReference = ({
         extractBlockquoteInfo(href, blockquoteMapping);
 
     if (blockquoteContent === "error") {
-        return <span style={{ color: "red" }}>{blockquoteNumber}</span>;
+        return (
+            <span style={{ color: "red" }}>
+                {/* Screen-reader prefix so the error state is not conveyed
+                    by the red color alone. */}
+                <span className="sr-only">Unresolved reference: </span>
+                {blockquoteNumber}
+            </span>
+        );
     }
 
     const displayType =
@@ -85,12 +92,12 @@ const BlockquoteReference = ({
             appearance="card"
             statelessProps={{ maxWidth: "100%", paddingX: 8, paddingY: 8 }}
         >
-            <a href={`#${targetId}`}>
+            <a href={`#${targetId}`} aria-label={label}>
                 <span>{label}</span>
             </a>
         </Tooltip>
     ) : (
-        <a href={`#${targetId}`}>
+        <a href={`#${targetId}`} aria-label={label}>
             <span>{label}</span>
         </a>
     );

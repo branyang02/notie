@@ -39,6 +39,53 @@ describe("BlockquoteReference", () => {
         expect(container.querySelector("a")).toBeNull();
     });
 
+    it("exposes a text alternative on the error span so meaning is not color-only", () => {
+        vi.spyOn(console, "error").mockImplementation(() => {});
+
+        render(
+            <BlockquoteReference
+                href="#bqref-def:missing"
+                blockquoteMapping={blockquoteMapping}
+                equationMapping={equationMapping}
+            />,
+        );
+
+        const errorSpan = screen.getByText(
+            "Error: reference def:missing not labeled",
+        );
+        expect(errorSpan).toHaveTextContent(/unresolved reference/i);
+        expect(errorSpan.querySelector("span.sr-only")).not.toBeNull();
+    });
+
+    it("gives reference anchors an accessible name via getByRole", () => {
+        render(
+            <BlockquoteReference
+                href="#bqref-def:first"
+                blockquoteMapping={blockquoteMapping}
+                equationMapping={equationMapping}
+            />,
+        );
+
+        const link = screen.getByRole("link", { name: /definition 1\.1/i });
+        expect(link).toHaveAttribute("href", "#def:first");
+        expect(link).toHaveAttribute("aria-label", "Definition 1.1");
+    });
+
+    it("keeps the accessible name on the tooltip-wrapped anchor", () => {
+        render(
+            <BlockquoteReference
+                href="#bqref-def:first"
+                blockquoteMapping={blockquoteMapping}
+                equationMapping={equationMapping}
+                previewBlockquotes
+            />,
+        );
+
+        expect(
+            screen.getByRole("link", { name: /definition 1\.1/i }),
+        ).toHaveAttribute("href", "#def:first");
+    });
+
     it("renders a capitalized type label linking to the blockquote", () => {
         const { container } = render(
             <BlockquoteReference

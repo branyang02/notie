@@ -28,10 +28,15 @@ const EquationReference = ({
     if (equationString == "error") {
         return (
             <span className="mord" style={{ color: "red" }}>
+                {/* Screen-reader prefix so the error state is not conveyed
+                    by the red color alone. */}
+                <span className="sr-only">Unresolved reference: </span>
                 {parenthesesRemoved ? `(${equationNumber})` : equationNumber}
             </span>
         );
     }
+
+    const ariaLabel = `Equation ${equationNumber}`;
 
     return previewEquation ? (
         <Tooltip
@@ -41,7 +46,7 @@ const EquationReference = ({
                 maxWidth: "100%",
             }}
         >
-            <a href={`#eqn-${equationNumber}`}>
+            <a href={`#eqn-${equationNumber}`} aria-label={ariaLabel}>
                 <span className="mord">
                     {parenthesesRemoved
                         ? `(${equationNumber})`
@@ -50,7 +55,7 @@ const EquationReference = ({
             </a>
         </Tooltip>
     ) : (
-        <a href={`#eqn-${equationNumber}`}>
+        <a href={`#eqn-${equationNumber}`} aria-label={ariaLabel}>
             <span className="mord">
                 {parenthesesRemoved ? `(${equationNumber})` : equationNumber}
             </span>
