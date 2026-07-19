@@ -28,10 +28,12 @@ const CodeBlock = ({
     initialCode,
     language = "python",
     theme,
+    codeRunnerUrl,
 }: {
     initialCode: string;
     language?: string;
     theme: string;
+    codeRunnerUrl?: string;
 }) => {
     const runCodeRef = useRef<() => void>(() => {});
 
@@ -95,15 +97,38 @@ const CodeBlock = ({
     const [code, setCode] = useState(initialCode);
     const [image, setImage] = useState("");
     const editorRef = useRef<ReactCodeMirrorRef>(null);
+    const isMountedRef = useRef(true);
+    const abortControllerRef = useRef<AbortController | null>(null);
+    const isRunPendingRef = useRef(false);
+
+    useEffect(() => {
+        isMountedRef.current = true;
+        return () => {
+            isMountedRef.current = false;
+            abortControllerRef.current?.abort();
+            abortControllerRef.current = null;
+        };
+    }, []);
 
     const onChange = useCallback((value: string) => {
         setCode(value);
     }, []);
 
     const runCodeAsync = useCallback(async () => {
+        // Guard against overlapping runs (e.g. Mod-Enter while loading).
+        if (isRunPendingRef.current) return;
+        isRunPendingRef.current = true;
+
+        const abortController = new AbortController();
+        abortControllerRef.current = abortController;
+
         setIsLoading(true);
         try {
-            const data: RunCodeResponse = await runCode(code, language);
+            const data: RunCodeResponse = await runCode(code, language, {
+                baseUrl: codeRunnerUrl,
+                signal: abortController.signal,
+            });
+            if (!isMountedRef.current) return;
             setError(
                 data.output.toLowerCase().includes("error") ||
                     data.output.toLowerCase().includes("exception"),
@@ -111,13 +136,22 @@ const CodeBlock = ({
             setOutput(data.output);
             setImage(data.image);
         } catch (error) {
-            setOutput(`Execution failed: ${error}`);
+            if (!isMountedRef.current) return;
+            const message =
+                error instanceof Error ? error.message : String(error);
+            setOutput(`Execution failed: ${message}`);
             setError(true);
             setImage("");
         } finally {
-            setIsLoading(false);
+            isRunPendingRef.current = false;
+            if (abortControllerRef.current === abortController) {
+                abortControllerRef.current = null;
+            }
+            if (isMountedRef.current) {
+                setIsLoading(false);
+            }
         }
-    }, [code, language]);
+    }, [code, language, codeRunnerUrl]);
 
     useEffect(() => {
         runCodeRef.current = runCodeAsync;
