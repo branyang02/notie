@@ -84,6 +84,71 @@ See $\\eqref{eq:first}$ and [definition](#bqref-def:first).
         });
     });
 
+    it("maps proof, note, and important blockquotes with independent counters", () => {
+        const markdown = `# Title
+
+## Section One
+
+<blockquote class="proof" id="proof:first">
+Proof body.
+</blockquote>
+
+<blockquote class="note" id="note:first">
+Note body.
+</blockquote>
+
+<blockquote class="proof" id="proof:second">
+Second proof body.
+</blockquote>
+
+<blockquote class="important" id="imp:first">
+Important body.
+</blockquote>
+
+<blockquote class="theorem" id="thm:first">
+Theorem body.
+</blockquote>
+
+<blockquote class="lemma" id="lem:first">
+Lemma body.
+</blockquote>
+
+See [proof](#bqref-proof:first) and [note](#bqref-note:first).
+`;
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        // proof/note/important each keep their own counter...
+        expect(result.blockquoteMapping["proof:first"]).toEqual({
+            blockquoteNumber: "1.1",
+            blockquoteType: "proof",
+            blockquoteContent: "Proof body.",
+        });
+        expect(result.blockquoteMapping["proof:second"]).toEqual({
+            blockquoteNumber: "1.2",
+            blockquoteType: "proof",
+            blockquoteContent: "Second proof body.",
+        });
+        expect(result.blockquoteMapping["note:first"]).toEqual({
+            blockquoteNumber: "1.1",
+            blockquoteType: "note",
+            blockquoteContent: "Note body.",
+        });
+        expect(result.blockquoteMapping["imp:first"]).toEqual({
+            blockquoteNumber: "1.1",
+            blockquoteType: "important",
+            blockquoteContent: "Important body.",
+        });
+
+        // ...while theorem and lemma still share a counter.
+        expect(result.blockquoteMapping["thm:first"].blockquoteNumber).toBe(
+            "1.1",
+        );
+        expect(result.blockquoteMapping["lem:first"].blockquoteNumber).toBe(
+            "1.2",
+        );
+    });
+
     it("does not scan labels inside fenced code blocks", () => {
         const errorSpy = vi
             .spyOn(console, "error")
