@@ -2,11 +2,11 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown, { type ExtraProps } from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
-import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { katexOptions } from "../utils/katexOptions";
 import rehypeAccessibleKatexRefs from "../utils/rehypeAccessibleKatexRefs";
+import rehypeHeadingIds from "../utils/rehypeHeadingIds";
 import { sanitizeUrl } from "../utils/sanitizeUrl";
 import {
     BlockquoteMapping,
@@ -143,6 +143,14 @@ function scheduleNextSection(callback: () => void): () => void {
 const MarkdownRenderer: React.FC<{
     markdownContent: string;
     markdownSections?: string[];
+    /**
+     * Per-section precomputed heading ids (document-unique, from
+     * MarkdownProcessor). `sectionHeadingIds[i]` lists the ids for the
+     * headings of `markdownSections[i]` in order. When omitted, headings
+     * are slugged per section tree (legacy rehype-slug behavior), which can
+     * duplicate ids across sections.
+     */
+    sectionHeadingIds?: string[][];
     config: FullNotieConfig;
     equationMapping: EquationMapping;
     blockquoteMapping: BlockquoteMapping;
@@ -153,6 +161,7 @@ const MarkdownRenderer: React.FC<{
     ({
         markdownContent,
         markdownSections,
+        sectionHeadingIds,
         config,
         equationMapping,
         blockquoteMapping,
@@ -166,6 +175,15 @@ const MarkdownRenderer: React.FC<{
                     ? markdownSections
                     : [markdownContent],
             [markdownContent, markdownSections],
+        );
+        // All heading ids of the document, used by rehypeHeadingIds to keep
+        // fallback ids for headings invisible to the markdown scan (raw
+        // HTML headings) from colliding with any precomputed id. Memoized
+        // on the id lists so section trees are not re-created on unrelated
+        // re-renders.
+        const documentHeadingIds = useMemo(
+            () => (sectionHeadingIds ? sectionHeadingIds.flat() : undefined),
+            [sectionHeadingIds],
         );
         const [visibleSectionCount, setVisibleSectionCount] = useState(() =>
             getInitialSectionCount(sections.length),
@@ -411,6 +429,8 @@ const MarkdownRenderer: React.FC<{
                         <MarkdownSection
                             key={index}
                             markdownContent={section}
+                            headingIds={sectionHeadingIds?.[index]}
+                            documentHeadingIds={documentHeadingIds}
                             components={components}
                         />
                     ))}
@@ -422,25 +442,46 @@ const MarkdownRenderer: React.FC<{
 const MarkdownSection = React.memo(
     ({
         markdownContent,
+        headingIds,
+        documentHeadingIds,
         components,
     }: {
         markdownContent: string;
+        headingIds?: string[];
+        documentHeadingIds?: string[];
         components: React.ComponentProps<typeof ReactMarkdown>["components"];
-    }) => (
-        <ReactMarkdown
-            remarkPlugins={[remarkGfm, remarkMath]}
-            rehypePlugins={[
+    }) => {
+        // Each section renders as an independent ReactMarkdown tree, so a
+        // live per-tree slugger (rehype-slug) would restart duplicate
+        // suffixes at every section and produce duplicate DOM ids when
+        // headings repeat across sections. Instead, rehypeHeadingIds
+        // assigns the document-unique ids precomputed by the processor.
+        // The plugin reads no cross-render state, so re-rendering a
+        // section reassigns byte-identical ids.
+        const rehypePlugins = useMemo(
+            (): React.ComponentProps<typeof ReactMarkdown>["rehypePlugins"] => [
                 [rehypeKatex, katexOptions],
                 rehypeAccessibleKatexRefs,
                 rehypeRaw,
-                rehypeSlug,
-            ]}
-            components={components}
-            urlTransform={sanitizeUrl}
-        >
-            {markdownContent}
-        </ReactMarkdown>
-    ),
+                [
+                    rehypeHeadingIds,
+                    { ids: headingIds, documentIds: documentHeadingIds },
+                ],
+            ],
+            [headingIds, documentHeadingIds],
+        );
+
+        return (
+            <ReactMarkdown
+                remarkPlugins={[remarkGfm, remarkMath]}
+                rehypePlugins={rehypePlugins}
+                components={components}
+                urlTransform={sanitizeUrl}
+            >
+                {markdownContent}
+            </ReactMarkdown>
+        );
+    },
 );
 
 export default MarkdownRenderer;

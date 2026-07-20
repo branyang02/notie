@@ -1,6 +1,6 @@
 import { NotieConfig } from "../config/NotieConfig";
 import { maskProtectedRegions } from "./markdownMasking";
-import { extractTocEntriesFromMasked, TocEntry } from "./toc";
+import { extractTocFromMaskedSections, TocEntry } from "./toc";
 import { BlockquoteMapping, EquationMapping } from "./utils";
 
 export class MarkdownProcessor {
@@ -20,6 +20,7 @@ export class MarkdownProcessor {
         equationMapping: EquationMapping;
         blockquoteMapping: BlockquoteMapping;
         tocEntries: TocEntry[];
+        sectionHeadingIds: string[][];
     } {
         // Mask fenced/indented code blocks and HTML comments at the document
         // level so that section splitting, equation/blockquote scanning, and
@@ -46,14 +47,17 @@ export class MarkdownProcessor {
                 this.addHeadingNumbersToSections(processedSections);
         }
 
-        // Extract the table of contents from the still-masked text (after
-        // heading numbering, so numbered ids match what rehype-slug sees in
-        // the rendered output). Reusing this pass's mask avoids the second
-        // document-level maskProtectedRegions() call that
-        // extractTableOfContents() would perform on the final content.
-        const tocEntries = extractTocEntriesFromMasked(
-            processedSections.join(""),
-        );
+        // Extract the table of contents from the still-masked sections
+        // (after heading numbering, so numbered ids match the rendered
+        // output). A single document-scoped slugger runs across all
+        // sections, so repeated headings in different sections get unique
+        // ids; the per-section id lists are handed to the renderer, which
+        // assigns exactly these ids to the DOM (rehypeHeadingIds). Reusing
+        // this pass's mask avoids the second document-level
+        // maskProtectedRegions() call that extractTableOfContents() would
+        // perform on the final content.
+        const { entries: tocEntries, sectionHeadingIds } =
+            extractTocFromMaskedSections(processedSections);
 
         // Restore the original code/comment content before returning.
         const restoredSections = processedSections.map(unmask);
@@ -70,6 +74,7 @@ export class MarkdownProcessor {
             equationMapping: this.equationMapping,
             blockquoteMapping: this.blockquoteMapping,
             tocEntries,
+            sectionHeadingIds,
         };
     }
 

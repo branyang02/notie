@@ -125,6 +125,10 @@ const Notie: React.FC<NotieProps> = ({
         // Computed by the processor from its own masked pass over the
         // document, so the whole text is masked exactly once per process().
         tocEntries,
+        // Document-unique heading ids per section: the renderer assigns
+        // exactly these ids to the DOM, so TOC hrefs always match and
+        // repeated headings across sections never collide.
+        sectionHeadingIds,
     } = useMemo(() => {
         const processor = new MarkdownProcessor(markdown, config);
         return processor.process();
@@ -348,6 +352,7 @@ const Notie: React.FC<NotieProps> = ({
                         <MarkdownRenderer
                             markdownContent={markdownContent}
                             markdownSections={markdownSections}
+                            sectionHeadingIds={sectionHeadingIds}
                             config={config}
                             equationMapping={equationMapping}
                             blockquoteMapping={blockquoteMapping}

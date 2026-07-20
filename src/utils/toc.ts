@@ -10,8 +10,8 @@ export interface TocEntry {
 /**
  * Decode the small set of HTML character references that can realistically
  * appear in heading source (notably the `&nbsp;` runs inserted by numbered
- * headings). remark decodes these before rehype-slug sees the heading text,
- * so the TOC must decode them too (`&nbsp;` becomes U+00A0, which
+ * headings). remark decodes these before the rendered heading text is
+ * slugged, so the TOC must decode them too (`&nbsp;` becomes U+00A0, which
  * github-slugger strips rather than turning into a dash).
  */
 function decodeEntities(text: string): string {
@@ -31,7 +31,7 @@ function decodeEntities(text: string): string {
 
 /**
  * Approximate the rendered text content of a heading from its raw markdown
- * source. rehype-slug slugs the *rendered* heading text (after markdown and
+ * source. The renderer slugs the *rendered* heading text (after markdown and
  * inline HTML processing), while the TOC scans raw markdown, so markdown
  * syntax that disappears from the rendered output must be stripped here:
  * links/images (keep the text), inline HTML tags, code-span backticks,
@@ -69,47 +69,75 @@ function headingRenderedText(rawTitle: string): string {
     ).trim();
 }
 
+export interface TocExtractionResult {
+    /** TOC entries (level >= 2) in document order. */
+    entries: TocEntry[];
+    /**
+     * For every input section, the ids of ALL its markdown headings
+     * (including the level-1 title, which is never listed in the TOC but
+     * still occupies an id) in document order. These feed the
+     * rehypeHeadingIds plugin so the ids rendered into the DOM are exactly
+     * the document-unique ids computed here.
+     */
+    sectionHeadingIds: string[][];
+}
+
 /**
- * Core TOC extraction over text whose protected regions (code blocks and
- * HTML comments) have ALREADY been masked, so `#` lines inside them are
+ * Core TOC extraction over sections whose protected regions (code blocks
+ * and HTML comments) have ALREADY been masked, so `#` lines inside them are
  * never mistaken for headings.
+ *
+ * A single document-scoped slugger runs across ALL sections, so headings
+ * repeated in different `##` sections get unique `-1`, `-2`, ... suffixes
+ * document-wide. The renderer assigns these same precomputed ids to the DOM
+ * (via rehypeHeadingIds), so TOC hrefs and heading ids always agree.
  *
  * This is the single shared implementation behind both
  * `extractTableOfContents` (which masks the raw document itself) and
  * `MarkdownProcessor.process()` (which reuses its own document-level mask
  * pass instead of masking a second time).
  */
-export function extractTocEntriesFromMasked(maskedText: string): TocEntry[] {
+export function extractTocFromMaskedSections(
+    maskedSections: readonly string[],
+): TocExtractionResult {
     const entries: TocEntry[] = [];
-    const pattern = /^(#+) (.*)$/gm;
-    let match;
+    const sectionHeadingIds: string[][] = [];
 
-    // Use the same slugger as rehype-slug so TOC ids match the ids that end
-    // up in the DOM, including `-1`, `-2`, ... suffixes for duplicates.
-    let slugger = new GithubSlugger();
+    // Document-scoped slugger shared across every section: duplicate
+    // headings get unique suffixes no matter which section they are in.
+    const slugger = new GithubSlugger();
 
-    while ((match = pattern.exec(maskedText)) !== null) {
-        const level = match[1].length;
-        const title = headingRenderedText(match[2]);
+    for (const section of maskedSections) {
+        const headingIds: string[] = [];
+        const pattern = /^(#+) (.*)$/gm;
+        let match;
 
-        // Every `##` heading starts a new markdown section, and each section
-        // is rendered as its own tree; rehype-slug resets its slugger at the
-        // start of every tree, so duplicate suffixes restart at each section
-        // boundary. Mirror that by resetting at every level-2 heading.
-        if (level === 2) {
-            slugger = new GithubSlugger();
+        while ((match = pattern.exec(section)) !== null) {
+            const level = match[1].length;
+            const title = headingRenderedText(match[2]);
+            const id = slugger.slug(title);
+
+            headingIds.push(id);
+
+            // The level-1 title is not listed in the TOC, but it still
+            // consumes a slug and occupies an id in the DOM.
+            if (level === 1) continue;
+
+            entries.push({ id, level, title });
         }
 
-        const id = slugger.slug(title);
-
-        // The level-1 title is not listed in the TOC, but it still consumes
-        // a slug in its section's tree.
-        if (level === 1) continue;
-
-        entries.push({ id, level, title });
+        sectionHeadingIds.push(headingIds);
     }
 
-    return entries;
+    return { entries, sectionHeadingIds };
+}
+
+/**
+ * TOC entries for already-masked text. Slugging is document-scoped: see
+ * `extractTocFromMaskedSections`.
+ */
+export function extractTocEntriesFromMasked(maskedText: string): TocEntry[] {
+    return extractTocFromMaskedSections([maskedText]).entries;
 }
 
 export function extractTableOfContents(markdownContent: string): TocEntry[] {
