@@ -1,0 +1,50 @@
+[
+  {
+    "tag": "A",
+    "href": "/examples/algo",
+    "ariaLabel": "Example: Algorithms",
+    "headingText": "Example: Algorithms"
+  },
+  {
+    "tag": "A",
+    "href": "/examples/auto-label",
+    "ariaLabel": "Example: Automatic Equation Numbering",
+    "headingText": "Example: Automatic Equation Numbering"
+  },
+  {
+    "tag": "A",
+    "href": "/examples/blockquote-reference",
+    "ariaLabel": "Example: Blockquote References",
+    "headingText": "Example: Blockquote References"
+  },
+  {
+    "tag": "A",
+    "href": "/examples/orgo",
+    "ariaLabel": "Example: Organic Chemistry 2",
+    "headingText": "Example: Organic Chemistry 2"
+  },
+  {
+    "tag": "A",
+    "href": "/examples/programming",
+    "ariaLabel": "Example: Running Code Snippets",
+    "headingText": "Example: Running Code Snippets"
+  },
+  {
+    "tag": "A",
+    "href": "/examples/statml",
+    "ariaLabel": "Example: Statistical Machine Learning",
+    "headingText": "Example: Statistical Machine Learning"
+  },
+  {
+    "tag": "A",
+    "href": "/examples/cso2",
+    "ariaLabel": "Computer Systems and Organization: Part 2",
+    "headingText": "Computer Systems and Organization: Part 2"
+  },
+  {
+    "tag": "A",
+    "href": "/examples/transformer",
+    "ariaLabel": "Transformers: A Mathematical Explanation and Implementation in PyTorch",
+    "headingText": "Transformers: A Mathematical Explanation and Implementation in PyTorch"
+  }
+]

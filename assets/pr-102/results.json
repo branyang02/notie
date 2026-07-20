@@ -1,0 +1,65 @@
+{
+  "checks": [
+    {
+      "name": "card count is 8",
+      "pass": true,
+      "detail": "count=8"
+    },
+    {
+      "name": "all cards are <a>",
+      "pass": true,
+      "detail": "A,A,A,A,A,A,A,A"
+    },
+    {
+      "name": "all hrefs match /examples/<file>",
+      "pass": true,
+      "detail": "/examples/algo /examples/auto-label /examples/blockquote-reference /examples/orgo /examples/programming /examples/statml /examples/cso2 /examples/transformer"
+    },
+    {
+      "name": "accessible name (aria-label) equals visible title",
+      "pass": true,
+      "detail": "Example: Algorithms==Example: Algorithms | Example: Automatic Equation Numbering==Example: Automatic Equation Numbering | Example: Blockquote References==Example: Blockquote References | Example: Organic Chemistry 2==Example: Organic Chemistry 2 | Example: Running Code Snippets==Example: Running Code Snippets | Example: Statistical Machine Learning==Example: Statistical Machine Learning | Computer Systems and Organization: Part 2==Computer Systems and Organization: Part 2 | Transformers: A Mathematical Explanation and Implementation in PyTorch==Transformers: A Mathematical Explanation and Implementation in PyTorch"
+    },
+    {
+      "name": "ariaSnapshot shows role link with title",
+      "pass": true,
+      "detail": "- 'link \"Example: Algorithms\"':"
+    },
+    {
+      "name": "card reachable via Tab",
+      "pass": true,
+      "detail": "tabs=8"
+    },
+    {
+      "name": "visible focus outline (2px solid #3366ff)",
+      "pass": true,
+      "detail": "outline=rgb(51, 102, 255) solid 2px offset=2px"
+    },
+    {
+      "name": "Enter navigates to focused card href",
+      "pass": true,
+      "detail": "url=/examples/algo expected=/examples/algo"
+    },
+    {
+      "name": "note page rendered content",
+      "pass": true,
+      "detail": "bodyTextLen=2902"
+    },
+    {
+      "name": "mouse click navigates",
+      "pass": true,
+      "detail": "url=http://localhost:5596/examples/auto-label"
+    },
+    {
+      "name": "no console errors on /examples",
+      "pass": true,
+      "detail": "none"
+    },
+    {
+      "name": "dark theme: title white, no underline, pointer cursor",
+      "pass": true,
+      "detail": "{\"titleColor\":\"rgb(255, 255, 255)\",\"textDecoration\":\"none\",\"cursor\":\"pointer\"}"
+    }
+  ],
+  "consoleErrors": []
+}
