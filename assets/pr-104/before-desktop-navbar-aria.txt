@@ -1,0 +1,14 @@
+- heading "notie v1.4.2" [level=2]
+- combobox:
+  - group:
+    - textbox: default
+    - button "open menu":
+      - img
+- button "Home"
+- button "Examples"
+- button "Tutorial"
+- button "Contribute"
+- button:
+  - img
+- navigation "Contents":
+  - heading "Contents" [level=2]
