@@ -6,6 +6,7 @@ import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { katexOptions } from "../utils/katexOptions";
+import rehypeAccessibleKatexRefs from "../utils/rehypeAccessibleKatexRefs";
 import { sanitizeUrl } from "../utils/sanitizeUrl";
 import {
     BlockquoteMapping,
@@ -241,6 +242,10 @@ const MarkdownRenderer: React.FC<{
                                 textContent={textFromReactNode(children)}
                                 equationMapping={equationMapping}
                                 previewEquation={config.previewEquations}
+                                inert={
+                                    "data-notie-inert-ref" in
+                                    (props as Record<string, unknown>)
+                                }
                             />
                         );
                     }
@@ -424,7 +429,12 @@ const MarkdownSection = React.memo(
     }) => (
         <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkMath]}
-            rehypePlugins={[[rehypeKatex, katexOptions], rehypeRaw, rehypeSlug]}
+            rehypePlugins={[
+                [rehypeKatex, katexOptions],
+                rehypeAccessibleKatexRefs,
+                rehypeRaw,
+                rehypeSlug,
+            ]}
             components={components}
             urlTransform={sanitizeUrl}
         >

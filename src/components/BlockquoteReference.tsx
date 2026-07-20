@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 
 import { katexOptions } from "../utils/katexOptions";
+import rehypeAccessibleKatexRefs from "../utils/rehypeAccessibleKatexRefs";
 import { sanitizeUrl } from "../utils/sanitizeUrl";
 import {
     BlockquoteMapping,
@@ -139,6 +140,10 @@ const BlockquoteCard = ({
                             textContent={textFromReactNode(children)}
                             equationMapping={equationMapping}
                             previewEquation={previewEquations}
+                            inert={
+                                "data-notie-inert-ref" in
+                                (props as Record<string, unknown>)
+                            }
                         />
                     );
                 }
@@ -201,7 +206,10 @@ const BlockquoteCard = ({
             </span>
             <ReactMarkdown
                 remarkPlugins={[remarkGfm, remarkMath]}
-                rehypePlugins={[[rehypeKatex, katexOptions]]}
+                rehypePlugins={[
+                    [rehypeKatex, katexOptions],
+                    rehypeAccessibleKatexRefs,
+                ]}
                 components={components}
                 urlTransform={sanitizeUrl}
             >

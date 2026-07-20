@@ -154,6 +154,88 @@ See $\\eqref{eq:x}$.
         );
     });
 
+    it("leaves no focusable elements inside aria-hidden subtrees for equation references", () => {
+        const { container } = render(
+            <Notie
+                markdown={`# Demo
+
+## First Section
+
+$$
+\\begin{equation} \\label{eq:first}
+x = 1
+\\end{equation}
+$$
+
+See $\\eqref{eq:first}$ and $\\ref{eq:first}$.
+`}
+            />,
+        );
+
+        // No focusable descendant may live inside any aria-hidden subtree
+        // (axe rule aria-hidden-focus). Anything matching a focusable
+        // selector must be explicitly removed from the tab order.
+        const focusableSelector =
+            'a[href], button, input, select, textarea, [tabindex], [contenteditable="true"]';
+        const hiddenFocusable = Array.from(
+            container.querySelectorAll('[aria-hidden="true"]'),
+        ).flatMap((hidden) =>
+            Array.from(hidden.querySelectorAll(focusableSelector)).filter(
+                (el) => el.getAttribute("tabindex") !== "-1",
+            ),
+        );
+        expect(hiddenFocusable).toEqual([]);
+
+        // The references stay in the accessibility tree with useful names
+        // and remain keyboard-focusable outside any hidden subtree.
+        const links = screen.getAllByRole("link", { name: /equation 1\.1/i });
+        expect(links).toHaveLength(2);
+        for (const link of links) {
+            expect(link.closest('[aria-hidden="true"]')).toBeNull();
+            expect(link).toHaveAttribute("href", "#eqn-1.1");
+        }
+    });
+
+    it("removes references embedded in visible math from the tab order", () => {
+        const { container } = render(
+            <Notie
+                markdown={`# Demo
+
+## First Section
+
+$$
+\\begin{equation} \\label{eq:first}
+x = 1
+\\end{equation}
+$$
+
+Embedded: $y = 2 \\quad \\eqref{eq:first}$.
+`}
+            />,
+        );
+
+        // A reference inside a larger formula stays in the aria-hidden
+        // layout half (the MathML alternative must keep announcing the
+        // math exactly once), so the anchor must not be keyboard-focusable.
+        const embedded = Array.from(
+            container.querySelectorAll(
+                '[aria-hidden="true"] a[href="#eqn-1.1"]',
+            ),
+        );
+        expect(embedded.length).toBeGreaterThan(0);
+        for (const anchor of embedded) {
+            expect(anchor).toHaveAttribute("tabindex", "-1");
+        }
+
+        // And the math itself still has its MathML accessible alternative.
+        expect(
+            container.querySelector(".katex-html[aria-hidden] .mord"),
+        ).not.toBeNull();
+        expect(
+            container.querySelectorAll(".katex-mathml").length,
+        ).toBeGreaterThan(0);
+    });
+
     it("renders equation references whose labels contain underscores", () => {
         const { container } = render(
             <Notie
