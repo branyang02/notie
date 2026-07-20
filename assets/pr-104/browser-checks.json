@@ -1,0 +1,80 @@
+[
+  {
+    "name": "desktop: GitHub button named",
+    "pass": true
+  },
+  {
+    "name": "desktop: theme input named 'Select theme'",
+    "pass": true
+  },
+  {
+    "name": "desktop: combobox toggle named 'Show theme options'",
+    "pass": true
+  },
+  {
+    "name": "desktop: no stray 'open menu' label",
+    "pass": true
+  },
+  {
+    "name": "desktop: theme switch via combobox still works",
+    "pass": true,
+    "detail": "selected 'default dark', body bg=rgb(255, 255, 255)"
+  },
+  {
+    "name": "desktop: no unnamed visible buttons in viewport",
+    "pass": true,
+    "detail": "[]"
+  },
+  {
+    "name": "mobile: hamburger named 'Open navigation menu'",
+    "pass": true
+  },
+  {
+    "name": "mobile: hamburger aria-expanded=false when closed",
+    "pass": true
+  },
+  {
+    "name": "mobile: hamburger aria-haspopup=menu",
+    "pass": true
+  },
+  {
+    "name": "mobile: GitHub button named",
+    "pass": true
+  },
+  {
+    "name": "mobile: theme input named",
+    "pass": true
+  },
+  {
+    "name": "mobile: open label flips to 'Close navigation menu'",
+    "pass": true
+  },
+  {
+    "name": "mobile: aria-expanded=true when open",
+    "pass": true
+  },
+  {
+    "name": "mobile: menu opens with expected items",
+    "pass": true,
+    "detail": "[\"Home\",\"Examples\",\"Tutorial\",\"Contribute\"]"
+  },
+  {
+    "name": "mobile: menu item navigates",
+    "pass": true,
+    "detail": "http://localhost:5597/tutorial"
+  },
+  {
+    "name": "mobile: Escape resets to 'Open navigation menu'",
+    "pass": true
+  },
+  {
+    "name": "mobile: no unnamed visible buttons in viewport",
+    "pass": true,
+    "detail": "[]"
+  },
+  {
+    "name": "mobile: GitHub button opens repo in new tab",
+    "pass": true,
+    "detail": "https://github.com/branyang02/notie"
+  }
+]

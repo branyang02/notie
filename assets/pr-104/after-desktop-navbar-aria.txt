@@ -1,0 +1,14 @@
+- heading "notie v1.4.2" [level=2]
+- combobox:
+  - group:
+    - textbox "Select theme": default
+    - button "Show theme options":
+      - img
+- button "Home"
+- button "Examples"
+- button "Tutorial"
+- button "Contribute"
+- button "GitHub repository":
+  - img
+- navigation "Contents":
+  - heading "Contents" [level=2]
