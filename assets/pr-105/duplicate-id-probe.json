@@ -1,0 +1,122 @@
+{
+  "headSha": "3dfe018",
+  "date": "2026-07-20T00:28:14.865Z",
+  "pages": {
+    "programming": {
+      "url": "/examples/programming",
+      "totalIdElements": 43,
+      "uniqueIds": 43,
+      "duplicates": [],
+      "tocLinkCount": 13,
+      "unresolvedTocHrefs": [],
+      "cIds": [
+        {
+          "id": "c",
+          "text": "C"
+        },
+        {
+          "id": "c-1",
+          "text": "C++"
+        },
+        {
+          "id": "c-2",
+          "text": "C#"
+        }
+      ],
+      "tocClickC2": {
+        "hash": "#c-2",
+        "headingText": "C#",
+        "topOffset": 0,
+        "section": "section-5"
+      }
+    },
+    "cso2": {
+      "url": "/examples/cso2",
+      "totalIdElements": 220,
+      "uniqueIds": 220,
+      "duplicates": [],
+      "tocLinkCount": 100,
+      "unresolvedTocHrefs": [],
+      "processesIds": [
+        {
+          "tag": "H3",
+          "id": "processes",
+          "section": "section-5"
+        },
+        {
+          "tag": "H2",
+          "id": "processes-1",
+          "section": "section-7"
+        }
+      ],
+      "tocClickProcesses1": {
+        "hash": "#processes-1",
+        "headingText": "Processes",
+        "topOffset": 193,
+        "section": "section-7"
+      }
+    },
+    "playgroundFixture": {
+      "url": "/",
+      "totalIdElements": 23,
+      "uniqueIds": 23,
+      "duplicates": [],
+      "tocLinkCount": 8,
+      "unresolvedTocHrefs": [],
+      "headingIds": [
+        {
+          "tag": "H1",
+          "id": "duplicate-heading-fixture",
+          "text": "Duplicate Heading Fixture"
+        },
+        {
+          "tag": "H2",
+          "id": "c",
+          "text": "C"
+        },
+        {
+          "tag": "H3",
+          "id": "setup",
+          "text": "Setup"
+        },
+        {
+          "tag": "H2",
+          "id": "c-1",
+          "text": "C++"
+        },
+        {
+          "tag": "H3",
+          "id": "setup-1",
+          "text": "Setup"
+        },
+        {
+          "tag": "H2",
+          "id": "c-2",
+          "text": "C#"
+        },
+        {
+          "tag": "H2",
+          "id": "multitasking",
+          "text": "Multitasking"
+        },
+        {
+          "tag": "H3",
+          "id": "processes",
+          "text": "Processes"
+        },
+        {
+          "tag": "H2",
+          "id": "processes-1",
+          "text": "Processes"
+        }
+      ]
+    }
+  },
+  "deepLinkC1": {
+    "hash": "#c-1",
+    "headingText": "C++",
+    "topOffset": -60,
+    "inView": true
+  },
+  "consoleErrors": []
+}

@@ -428,6 +428,130 @@ Third section.
         });
     });
 
+    it("gives repeated headings across sections unique DOM ids matching TOC hrefs (issue #94)", async () => {
+        const { container } = render(
+            <Notie
+                markdown={`# Demo
+
+## C
+
+C section.
+
+## C++
+
+C++ section.
+
+## C#
+
+C# section.
+
+## Multitasking
+
+### Processes
+
+Nested processes.
+
+## Processes
+
+Top-level processes.
+`}
+            />,
+        );
+
+        // Wait for every section to be progressively revealed.
+        await waitFor(() => {
+            expect(
+                screen.getByText("Top-level processes."),
+            ).toBeInTheDocument();
+        });
+
+        const toc = screen.getByRole("navigation", { name: /contents/i });
+        const hrefs = Array.from(toc.querySelectorAll("a[href^='#']")).map(
+            (link) => link.getAttribute("href")!.slice(1),
+        );
+
+        // Document-scoped slugging: "C", "C++", and "C#" all slug to "c"
+        // and must be disambiguated, as must the repeated "Processes".
+        expect(hrefs).toEqual([
+            "c",
+            "c-1",
+            "c-2",
+            "multitasking",
+            "processes",
+            "processes-1",
+        ]);
+
+        // Every TOC href resolves to exactly one rendered heading, and the
+        // heading is the right occurrence.
+        const content = container.querySelector(
+            "[class*='blog-content']",
+        ) as HTMLElement;
+        for (const id of hrefs) {
+            expect(
+                content.querySelectorAll(`[id="${CSS.escape(id)}"]`),
+                `expected exactly one element with id "${id}"`,
+            ).toHaveLength(1);
+        }
+        expect(content.querySelector("#c-1")).toHaveTextContent("C++");
+        expect(content.querySelector("#c-2")).toHaveTextContent("C#");
+        expect(content.querySelector("#processes")).toHaveTextContent(
+            "Processes",
+        );
+        expect(
+            content.querySelector("#processes-1")?.closest(".sections")?.id,
+        ).toBe("section-5");
+
+        // No duplicate ids anywhere in the document, including the TOC's
+        // own toc- prefixed anchor ids.
+        const allIds = Array.from(container.querySelectorAll("[id]")).map(
+            (el) => el.id,
+        );
+        expect(new Set(allIds).size).toBe(allIds.length);
+    });
+
+    it("scrolls to the second occurrence of a duplicate heading targeted by the URL hash", async () => {
+        // The duplicate-suffixed id lives in a late, not-yet-revealed
+        // section; the pending-scroll retry must find it after reveal.
+        window.history.replaceState(null, "", "/#setup-1");
+        const scrollSpy = vi.spyOn(HTMLElement.prototype, "scrollIntoView");
+
+        render(
+            <Notie
+                markdown={`# Demo
+
+## Setup
+
+First setup.
+
+## Middle
+
+Middle section.
+
+## Another
+
+Another section.
+
+## Setup
+
+Second setup.
+`}
+            />,
+        );
+
+        await waitFor(
+            () => {
+                expect(scrollSpy).toHaveBeenCalled();
+            },
+            { timeout: 3000 },
+        );
+
+        const scrolledElement = scrollSpy.mock
+            .contexts[0] as unknown as HTMLElement;
+        expect(scrolledElement.id).toBe("setup-1");
+        expect(scrolledElement).toHaveTextContent("Setup");
+        expect(window.location.hash).toBe("#setup-1");
+    });
+
     it("gives every TOC entry an id that exists in the rendered DOM (tricky headings)", () => {
         const { container } = render(
             <Notie

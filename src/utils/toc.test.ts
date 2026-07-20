@@ -90,10 +90,11 @@ describe("extractTableOfContents", () => {
         ]);
     });
 
-    it("restarts duplicate suffixes at section boundaries (per-tree rehype-slug reset)", () => {
-        // Each `##` heading starts a new markdown section rendered as its
-        // own tree, and rehype-slug resets its slugger per tree, so
-        // duplicate `##` headings all get the unsuffixed slug in the DOM.
+    it("keeps duplicate suffixes unique across section boundaries (document-scoped slugger)", () => {
+        // Sections render as independent trees, but heading ids are
+        // precomputed here with ONE document-scoped slugger and assigned
+        // to the DOM as-is (rehypeHeadingIds), so repeated headings in
+        // different `##` sections still get unique ids document-wide.
         const markdown = `# Title
 
 ## Setup
@@ -110,9 +111,43 @@ describe("extractTableOfContents", () => {
         expect(entries.map((entry) => entry.id)).toEqual([
             "setup",
             "details",
-            "setup",
-            "details",
+            "setup-1",
+            "details-1",
         ]);
+    });
+
+    it("gives repeated subsection headings in different sections unique ids (issue #94)", () => {
+        // /examples/programming has "## C", "## C++", and "## C#", which
+        // all slug to "c"; /examples/cso2 repeats "## Processes". Both
+        // must produce unique ids document-wide.
+        const markdown = `# Title
+
+## C
+
+## C++
+
+## C#
+
+## Multitasking
+
+### Processes
+
+## Processes
+`;
+
+        const entries = extractTableOfContents(markdown);
+
+        expect(entries.map((entry) => entry.id)).toEqual([
+            "c",
+            "c-1",
+            "c-2",
+            "multitasking",
+            "processes",
+            "processes-1",
+        ]);
+
+        const ids = entries.map((entry) => entry.id);
+        expect(new Set(ids).size).toBe(ids.length);
     });
 
     it("slugs special characters exactly like github-slugger", () => {
