@@ -24,6 +24,90 @@ const isBlank = (line: string): boolean => line.trim() === "";
 const isIndentedCodeLine = (line: string): boolean =>
     /^(?: {4}|\t)/.test(line) && !isBlank(line);
 
+const indentationColumns = (line: string): number => {
+    let columns = 0;
+    for (const char of line) {
+        if (char === " ") {
+            columns++;
+            continue;
+        }
+        if (char === "\t") {
+            columns += 4;
+            continue;
+        }
+        break;
+    }
+    return columns;
+};
+
+const prefixColumns = (text: string): number => {
+    let columns = 0;
+    for (const char of text) {
+        columns += char === "\t" ? 4 : 1;
+    }
+    return columns;
+};
+
+const listMarkerMatch = (
+    line: string,
+): { markerIndent: number; contentIndent: number } | null => {
+    const match = line.match(/^([ \t]*)(?:[-+*]|\d+[.)])([ \t]+)/);
+    if (!match) return null;
+    return {
+        markerIndent: indentationColumns(match[1]),
+        contentIndent: prefixColumns(match[0]),
+    };
+};
+
+const listContinuationContext = (
+    lines: string[],
+    index: number,
+): { contentIndent: number } | null => {
+    const currentIndent = indentationColumns(lines[index]);
+
+    const findLazyContinuationMarker = (
+        startIndex: number,
+    ): { contentIndent: number } | null => {
+        for (let i = startIndex; i >= 0; i--) {
+            const line = lines[i];
+            if (isBlank(line)) return null;
+
+            const marker = listMarkerMatch(line);
+            if (marker && marker.markerIndent < currentIndent) {
+                return { contentIndent: marker.contentIndent };
+            }
+        }
+
+        return null;
+    };
+
+    for (let i = index - 1; i >= 0; i--) {
+        const line = lines[i];
+        if (isBlank(line)) continue;
+
+        const marker = listMarkerMatch(line);
+        if (marker && marker.markerIndent < currentIndent) {
+            return { contentIndent: marker.contentIndent };
+        }
+
+        if (indentationColumns(line) < currentIndent) {
+            return findLazyContinuationMarker(i - 1);
+        }
+    }
+
+    return null;
+};
+
+const isIndentedCodeBlockStart = (lines: string[], index: number): boolean => {
+    const line = lines[index];
+    if (!isIndentedCodeLine(line)) return false;
+
+    const listContext = listContinuationContext(lines, index);
+    if (!listContext) return true;
+
+    return indentationColumns(line) >= listContext.contentIndent + 4;
+};
+
 export function maskProtectedRegions(text: string): MaskResult {
     // Grow the token base until it cannot collide with document content.
     let base = "NOTIEMASK";
@@ -81,11 +165,11 @@ export function maskProtectedRegions(text: string): MaskResult {
         // (or at the start of the document). Interior blank lines are part
         // of the block only when followed by another indented line.
         const prevBlank = out.length === 0 || isBlank(out[out.length - 1]);
-        if (isIndentedCodeLine(line) && prevBlank) {
+        if (isIndentedCodeBlockStart(lines, i) && prevBlank) {
             const block: string[] = [line];
             i++;
             while (i < lines.length) {
-                if (isIndentedCodeLine(lines[i])) {
+                if (isIndentedCodeBlockStart(lines, i)) {
                     block.push(lines[i]);
                     i++;
                     continue;
@@ -95,7 +179,10 @@ export function maskProtectedRegions(text: string): MaskResult {
                     while (j < lines.length && isBlank(lines[j])) {
                         j++;
                     }
-                    if (j < lines.length && isIndentedCodeLine(lines[j])) {
+                    if (
+                        j < lines.length &&
+                        isIndentedCodeBlockStart(lines, j)
+                    ) {
                         while (i < j) {
                             block.push(lines[i]);
                             i++;
