@@ -23,5 +23,8 @@
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true
     },
-    "include": ["src"]
+    "include": ["src"],
+    // Test files run under the root vitest project, which provides the
+    // vitest globals; keep them out of the demo build.
+    "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"]
 }

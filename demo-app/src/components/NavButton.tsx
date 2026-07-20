@@ -40,7 +40,27 @@ const NavMobileMenu = ({ tabs }: { tabs: string[] }) => {
                 </Menu>
             }
         >
-            <IconButton icon={MenuIcon} marginRight={16} />
+            {({ getRef, isShown, toggle }) => (
+                <IconButton
+                    // evergreen types getRef as taking a RefObject, but at
+                    // runtime it receives the DOM node like a callback ref.
+                    ref={
+                        getRef as unknown as (
+                            instance: HTMLButtonElement | null,
+                        ) => void
+                    }
+                    icon={MenuIcon}
+                    marginRight={16}
+                    aria-label={
+                        isShown
+                            ? "Close navigation menu"
+                            : "Open navigation menu"
+                    }
+                    aria-expanded={Boolean(isShown)}
+                    aria-haspopup="menu"
+                    onClick={toggle}
+                />
+            )}
         </Popover>
     );
 };
@@ -109,6 +129,7 @@ const GitHubButton = ({ darkMode }: { darkMode: boolean }) => {
     return (
         <IconButton
             appearance="minimal"
+            aria-label="GitHub repository"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             onClick={handleClick}
