@@ -2,7 +2,7 @@
 
 <div class="subtitle">
 
-Updated for [v1.3](https://github.com/branyang02/notie/tree/a89c10cb3ad6201971f7e89fa24b58c3b6f96633).
+Updated for [v1.4](https://github.com/branyang02/notie).
 
 </div>
 
@@ -21,40 +21,66 @@ Then, import the `Notie` component in your React application:
 ```tsx
 import { Notie } from "notie-markdown";
 
-const Example = () => (
-  <Notie markdown="# Hello World\nThis is a Markdown content." />
-);
+const markdown = `# Hello World
+
+This is a Markdown content.`;
+
+const Example = () => <Notie markdown={markdown} />;
 ```
 
 The `Notie` component has the following props:
 
-| Prop               | Type                                              | Description                                                                                                |
-| ------------------ | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `markdown`         | `string`                                          | The Markdown content to be rendered.                                                                       |
-| `config`           | `NotieConfig` (optional)                          | Configuration options for Notie, including table of contents settings, font size, and theme customization. |
-| `theme`            | `NotieThemes` (optional)                          | Predefined theme option. Can be `default`, `default dark`, `Starlit Eclipse`, or `Starlit Eclipse Light`.  |
-| `customComponents` | `{ [key: string]: () => JSX.Element }` (optional) | Custom React components to be used for rendering specific elements in the markdown.                        |
+| Prop               | Type                          | Description                                                                                                |
+| ------------------ | ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `markdown`         | `string`                      | The Markdown content to be rendered.                                                                       |
+| `config`           | `NotieConfig` (optional)      | Configuration options for Notie, including table of contents settings, font size, and theme customization. |
+| `theme`            | `NotieThemes` (optional)      | Predefined theme option. Can be `default`, `default dark`, `Starlit Eclipse`, or `Starlit Eclipse Light`.  |
+| `customComponents` | `CustomComponents` (optional) | Custom React components to be used for rendering specific elements in the markdown.                        |
 
 Additionally, you can import the following types and interfaces from the `notie-markdown` package:
 
 ```tsx
-import { Notie, NotieConfig, NotieThemes, Theme } from "notie-markdown";
+import { Notie, sanitizeUrl, extractTableOfContents } from "notie-markdown";
+import type {
+  NotieProps,
+  NotieConfig,
+  NotieThemes,
+  Theme,
+  TocEntry,
+  CustomComponents,
+  CustomComponentProps,
+  FullNotieConfig,
+  FullTheme,
+} from "notie-markdown";
 ```
+
+- `sanitizeUrl` is the URL transform **notie** uses with react-markdown to block dangerous URL schemes (e.g. `javascript:`), exported for reuse.
+- `extractTableOfContents` returns the table of contents of a markdown string as a `TocEntry[]` (`{ id, level, title }`).
+- `CustomComponents` and `CustomComponentProps` describe the `customComponents` prop (see the _Using Custom Components in Markdown_ section below).
+- `FullNotieConfig` and `FullTheme` are the fully-resolved (all fields required) versions of `NotieConfig` and `Theme` used internally by **notie**.
 
 Notes:
 
 - The `NotieConfig` interface allows for fine-grained control over various styling aspects, including colors, fonts, and component-specific styles. This is what `NotieConfig` looks like:
 
-```tsx
+````tsx
 interface NotieConfig {
   showTableOfContents?: boolean;
   previewEquations?: boolean;
   previewBlockquotes?: boolean;
   tocTitle?: string;
   fontSize?: CSSStyleDeclaration["fontSize"];
+  /** Base URL of the code-runner service used by executable code blocks. */
+  codeRunnerUrl?: string;
+  /**
+   * Desmos calculator API key used by ```desmos code blocks. Defaults to
+   * the built-in demo key, which logs a warning that it is not licensed
+   * for commercial use.
+   */
+  desmosApiKey?: string;
   theme?: Theme;
 }
-```
+````
 
 - The `Theme` interface within `NotieConfig` provides extensive customization options for appearance, colors, and component-specific styles.
 - `NotieThemes` is a string union type that defines the available predefined themes.
@@ -153,6 +179,20 @@ const App = () => {
 
 Let's also break down what you need to write in the markdown file. You need to include a code block with triple backticks and the `component` language identifier. Inside the code block, you need to provide a JSON object with the `componentName` key set to the key you defined in the `customComponents` object.
 
+The `customComponents` prop is typed as `CustomComponents`, a map from `componentName` to a React component. Each component receives an optional `config` prop (see `CustomComponentProps`) containing the full parsed JSON object from the code block (including `componentName`), so you can pass extra configuration to your component directly from the markdown. Zero-prop components like `() => <MyChart />` above remain fully compatible — they simply ignore `config`.
+
+```tsx
+import type { CustomComponentProps, CustomComponents } from "notie-markdown";
+
+const ConfiguredChart = ({ config }: CustomComponentProps) => (
+  <MyChart height={(config?.height as number) ?? 290} />
+);
+
+const customComponents: CustomComponents = {
+  myChart: ConfiguredChart,
+};
+```
+
 ````markdown
 ```component
 {
@@ -187,6 +227,12 @@ That's it! You've successfully added a custom component to your markdown file.
 - `#### Heading 3`
 - `##### Heading 4`
 - `###### Heading 5`
+
+<blockquote class="note">
+
+Only ATX headings (`#`, `##`, ...) are recognized by the table of contents, section splitting, and automatic heading numbering. Setext headings (underlined with `===` or `---`) still render as headings but are not listed in the TOC and are not numbered. Also note that theming is entirely prop-driven (`theme` / `config.theme`); **notie** does not auto-detect the user's `prefers-color-scheme` setting.
+
+</blockquote>
 
 ### Paragraphs
 
@@ -291,6 +337,12 @@ helloWorld();
 ```
 
 For more information on supported languages, see the [Programming](https://notie-markdown.vercel.app/examples/programming) page.
+
+<blockquote class="note">
+
+Live code blocks send the code to a remote code-runner service when you click Run. The endpoint is configurable via `config.codeRunnerUrl`, so you can point it at infrastructure you control.
+
+</blockquote>
 
 #### Special Note for Python Support
 
@@ -403,7 +455,7 @@ $$
 
 ### Equation Numbering and Referencing
 
-**notie** generates automatic equation numbering and referencing for the `\begin{equation}` and `\begin{align}` environments based on the current **section**.
+**notie** generates automatic equation numbering and referencing for the `\begin{equation}` and `\begin{align}` environments based on the current **section**. Display-math environments are only recognized when wrapped in `$$ ... $$` delimiters.
 
 <blockquote class="definition">
 
@@ -648,6 +700,12 @@ y=\frac{x^2}{4}-\frac{x}{3}+\frac{1}{2}+\frac{c_1}{x^2}
 
 ```
 
+<blockquote class="note">
+
+Desmos graphs are rendered with the Desmos calculator API, which requires an API key. By default **notie** uses the built-in Desmos demo key, which logs a console warning that it is not licensed for commercial use. Supply your own key via `config.desmosApiKey`.
+
+</blockquote>
+
 ## Blockquotes
 
 **notie** supports different types of blockquotes:
@@ -732,7 +790,7 @@ $$
 
 ### Blockquote References
 
-You can label a blockquote with an `id` attribute and reference it anywhere in the document using a `#bqref-` link. Supported types are `definition`, `theorem`, `lemma`, `algorithm`, and `problem`.
+You can label a blockquote with an `id` attribute and reference it anywhere in the document using a `#bqref-` link. Supported types are `definition`, `theorem`, `lemma`, `algorithm`, `problem`, `proof`, `note`, and `important`.
 
 ```html
 <blockquote class="definition" id="def:limit">
@@ -826,15 +884,15 @@ $$
 You can include images in your markdown file using the following syntax:
 
 ```markdown
-![Alt text](https://via.placeholder.com/150)
+![Alt text](https://placehold.co/150)
 ```
 
-![Alt text](https://via.placeholder.com/150)
+![Alt text](https://placehold.co/150)
 
 You can also make the images smaller by using HTML attributes:
 
 ```markdown
-<img src="https://via.placeholder.com/150" alt="placeholder" style="display: block; max-height: 30%; max-width: 30%;">
+<img src="https://placehold.co/150" alt="placeholder" style="display: block; max-height: 30%; max-width: 30%;">
 
 <div class="caption">
 
@@ -843,7 +901,7 @@ This is a placeholder image.
 </div>
 ```
 
-<img src="https://via.placeholder.com/150" alt="placeholder" style="display: block; max-height: 30%; max-width: 30%;">
+<img src="https://placehold.co/150" alt="placeholder" style="display: block; max-height: 30%; max-width: 30%;">
 
 <div class="caption">
 

@@ -65,6 +65,9 @@
     font-family: var(--blog-font-family);
     color: var(--blog-text-color);
     overflow-x: hidden;
+    /* Long unbreakable tokens (URLs, hashes) wrap instead of clipping
+       under the overflow-x: hidden above. */
+    overflow-wrap: anywhere;
 }
 
 /* Heading colors */
@@ -90,6 +93,17 @@
 .blog-content a:focus {
     color: var(--blog-link-hover-color);
     text-decoration: underline;
+}
+
+/* Distinct keyboard focus indicators */
+.blog-content a:focus-visible {
+    outline: 2px solid var(--blog-link-color);
+    outline-offset: 2px;
+}
+
+.blog-content summary:focus-visible {
+    outline: 2px solid var(--blog-link-color);
+    outline-offset: 2px;
 }
 
 /* inline code colors */
@@ -121,6 +135,13 @@
 }
 
 /* Table colors */
+.blog-content table {
+    /* Body cells read the theme background so tables look consistent even
+       inside surfaces with their own background (e.g. collapse sections),
+       in both light and dark appearances. */
+    background-color: var(--blog-background-color);
+}
+
 .blog-content th {
     background-color: var(--blog-table-background-color);
 }
@@ -129,6 +150,26 @@
 .tikz-drawing svg {
     -webkit-filter: var(--blog-tikz-style);
     filter: var(--blog-tikz-style);
+}
+
+/* Fallback shown when TikZ or Desmos assets fail to load. */
+/* Used in TikZ.tsx and DesmosGraph.tsx */
+.diagram-fallback {
+    margin: 16px auto;
+    padding: 10px;
+    border: 1px dashed var(--blog-table-border-color);
+    border-radius: 6px;
+    color: var(--blog-caption-color);
+    font-size: 0.9em;
+}
+
+.diagram-fallback pre {
+    margin: 8px 0 0;
+    padding: 8px;
+    overflow-x: auto;
+    background-color: var(--blog-code-background-color);
+    color: var(--blog-code-color);
+    border-radius: 6px;
 }
 
 .code-blocks {
@@ -198,6 +239,22 @@
     margin: 16px auto;
 }
 
+/* GFM task list styles (remark-gfm emits .task-list-item on the <li> and
+   .contains-task-list on the list): drop the list marker so checkboxes do
+   not get a double bullet, and align the checkbox with the text. */
+.blog-content ul:global(.contains-task-list) {
+    padding-left: 1em;
+}
+
+.blog-content li:global(.task-list-item) {
+    list-style-type: none;
+}
+
+.blog-content li:global(.task-list-item) input[type="checkbox"] {
+    margin-right: 0.4em;
+    vertical-align: middle;
+}
+
 /* a tag styles for reference and katex */
 
 .blog-content a[data-footnote-ref] {
@@ -206,6 +263,14 @@
 
 .blog-content a[data-footnote-backref] {
     text-decoration: none;
+}
+
+/* GFM footnotes section */
+.blog-content section[data-footnotes] {
+    margin-top: 2em;
+    border-top: 1px solid var(--blog-table-border-color);
+    font-size: 0.9em;
+    color: var(--blog-caption-color);
 }
 
 /* Collapse Section Styles */

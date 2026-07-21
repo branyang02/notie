@@ -4,6 +4,7 @@ import NavBar from "./components/NavBar";
 import { Route, Routes } from "react-router-dom";
 import Examples from "./pages/Examples";
 import ExamplePage from "./pages/ExamplePage";
+import NotFound from "./pages/NotFound";
 import { useEffect, useState } from "react";
 import { useTheme } from "./context/useTheme";
 import MyChart from "./components/MyChart";
@@ -118,6 +119,7 @@ const App = () => {
                             path="/examples/:noteId"
                             element={<ExamplePage />}
                         />
+                        <Route path="*" element={<NotFound />} />
                     </Routes>
                 </Pane>
             </Pane>

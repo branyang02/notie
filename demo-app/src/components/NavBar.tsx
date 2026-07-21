@@ -1,8 +1,24 @@
-import { Pane, Heading, majorScale, Combobox, Text } from "evergreen-ui";
+import {
+    Pane,
+    Heading,
+    majorScale,
+    Combobox,
+    Text,
+    TextInputProps,
+    IconButtonProps,
+} from "evergreen-ui";
 import { useTheme } from "../context/useTheme";
 import { useEffect, useState } from "react";
 import { GitHubButton, NavButton, NavMobileMenu } from "./NavButton";
 import { useNavigate } from "react-router-dom";
+
+// evergreen's Combobox forwards these to the underlying <input> and toggle
+// <button>, but its prop types omit aria attributes; the polymorphic
+// TextInputProps/IconButtonProps types include them.
+const themeInputProps: TextInputProps = { "aria-label": "Select theme" };
+const themeButtonProps: IconButtonProps = {
+    "aria-label": "Show theme options",
+};
 
 const NavBar = () => {
     const version = import.meta.env.PACKAGE_VERSION;
@@ -72,7 +88,13 @@ const NavBar = () => {
                                 { label: "Starlit Eclipse Light" },
                             ]}
                             itemToString={(item) => (item ? item.label : "")}
-                            onChange={(selected) => setTheme(selected.label)}
+                            inputProps={themeInputProps}
+                            buttonProps={themeButtonProps}
+                            onChange={(selected) => {
+                                if (selected?.label) {
+                                    setTheme(selected.label);
+                                }
+                            }}
                         />
                     </Pane>
                     {isMobile ? (

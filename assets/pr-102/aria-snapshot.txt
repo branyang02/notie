@@ -1,0 +1,4 @@
+- 'link "Example: Algorithms"':
+  - /url: /examples/algo
+  - 'heading "Example: Algorithms" [level=2]'
+  - text: algo

@@ -26,23 +26,31 @@ Then, import the `Notie` component in your React application:
 ```tsx
 import { Notie } from "notie-markdown";
 
-const Example = () => (
-  <Notie markdown="# Hello World\nThis is a Markdown content." />
-);
+const markdown = `# Hello World
+
+This is a Markdown content.`;
+
+const Example = () => <Notie markdown={markdown} />;
 ```
 
 The `Notie` component is used to render Markdown content. It accepts the following props:
 
 ### Props
 
-| Prop               | Type                                              | Description                                                                                                |
-| ------------------ | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `markdown`         | `string`                                          | The Markdown content to be rendered.                                                                       |
-| `config`           | `NotieConfig` (optional)                          | Configuration options for Notie, including table of contents settings, font size, and theme customization. |
-| `theme`            | `NotieThemes` (optional)                          | Predefined theme option. Can be "default", "default dark", "Starlit Eclipse", or "Starlit Eclipse Light".  |
-| `customComponents` | `{ [key: string]: () => JSX.Element }` (optional) | Custom React components to be used for rendering specific elements in the markdown.                        |
+| Prop               | Type                          | Description                                                                                                |
+| ------------------ | ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `markdown`         | `string`                      | The Markdown content to be rendered.                                                                       |
+| `config`           | `NotieConfig` (optional)      | Configuration options for Notie, including table of contents settings, font size, and theme customization. |
+| `theme`            | `NotieThemes` (optional)      | Predefined theme option. Can be "default", "default dark", "Starlit Eclipse", or "Starlit Eclipse Light".  |
+| `customComponents` | `CustomComponents` (optional) | Custom React components to be used for rendering specific elements in the markdown.                        |
+
+`CustomComponents` maps a `componentName` (as referenced in ` ```component ` code blocks) to a React component. Each component receives an optional `config` prop (`CustomComponentProps`) containing the full parsed JSON object from the code block; zero-prop legacy components (`() => JSX.Element`) remain compatible.
 
 Check out the [tutorial](https://notie-markdown.vercel.app/tutorial) for more detailed information on how to use **notie**.
+
+### Package exports
+
+Besides the `Notie` component, the package exports the helper functions `sanitizeUrl` (a URL transform for react-markdown that blocks dangerous URL schemes) and `extractTableOfContents` (returns the `TocEntry[]` table of contents of a markdown string), plus the types `NotieProps`, `NotieConfig`, `NotieThemes`, `Theme`, `TocEntry`, `CustomComponents`, `CustomComponentProps`, `FullNotieConfig`, and `FullTheme`.
 
 ## Features
 
@@ -50,8 +58,96 @@ Check out the [tutorial](https://notie-markdown.vercel.app/tutorial) for more de
 - **TikZ Support**: Use TikZ to draw diagrams in your notes.
 - **Math Equations**: Write math equations using LaTeX syntax.
   - **Automatic Equation Numbering**: Automatically number equations and refer to them in your notes.
-- **Blockquote References**: Label definitions, theorems, lemmas, algorithms, and problems with an `id`, then reference them anywhere in the document with hover-preview tooltips.
+- **Blockquote References**: Label definitions, theorems, lemmas, algorithms, problems, proofs, notes, and important blocks with an `id`, then reference them anywhere in the document with hover-preview tooltips.
 - **Customizable Themes**: Customize the appearance of your notes with different themes.
+
+## Security
+
+Please keep the following in mind when using **notie**:
+
+- **Raw HTML is rendered by design.** notie uses [rehype-raw](https://github.com/rehypejs/rehype-raw) so that HTML embedded in your Markdown (e.g. `<img>`, `<div class="caption">`) renders as-is. This means Markdown is treated as trusted input — do **not** feed untrusted, user-supplied Markdown to the `Notie` component without sanitizing it first, as it can inject arbitrary HTML (including scripts and event handlers) into your page.
+- **`execute-` code blocks send code to a remote execution endpoint.** Live-executable code blocks (e.g. ` ```execute-python `) submit the code to the code execution endpoint over the network when the user clicks Run. The endpoint can be overridden via `config.codeRunnerUrl`. Be mindful of what code is sent, and point the endpoint at infrastructure you control if you have privacy or availability requirements.
+- **`tikz` blocks load a third-party engine.** TikZ diagrams are rendered by the [TikZJax](https://github.com/artisticat1/obsidian-tikzjax) engine, whose script and stylesheet are fetched at runtime from a pinned third-party URL and executed in the page.
+- **`desmos` blocks load the Desmos API script.** Graphs are rendered by loading the [Desmos](https://www.desmos.com/) calculator API script from Desmos servers at runtime.
+
+## Supported markdown notes
+
+- **ATX headings only.** The table of contents, section splitting, and automatic heading numbering only recognize ATX headings (`#`, `##`, ...). Setext headings (underlined with `===` or `---`) still render as headings, but they are not picked up by the TOC and are not numbered.
+- **Display-math environments must be `$$`-wrapped.** Environments such as `\begin{equation}`/`\begin{align}` are only recognized (rendered, numbered, and referenceable via `\eqref`) when wrapped in `$$ ... $$` delimiters.
+- **Theme is prop-driven.** The appearance is controlled entirely by the `theme` prop and `config.theme`; notie does not auto-detect the user's `prefers-color-scheme` setting.
+
+## Limitations
+
+- **One themed `Notie` instance per page.** Theming is applied by setting CSS variables (e.g. `--blog-background-color`, `--blog-text-color`) globally on the document root (`:root`). If you render multiple `Notie` components on the same page with different `theme` or `config.theme` values, they will overwrite each other's variables and all instances end up styled by whichever one applied its theme last. Multiple instances are fine as long as they share the same theme configuration.
+
+## Configuration reference
+
+The `config` prop accepts a `NotieConfig` object. All fields are optional; unspecified fields fall back to the selected theme's defaults.
+
+| Option                | Type      | Description                                                                                                                                                      |
+| --------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `showTableOfContents` | `boolean` | Show or hide the table of contents sidebar.                                                                                                                      |
+| `tocTitle`            | `string`  | Title displayed above the table of contents.                                                                                                                     |
+| `previewEquations`    | `boolean` | Show a hover preview when referencing numbered equations.                                                                                                        |
+| `previewBlockquotes`  | `boolean` | Show a hover preview when referencing labeled blockquotes.                                                                                                       |
+| `fontSize`            | `string`  | Base font size for the rendered notes (any CSS `font-size` value).                                                                                               |
+| `codeRunnerUrl`       | `string`  | Base URL of the code-runner service used by executable code blocks.                                                                                              |
+| `desmosApiKey`        | `string`  | Desmos calculator API key used by ` ```desmos ` code blocks. Defaults to the built-in demo key, which logs a warning that it is not licensed for commercial use. |
+| `theme`               | `Theme`   | Fine-grained theme overrides (see below).                                                                                                                        |
+
+### `Theme` options
+
+| Option                     | Type                      | Description                                                        |
+| -------------------------- | ------------------------- | ------------------------------------------------------------------ |
+| `appearance`               | `"light" \| "dark"`       | Base appearance the theme builds on.                               |
+| `backgroundColor`          | CSS color                 | Page background color.                                             |
+| `fontFamily`               | CSS font-family           | Font family for note text.                                         |
+| `customFontUrl`            | `string`                  | URL of a stylesheet providing the custom font.                     |
+| `titleColor`               | CSS color                 | Color of the note title.                                           |
+| `textColor`                | CSS color                 | Color of body text.                                                |
+| `linkColor`                | CSS color                 | Link color.                                                        |
+| `linkHoverColor`           | CSS color                 | Link color on hover.                                               |
+| `linkUnderline`            | `boolean`                 | Underline links.                                                   |
+| `tocFontFamily`            | CSS font-family           | Font family for the table of contents.                             |
+| `tocCustomFontUrl`         | `string`                  | URL of a stylesheet providing the TOC font.                        |
+| `tocColor`                 | CSS color                 | TOC link color.                                                    |
+| `tocHoverColor`            | CSS color                 | TOC link color on hover.                                           |
+| `tocUnderline`             | `boolean`                 | Underline TOC links.                                               |
+| `codeColor`                | CSS color                 | Inline code text color.                                            |
+| `codeBackgroundColor`      | CSS color                 | Inline code background color.                                      |
+| `codeHeaderColor`          | CSS color                 | Code block header background color.                                |
+| `codeFontSize`             | CSS font-size             | Code font size.                                                    |
+| `codeCopyButtonHoverColor` | CSS color                 | Copy button hover color in code blocks.                            |
+| `staticCodeTheme`          | Shiki theme name          | Syntax highlighting theme for static code blocks.                  |
+| `liveCodeTheme`            | Shiki theme name          | Syntax highlighting theme for live (editable) code blocks.         |
+| `collapseSectionColor`     | CSS color                 | Color of the collapsible section controls.                         |
+| `katexSize`                | CSS font-size             | Font size for KaTeX math.                                          |
+| `tableBorderColor`         | CSS color                 | Table border color.                                                |
+| `tableBackgroundColor`     | CSS color                 | Table background color.                                            |
+| `captionColor`             | CSS color                 | Caption text color.                                                |
+| `subtitleColor`            | CSS color                 | Subtitle text color.                                               |
+| `tikZstyle`                | `"inverted" \| "default"` | Render TikZ diagrams normally or color-inverted (for dark themes). |
+| `blockquoteStyle`          | `"default" \| "latex"`    | Blockquote styling; `"latex"` renders LaTeX-style theorem boxes.   |
+| `numberedHeading`          | `boolean`                 | Automatically number section headings.                             |
+| `tocMarker`                | `boolean`                 | Show the active-section marker in the table of contents.           |
+
+Example:
+
+```tsx
+<Notie
+  markdown={markdown}
+  config={{
+    showTableOfContents: true,
+    tocTitle: "Contents",
+    fontSize: "16px",
+    theme: {
+      appearance: "dark",
+      blockquoteStyle: "latex",
+      numberedHeading: true,
+    },
+  }}
+/>
+```
 
 ## Showcase
 
@@ -92,11 +188,6 @@ This project makes use of several open-source projects and resources. We extend 
 **[KaTeX](https://katex.org/)**
 
 - **Author(s)**: Khan Academy
-- **License**: MIT
-
-**[react-code-blocks](https://react-code-blocks-rajinwonderland.vercel.app/?path=/story/code--default)**
-
-- **Author(s)**: Raj K Singh
 - **License**: MIT
 
 **[react-markdown](https://remarkjs.github.io/react-markdown/)**

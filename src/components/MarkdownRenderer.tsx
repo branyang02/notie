@@ -1,12 +1,18 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { type ExtraProps } from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
-import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { katexOptions } from "../utils/katexOptions";
-import { BlockquoteMapping, EquationMapping } from "../utils/utils";
+import rehypeAccessibleKatexRefs from "../utils/rehypeAccessibleKatexRefs";
+import rehypeHeadingIds from "../utils/rehypeHeadingIds";
+import { sanitizeUrl } from "../utils/sanitizeUrl";
+import {
+    BlockquoteMapping,
+    EquationMapping,
+    parseExecuteLanguage,
+} from "../utils/utils";
 import BlockquoteReference from "./BlockquoteReference";
 import CodeBlock from "./CodeBlock";
 import DesmosGraph from "./DesmosGraph";
@@ -15,23 +21,66 @@ import { InlineAlert } from "evergreen-ui";
 import LazyRender from "./LazyRender";
 import StaticCodeBlock from "./StaticCodeBlock";
 import TikZ from "./TikZ";
-import { FullNotieConfig } from "../config/NotieConfig";
+import { CustomComponents, FullNotieConfig } from "../config/NotieConfig";
+import type { Element as HastElement, ElementContent } from "hast";
 
-type CodeProps = React.HTMLAttributes<HTMLElement> & {
-    node?: unknown;
-    inline?: boolean;
-    className?: string;
-    children?: React.ReactNode;
-};
+type PreProps = React.HTMLAttributes<HTMLPreElement> &
+    ExtraProps & {
+        children?: React.ReactNode;
+    };
 
 type CustomComponentFormat = {
     componentName: string;
-};
+} & Record<string, unknown>;
 
 type AnchorProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
     node?: unknown;
     children?: React.ReactNode;
 };
+
+/**
+ * Returns the sole `<code>` element child of a `<pre>` hast node, or `null`
+ * when the `<pre>` does not look like a markdown code block (react-markdown
+ * always renders a fenced or indented code block as a `<pre>` wrapping
+ * exactly one `<code>` element).
+ */
+function getCodeChild(node: HastElement | undefined): HastElement | null {
+    if (!node) return null;
+    const meaningfulChildren = node.children.filter(
+        (child) =>
+            !(child.type === "text" && child.value.trim() === "") &&
+            child.type !== "comment",
+    );
+    if (meaningfulChildren.length !== 1) return null;
+    const [child] = meaningfulChildren;
+    if (child.type !== "element" || child.tagName !== "code") return null;
+    return child;
+}
+
+/** Extracts the `language-*` token from a hast `<code>` element, if any. */
+function getCodeLanguage(codeNode: HastElement): string {
+    const className = codeNode.properties?.className;
+    const classes = Array.isArray(className)
+        ? className.map(String)
+        : typeof className === "string"
+          ? className.split(/\s+/)
+          : [];
+    const languageClass = classes.find((cls) => cls.startsWith("language-"));
+    return languageClass ? languageClass.slice("language-".length) : "";
+}
+
+/** Concatenates the text content of a hast subtree. */
+function textFromHast(nodes: ElementContent[]): string {
+    let text = "";
+    for (const node of nodes) {
+        if (node.type === "text") {
+            text += node.value;
+        } else if (node.type === "element") {
+            text += textFromHast(node.children);
+        }
+    }
+    return text;
+}
 
 const INITIAL_SECTION_COUNT = 2;
 
@@ -48,8 +97,18 @@ function textFromReactNode(node: React.ReactNode): string {
     return "";
 }
 
+/**
+ * Returns the number of sections rendered on the first render pass.
+ *
+ * This intentionally returns the same value on the server and on the client
+ * so that server-rendered markup matches the first client render during
+ * hydration. Previously the server rendered every section while the client
+ * started with `INITIAL_SECTION_COUNT`, which guaranteed a hydration
+ * mismatch. The trade-off is that SSR output now only contains the initial
+ * sections; the remaining sections are revealed progressively after
+ * hydration, exactly as on a client-only render.
+ */
 function getInitialSectionCount(sectionCount: number): number {
-    if (typeof window === "undefined") return sectionCount;
     return Math.min(INITIAL_SECTION_COUNT, sectionCount);
 }
 
@@ -84,18 +143,25 @@ function scheduleNextSection(callback: () => void): () => void {
 const MarkdownRenderer: React.FC<{
     markdownContent: string;
     markdownSections?: string[];
+    /**
+     * Per-section precomputed heading ids (document-unique, from
+     * MarkdownProcessor). `sectionHeadingIds[i]` lists the ids for the
+     * headings of `markdownSections[i]` in order. When omitted, headings
+     * are slugged per section tree (legacy rehype-slug behavior), which can
+     * duplicate ids across sections.
+     */
+    sectionHeadingIds?: string[][];
     config: FullNotieConfig;
     equationMapping: EquationMapping;
     blockquoteMapping: BlockquoteMapping;
-    customComponents?: {
-        [key: string]: () => JSX.Element;
-    };
+    customComponents?: CustomComponents;
     renderAllToken?: number;
     onRenderedSectionsChange?: (renderedSectionCount: number) => void;
 }> = React.memo(
     ({
         markdownContent,
         markdownSections,
+        sectionHeadingIds,
         config,
         equationMapping,
         blockquoteMapping,
@@ -109,6 +175,15 @@ const MarkdownRenderer: React.FC<{
                     ? markdownSections
                     : [markdownContent],
             [markdownContent, markdownSections],
+        );
+        // All heading ids of the document, used by rehypeHeadingIds to keep
+        // fallback ids for headings invisible to the markdown scan (raw
+        // HTML headings) from colliding with any precomputed id. Memoized
+        // on the id lists so section trees are not re-created on unrelated
+        // re-renders.
+        const documentHeadingIds = useMemo(
+            () => (sectionHeadingIds ? sectionHeadingIds.flat() : undefined),
+            [sectionHeadingIds],
         );
         const [visibleSectionCount, setVisibleSectionCount] = useState(() =>
             getInitialSectionCount(sections.length),
@@ -185,6 +260,10 @@ const MarkdownRenderer: React.FC<{
                                 textContent={textFromReactNode(children)}
                                 equationMapping={equationMapping}
                                 previewEquation={config.previewEquations}
+                                inert={
+                                    "data-notie-inert-ref" in
+                                    (props as Record<string, unknown>)
+                                }
                             />
                         );
                     }
@@ -207,23 +286,34 @@ const MarkdownRenderer: React.FC<{
                         </a>
                     );
                 },
-                code({ inline, className, children, ...props }: CodeProps) {
-                    const match = /\w+/.exec(className || "");
+                // react-markdown v9 removed the `inline` prop from the
+                // `code` component. The v9-idiomatic way to detect block
+                // code is structural: every fenced/indented code block is
+                // rendered as a `<pre>` wrapping exactly one `<code>`,
+                // while inline code is a bare `<code>` (never inside a
+                // custom `pre`). Implementing `pre` therefore captures all
+                // block code — including classless fences (``` with no info
+                // string), which have no `language-*` class and previously
+                // fell through to the plain inline branch.
+                pre({ node, children, ...props }: PreProps) {
+                    const codeNode = getCodeChild(node);
 
-                    if (!inline && match) {
-                        const language =
-                            className?.split("language-").pop() || "";
-                        const content = Array.isArray(children)
-                            ? children.join("")
-                            : children;
-                        const code = String(content).replace(/\n$/, "");
+                    if (codeNode) {
+                        const language = getCodeLanguage(codeNode);
+                        const code = textFromHast(codeNode.children).replace(
+                            /\n$/,
+                            "",
+                        );
                         if (language.includes("execute-")) {
                             return (
                                 <LazyRender minHeight={260}>
                                     <CodeBlock
                                         initialCode={code}
-                                        language={language.split("-").pop()}
+                                        language={parseExecuteLanguage(
+                                            language,
+                                        )}
                                         theme={config.theme.liveCodeTheme}
+                                        codeRunnerUrl={config.codeRunnerUrl}
                                     />
                                 </LazyRender>
                             );
@@ -238,7 +328,11 @@ const MarkdownRenderer: React.FC<{
                         if (language === "desmos") {
                             return (
                                 <LazyRender minHeight={400}>
-                                    <DesmosGraph graphScript={code} />
+                                    <DesmosGraph
+                                        graphScript={code}
+                                        appearance={config.theme.appearance}
+                                        apiKey={config.desmosApiKey}
+                                    />
                                 </LazyRender>
                             );
                         }
@@ -251,16 +345,40 @@ const MarkdownRenderer: React.FC<{
                                     </InlineAlert>
                                 );
                             }
-                            const jsonString = code.replace(/(\w+):/g, '"$1":');
-                            const componentConfig = JSON.parse(
-                                jsonString,
-                            ) as CustomComponentFormat;
+                            let componentConfig: CustomComponentFormat;
+                            try {
+                                const jsonString = code.replace(
+                                    /(\w+):/g,
+                                    '"$1":',
+                                );
+                                const parsed: unknown = JSON.parse(jsonString);
+                                if (
+                                    typeof parsed !== "object" ||
+                                    parsed === null ||
+                                    typeof (parsed as CustomComponentFormat)
+                                        .componentName !== "string"
+                                ) {
+                                    throw new Error(
+                                        "Missing componentName in component configuration.",
+                                    );
+                                }
+                                componentConfig =
+                                    parsed as CustomComponentFormat;
+                            } catch {
+                                return (
+                                    <InlineAlert intent="danger">
+                                        Invalid component configuration.
+                                    </InlineAlert>
+                                );
+                            }
 
                             const CustomComponent =
                                 customComponents[componentConfig.componentName];
 
                             if (CustomComponent) {
-                                return <CustomComponent />;
+                                return (
+                                    <CustomComponent config={componentConfig} />
+                                );
                             } else {
                                 return (
                                     <InlineAlert intent="danger">
@@ -269,6 +387,10 @@ const MarkdownRenderer: React.FC<{
                                 );
                             }
                         }
+                        // Classless fences reach here with language "";
+                        // resolveLanguage maps unknown languages to "text",
+                        // so they get the same StaticCodeBlock chrome as
+                        // tagged fences.
                         return (
                             <StaticCodeBlock
                                 code={code}
@@ -276,19 +398,22 @@ const MarkdownRenderer: React.FC<{
                                 theme={config.theme.staticCodeTheme}
                             />
                         );
-                    } else {
-                        return (
-                            <code className={className} {...props}>
-                                {children}
-                            </code>
-                        );
                     }
+
+                    // Not a markdown code block (e.g. raw <pre> HTML passed
+                    // through rehype-raw): render the <pre> untouched.
+                    // Inline code never hits this component — it renders via
+                    // the default `code` handling as a plain <code>.
+                    return <pre {...props}>{children}</pre>;
                 },
             }),
             [
                 blockquoteMapping,
+                config.codeRunnerUrl,
+                config.desmosApiKey,
                 config.previewBlockquotes,
                 config.previewEquations,
+                config.theme.appearance,
                 config.theme.liveCodeTheme,
                 config.theme.staticCodeTheme,
                 customComponents,
@@ -304,6 +429,8 @@ const MarkdownRenderer: React.FC<{
                         <MarkdownSection
                             key={index}
                             markdownContent={section}
+                            headingIds={sectionHeadingIds?.[index]}
+                            documentHeadingIds={documentHeadingIds}
                             components={components}
                         />
                     ))}
@@ -315,19 +442,46 @@ const MarkdownRenderer: React.FC<{
 const MarkdownSection = React.memo(
     ({
         markdownContent,
+        headingIds,
+        documentHeadingIds,
         components,
     }: {
         markdownContent: string;
+        headingIds?: string[];
+        documentHeadingIds?: string[];
         components: React.ComponentProps<typeof ReactMarkdown>["components"];
-    }) => (
-        <ReactMarkdown
-            remarkPlugins={[remarkGfm, remarkMath]}
-            rehypePlugins={[[rehypeKatex, katexOptions], rehypeRaw, rehypeSlug]}
-            components={components}
-        >
-            {markdownContent}
-        </ReactMarkdown>
-    ),
+    }) => {
+        // Each section renders as an independent ReactMarkdown tree, so a
+        // live per-tree slugger (rehype-slug) would restart duplicate
+        // suffixes at every section and produce duplicate DOM ids when
+        // headings repeat across sections. Instead, rehypeHeadingIds
+        // assigns the document-unique ids precomputed by the processor.
+        // The plugin reads no cross-render state, so re-rendering a
+        // section reassigns byte-identical ids.
+        const rehypePlugins = useMemo(
+            (): React.ComponentProps<typeof ReactMarkdown>["rehypePlugins"] => [
+                [rehypeKatex, katexOptions],
+                rehypeAccessibleKatexRefs,
+                rehypeRaw,
+                [
+                    rehypeHeadingIds,
+                    { ids: headingIds, documentIds: documentHeadingIds },
+                ],
+            ],
+            [headingIds, documentHeadingIds],
+        );
+
+        return (
+            <ReactMarkdown
+                remarkPlugins={[remarkGfm, remarkMath]}
+                rehypePlugins={rehypePlugins}
+                components={components}
+                urlTransform={sanitizeUrl}
+            >
+                {markdownContent}
+            </ReactMarkdown>
+        );
+    },
 );
 
 export default MarkdownRenderer;

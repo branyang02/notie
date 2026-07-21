@@ -1,0 +1,36 @@
+{
+  "classlessFence": {
+    "inPreShiki": true,
+    "inCodeBlocksWrapper": true,
+    "hasCodeHeader": true,
+    "hasCopyButton": true,
+    "shikiStyles": {
+      "backgroundColor": "rgb(250, 250, 250)",
+      "padding": "14px",
+      "borderRadius": "0px 0px 10px 10px"
+    },
+    "spanTokenCount": 0
+  },
+  "taggedFence": {
+    "inPreShiki": true,
+    "inCodeBlocksWrapper": true,
+    "hasCodeHeader": true,
+    "hasCopyButton": true,
+    "shikiStyles": {
+      "backgroundColor": "rgb(250, 250, 250)",
+      "padding": "14px",
+      "borderRadius": "0px 0px 10px 10px"
+    },
+    "spanTokenCount": 10
+  },
+  "inlineCode": {
+    "found": true,
+    "inPre": false,
+    "inCodeBlocksWrapper": false
+  },
+  "specialFences": {
+    "runCodeButtons": 1,
+    "codeMirrorEditors": 1,
+    "componentBranchAlert": true
+  }
+}

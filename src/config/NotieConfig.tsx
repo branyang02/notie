@@ -1,3 +1,4 @@
+import type { ComponentType } from "react";
 import type { BundledTheme } from "shiki";
 
 type LiveCodeBlockThemeNames = BundledTheme;
@@ -45,6 +46,14 @@ export interface NotieConfig {
     previewBlockquotes?: boolean;
     tocTitle?: string;
     fontSize?: CSSStyleDeclaration["fontSize"];
+    /** Base URL of the code-runner service used by executable code blocks. */
+    codeRunnerUrl?: string;
+    /**
+     * Desmos calculator API key used by ```desmos code blocks. Defaults to
+     * the built-in demo key, which logs a warning that it is not licensed
+     * for commercial use.
+     */
+    desmosApiKey?: string;
     theme?: Theme;
 }
 
@@ -54,6 +63,25 @@ export type NotieThemes =
     | "default dark"
     | "Starlit Eclipse"
     | "Starlit Eclipse Light";
+
+/**
+ * Props passed to a custom component rendered from a ```component code
+ * block. `config` is the full parsed JSON object from the code block
+ * (including `componentName`). Zero-prop legacy components
+ * (`() => JSX.Element`) remain compatible and simply ignore it.
+ */
+export interface CustomComponentProps {
+    config?: Record<string, unknown>;
+}
+
+/**
+ * Map from `componentName` (as referenced in ```component code blocks) to
+ * the React component that renders it.
+ */
+export type CustomComponents = Record<
+    string,
+    ComponentType<CustomComponentProps>
+>;
 
 // FullTheme and FullNotieConfig are the types that are used in notie
 export type FullTheme = Required<Theme>;

@@ -8,19 +8,22 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    # Skip runs triggered by this workflow's own version bump commits to
+    # avoid an infinite re-trigger/auto-republish loop.
+    if: "${{ !startsWith(github.event.head_commit.message, 'ci: bump version') }}"
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Configure npm for authentication
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
@@ -30,14 +33,16 @@ jobs:
         env:
           COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
-          FIRST_LINE=$(echo "$COMMIT_MSG" | head -1)
-          if [[ "$FIRST_LINE" =~ ^fix ]]; then
-            echo "bump=patch" >> $GITHUB_ENV
-          elif [[ "$FIRST_LINE" =~ ^feat ]]; then
-            echo "bump=minor" >> $GITHUB_ENV
-          elif [[ "$FIRST_LINE" =~ BREAKING[[:space:]]CHANGE ]]; then
+          # BREAKING CHANGE can appear anywhere in the commit message
+          # (subject, body, or footer), so check the full message first.
+          if [[ "$COMMIT_MSG" =~ BREAKING[[:space:]]CHANGE ]]; then
             echo "bump=major" >> $GITHUB_ENV
+          elif [[ "$COMMIT_MSG" =~ ^feat ]]; then
+            echo "bump=minor" >> $GITHUB_ENV
+          elif [[ "$COMMIT_MSG" =~ ^fix ]]; then
+            echo "bump=patch" >> $GITHUB_ENV
           else
+            # Default: any other commit type gets a patch bump.
             echo "bump=patch" >> $GITHUB_ENV
           fi
 
@@ -53,11 +58,9 @@ jobs:
       - name: Build the package
         run: npm run build
 
-      - name: Publish to npm
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
+      # Commit and push the version bump BEFORE publishing, so a failed push
+      # cannot leave npm ahead of git. If the push fails, the job fails here
+      # and nothing is published.
       - name: Push version bump
         run: |
           git config user.name "GitHub Actions"
@@ -67,3 +70,8 @@ jobs:
           git push origin HEAD:main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

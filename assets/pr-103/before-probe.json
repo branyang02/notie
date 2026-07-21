@@ -1,0 +1,646 @@
+{
+  "label": "before",
+  "when": "2026-07-20T00:11:53.000Z",
+  "pages": {
+    "/tutorial": {
+      "focusableInAriaHidden": [
+        {
+          "tag": "a",
+          "href": "#eqn-4.1",
+          "label": "Equation 4.1"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-4.2",
+          "label": "Equation 4.2"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-4.3",
+          "label": "Equation 4.3"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-4.4",
+          "label": "Equation 4.4"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-4.5",
+          "label": "Equation 4.5"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-4.6",
+          "label": "Equation 4.6"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-4.7",
+          "label": "Equation 4.7"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-4.8",
+          "label": "Equation 4.8"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-4.9",
+          "label": "Equation 4.9"
+        }
+      ],
+      "eqRefAnchors": [
+        {
+          "href": "#eqn-4.1",
+          "ariaLabel": "Equation 4.1",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-4.2",
+          "ariaLabel": "Equation 4.2",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-4.3",
+          "ariaLabel": "Equation 4.3",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-4.4",
+          "ariaLabel": "Equation 4.4",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-4.5",
+          "ariaLabel": "Equation 4.5",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-4.6",
+          "ariaLabel": "Equation 4.6",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-4.7",
+          "ariaLabel": "Equation 4.7",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-4.8",
+          "ariaLabel": "Equation 4.8",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-4.9",
+          "ariaLabel": "Equation 4.9",
+          "tabindex": null,
+          "insideAriaHidden": true
+        }
+      ]
+    },
+    "/examples/auto-label": {
+      "focusableInAriaHidden": [
+        {
+          "tag": "a",
+          "href": "#eqn-1.1",
+          "label": "Equation 1.1"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-1.1",
+          "label": "Equation 1.1"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.1",
+          "label": "Equation 2.1"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.2",
+          "label": "Equation 2.2"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.3",
+          "label": "Equation 2.3"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.4",
+          "label": "Equation 2.4"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.5",
+          "label": "Equation 2.5"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.6",
+          "label": "Equation 2.6"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.7",
+          "label": "Equation 2.7"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.8",
+          "label": "Equation 2.8"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.11",
+          "label": "Equation 2.11"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.12",
+          "label": "Equation 2.12"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.13",
+          "label": "Equation 2.13"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.14",
+          "label": "Equation 2.14"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.15",
+          "label": "Equation 2.15"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.16",
+          "label": "Equation 2.16"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.17",
+          "label": "Equation 2.17"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.18",
+          "label": "Equation 2.18"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.19",
+          "label": "Equation 2.19"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-1.1",
+          "label": "Equation 1.1"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.1",
+          "label": "Equation 2.1"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.2",
+          "label": "Equation 2.2"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.3",
+          "label": "Equation 2.3"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.4",
+          "label": "Equation 2.4"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.5",
+          "label": "Equation 2.5"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.6",
+          "label": "Equation 2.6"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.7",
+          "label": "Equation 2.7"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.8",
+          "label": "Equation 2.8"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.11",
+          "label": "Equation 2.11"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.12",
+          "label": "Equation 2.12"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.13",
+          "label": "Equation 2.13"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-3.1",
+          "label": "Equation 3.1"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-3.4",
+          "label": "Equation 3.4"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-3.5",
+          "label": "Equation 3.5"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-3.6",
+          "label": "Equation 3.6"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-3.7",
+          "label": "Equation 3.7"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-3.10",
+          "label": "Equation 3.10"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-3.11",
+          "label": "Equation 3.11"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-3.13",
+          "label": "Equation 3.13"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-3.14",
+          "label": "Equation 3.14"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-3.15",
+          "label": "Equation 3.15"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-3.17",
+          "label": "Equation 3.17"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-1.1",
+          "label": "Equation 1.1"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-2.1",
+          "label": "Equation 2.1"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-3.12",
+          "label": "Equation 3.12"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-5.1",
+          "label": "Equation 5.1"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-5.2",
+          "label": "Equation 5.2"
+        },
+        {
+          "tag": "a",
+          "href": "#eqn-5.3",
+          "label": "Equation 5.3"
+        }
+      ],
+      "eqRefAnchors": [
+        {
+          "href": "#eqn-1.1",
+          "ariaLabel": "Equation 1.1",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-1.1",
+          "ariaLabel": "Equation 1.1",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.1",
+          "ariaLabel": "Equation 2.1",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.2",
+          "ariaLabel": "Equation 2.2",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.3",
+          "ariaLabel": "Equation 2.3",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.4",
+          "ariaLabel": "Equation 2.4",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.5",
+          "ariaLabel": "Equation 2.5",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.6",
+          "ariaLabel": "Equation 2.6",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.7",
+          "ariaLabel": "Equation 2.7",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.8",
+          "ariaLabel": "Equation 2.8",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.11",
+          "ariaLabel": "Equation 2.11",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.12",
+          "ariaLabel": "Equation 2.12",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.13",
+          "ariaLabel": "Equation 2.13",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.14",
+          "ariaLabel": "Equation 2.14",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.15",
+          "ariaLabel": "Equation 2.15",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.16",
+          "ariaLabel": "Equation 2.16",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.17",
+          "ariaLabel": "Equation 2.17",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.18",
+          "ariaLabel": "Equation 2.18",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.19",
+          "ariaLabel": "Equation 2.19",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-1.1",
+          "ariaLabel": "Equation 1.1",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.1",
+          "ariaLabel": "Equation 2.1",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.2",
+          "ariaLabel": "Equation 2.2",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.3",
+          "ariaLabel": "Equation 2.3",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.4",
+          "ariaLabel": "Equation 2.4",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.5",
+          "ariaLabel": "Equation 2.5",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.6",
+          "ariaLabel": "Equation 2.6",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.7",
+          "ariaLabel": "Equation 2.7",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.8",
+          "ariaLabel": "Equation 2.8",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.11",
+          "ariaLabel": "Equation 2.11",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.12",
+          "ariaLabel": "Equation 2.12",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.13",
+          "ariaLabel": "Equation 2.13",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-3.1",
+          "ariaLabel": "Equation 3.1",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-3.4",
+          "ariaLabel": "Equation 3.4",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-3.5",
+          "ariaLabel": "Equation 3.5",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-3.6",
+          "ariaLabel": "Equation 3.6",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-3.7",
+          "ariaLabel": "Equation 3.7",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-3.10",
+          "ariaLabel": "Equation 3.10",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-3.11",
+          "ariaLabel": "Equation 3.11",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-3.13",
+          "ariaLabel": "Equation 3.13",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-3.14",
+          "ariaLabel": "Equation 3.14",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-3.15",
+          "ariaLabel": "Equation 3.15",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-3.17",
+          "ariaLabel": "Equation 3.17",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-1.1",
+          "ariaLabel": "Equation 1.1",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-2.1",
+          "ariaLabel": "Equation 2.1",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-3.12",
+          "ariaLabel": "Equation 3.12",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-5.1",
+          "ariaLabel": "Equation 5.1",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-5.2",
+          "ariaLabel": "Equation 5.2",
+          "tabindex": null,
+          "insideAriaHidden": true
+        },
+        {
+          "href": "#eqn-5.3",
+          "ariaLabel": "Equation 5.3",
+          "tabindex": null,
+          "insideAriaHidden": true
+        }
+      ],
+      "refParagraphAriaSnapshot": "- paragraph:\n  - text: Reference equation\n  - math\n  - text: with\n  - code: \"\\\\eqref{eq:quadratic}\"\n  - text: in the text, or\n  - math\n  - text: with\n  - code: \"\\\\ref{eq:quadratic}\"\n  - text: ."
+    }
+  }
+}

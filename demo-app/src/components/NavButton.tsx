@@ -16,19 +16,8 @@ const NavMobileMenu = ({ tabs }: { tabs: string[] }) => {
     const navigate = useNavigate();
 
     const handleSelect = (tab: string) => {
-        let path: string;
-
-        switch (tab) {
-            case "Home":
-                path = "/";
-                break;
-            case "Relevant Coursework":
-                path = "/coursework";
-                break;
-            default:
-                path = `/${tab.toLowerCase().replace(/\s+/g, "")}`;
-                break;
-        }
+        const path =
+            tab === "Home" ? "/" : `/${tab.toLowerCase().replace(/\s+/g, "")}`;
 
         navigate(path);
     };
@@ -51,7 +40,27 @@ const NavMobileMenu = ({ tabs }: { tabs: string[] }) => {
                 </Menu>
             }
         >
-            <IconButton icon={MenuIcon} marginRight={16} />
+            {({ getRef, isShown, toggle }) => (
+                <IconButton
+                    // evergreen types getRef as taking a RefObject, but at
+                    // runtime it receives the DOM node like a callback ref.
+                    ref={
+                        getRef as unknown as (
+                            instance: HTMLButtonElement | null,
+                        ) => void
+                    }
+                    icon={MenuIcon}
+                    marginRight={16}
+                    aria-label={
+                        isShown
+                            ? "Close navigation menu"
+                            : "Open navigation menu"
+                    }
+                    aria-expanded={Boolean(isShown)}
+                    aria-haspopup="menu"
+                    onClick={toggle}
+                />
+            )}
         </Popover>
     );
 };
@@ -77,19 +86,10 @@ const NavButton = ({
     };
 
     const handleClick = () => {
-        let path: string;
-
-        switch (label) {
-            case "Home":
-                path = "/";
-                break;
-            case "Relevant Coursework":
-                path = "/coursework";
-                break;
-            default:
-                path = `/${label.toLowerCase().replace(/\s+/g, "")}`;
-                break;
-        }
+        const path =
+            label === "Home"
+                ? "/"
+                : `/${label.toLowerCase().replace(/\s+/g, "")}`;
 
         navigate(path);
     };
@@ -129,6 +129,7 @@ const GitHubButton = ({ darkMode }: { darkMode: boolean }) => {
     return (
         <IconButton
             appearance="minimal"
+            aria-label="GitHub repository"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             onClick={handleClick}

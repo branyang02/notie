@@ -1,3 +1,5 @@
+import "./Examples.css";
+
 import {
     Card,
     Heading,
@@ -9,7 +11,7 @@ import {
     Text,
 } from "evergreen-ui";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { useTheme } from "../context/useTheme";
 
 const modules = import.meta.glob("../assets/**.md", {
@@ -27,7 +29,6 @@ interface NotesMetaData {
 const Examples = () => {
     const [notesMetaData, setNotesMetaData] = useState<NotesMetaData[]>([]);
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
     const { theme } = useTheme();
     const darkMode = theme === "default dark" || theme === "Starlit Eclipse";
 
@@ -55,7 +56,8 @@ const Examples = () => {
                     date: date,
                 });
             }
-            notesData.sort((b, a) => sortNotesByDate(a.date, b.date));
+            // sortNotesByDate compares ascending; reverse args for newest-first order.
+            notesData.sort((a, b) => sortNotesByDate(b.date, a.date));
             setNotesMetaData(notesData);
             setLoading(false);
         }
@@ -99,10 +101,6 @@ const Examples = () => {
 
         fetchNotes();
     }, []);
-
-    const handleCardClick = (path: string) => {
-        navigate(path);
-    };
 
     if (loading) {
         return (
@@ -153,6 +151,9 @@ const Examples = () => {
                     {exampleNotes.map((post, index) => (
                         <Card
                             key={index}
+                            is={RouterLink}
+                            to={post.link}
+                            aria-label={post.title}
                             className="BlogCard"
                             elevation={1}
                             hoverElevation={2}
@@ -161,10 +162,8 @@ const Examples = () => {
                             display="flex"
                             flexDirection="column"
                             justifyContent="space-between"
-                            onClick={() => handleCardClick(post.link)}
-                            cursor="pointer"
                             background={darkMode ? "overlay" : "tint2"}
-                            color={darkMode ? "white" : "default"}
+                            color={darkMode ? "white" : "inherit"}
                         >
                             <Heading
                                 size={500}
@@ -197,6 +196,9 @@ const Examples = () => {
                     {otherNotes.map((post, index) => (
                         <Card
                             key={index}
+                            is={RouterLink}
+                            to={post.link}
+                            aria-label={post.title}
                             className="BlogCard"
                             elevation={1}
                             hoverElevation={2}
@@ -205,10 +207,8 @@ const Examples = () => {
                             display="flex"
                             flexDirection="column"
                             justifyContent="space-between"
-                            onClick={() => handleCardClick(post.link)}
-                            cursor="pointer"
                             background={darkMode ? "overlay" : "tint2"}
-                            color={darkMode ? "white" : "default"}
+                            color={darkMode ? "white" : "inherit"}
                         >
                             <Heading
                                 size={500}
@@ -244,6 +244,7 @@ const Examples = () => {
                     <Link
                         href="https://github.com/branyang02/notie/tree/main/demo-app/src/assets"
                         target="_blank"
+                        rel="noopener noreferrer"
                         color={darkMode ? "white" : "blue"}
                     >
                         here.
@@ -254,6 +255,7 @@ const Examples = () => {
                     <Link
                         href="https://www.brandonyifanyang.com/notes"
                         target="_blank"
+                        rel="noopener noreferrer"
                         color={darkMode ? "white" : "blue"}
                     >
                         www.brandonyifanyang.com/notes.

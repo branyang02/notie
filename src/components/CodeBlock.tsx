@@ -28,12 +28,28 @@ const CodeBlock = ({
     initialCode,
     language = "python",
     theme,
+    codeRunnerUrl,
 }: {
     initialCode: string;
     language?: string;
     theme: string;
+    codeRunnerUrl?: string;
 }) => {
     const runCodeRef = useRef<() => void>(() => {});
+
+    // Detect the platform in an effect so that server-side rendering (where
+    // `navigator` is undefined) and the first client render agree on the
+    // markup (Ctrl icon), avoiding SSR crashes and hydration mismatches.
+    const [isMac, setIsMac] = useState(false);
+
+    useEffect(() => {
+        if (
+            typeof navigator !== "undefined" &&
+            navigator.platform?.includes("Mac")
+        ) {
+            setIsMac(true);
+        }
+    }, []);
 
     const runKeymap = useMemo(
         () =>
@@ -95,15 +111,38 @@ const CodeBlock = ({
     const [code, setCode] = useState(initialCode);
     const [image, setImage] = useState("");
     const editorRef = useRef<ReactCodeMirrorRef>(null);
+    const isMountedRef = useRef(true);
+    const abortControllerRef = useRef<AbortController | null>(null);
+    const isRunPendingRef = useRef(false);
+
+    useEffect(() => {
+        isMountedRef.current = true;
+        return () => {
+            isMountedRef.current = false;
+            abortControllerRef.current?.abort();
+            abortControllerRef.current = null;
+        };
+    }, []);
 
     const onChange = useCallback((value: string) => {
         setCode(value);
     }, []);
 
     const runCodeAsync = useCallback(async () => {
+        // Guard against overlapping runs (e.g. Mod-Enter while loading).
+        if (isRunPendingRef.current) return;
+        isRunPendingRef.current = true;
+
+        const abortController = new AbortController();
+        abortControllerRef.current = abortController;
+
         setIsLoading(true);
         try {
-            const data: RunCodeResponse = await runCode(code, language);
+            const data: RunCodeResponse = await runCode(code, language, {
+                baseUrl: codeRunnerUrl,
+                signal: abortController.signal,
+            });
+            if (!isMountedRef.current) return;
             setError(
                 data.output.toLowerCase().includes("error") ||
                     data.output.toLowerCase().includes("exception"),
@@ -111,13 +150,22 @@ const CodeBlock = ({
             setOutput(data.output);
             setImage(data.image);
         } catch (error) {
-            setOutput(`Execution failed: ${error}`);
+            if (!isMountedRef.current) return;
+            const message =
+                error instanceof Error ? error.message : String(error);
+            setOutput(`Execution failed: ${message}`);
             setError(true);
             setImage("");
         } finally {
-            setIsLoading(false);
+            isRunPendingRef.current = false;
+            if (abortControllerRef.current === abortController) {
+                abortControllerRef.current = null;
+            }
+            if (isMountedRef.current) {
+                setIsLoading(false);
+            }
         }
-    }, [code, language]);
+    }, [code, language, codeRunnerUrl]);
 
     useEffect(() => {
         runCodeRef.current = runCodeAsync;
@@ -167,6 +215,7 @@ const CodeBlock = ({
                             appearance="minimal"
                             icon={ResetIcon}
                             intent="danger"
+                            aria-label="Reset code"
                             onClick={resetEditor}
                         />
                     </Pane>
@@ -176,6 +225,7 @@ const CodeBlock = ({
                             appearance="primary"
                             intent="success"
                             isLoading={isLoading}
+                            aria-label="Run code (Cmd/Ctrl+Enter)"
                             onClick={runCodeAsync}
                         >
                             <span
@@ -184,12 +234,20 @@ const CodeBlock = ({
                                     alignItems: "center",
                                 }}
                             >
-                                {navigator.platform.includes("Mac") ? (
-                                    <KeyCommandIcon size={12} />
-                                ) : (
-                                    <KeyControlIcon size={12} />
-                                )}
-                                <KeyEnterIcon size={12} />
+                                <span
+                                    aria-hidden="true"
+                                    style={{
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    {isMac ? (
+                                        <KeyCommandIcon size={12} />
+                                    ) : (
+                                        <KeyControlIcon size={12} />
+                                    )}
+                                    <KeyEnterIcon size={12} />
+                                </span>
                                 <span style={{ marginLeft: 4 }}>
                                     {"Run Code"}
                                 </span>
