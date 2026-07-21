@@ -2,7 +2,7 @@
     "name": "notie-markdown",
     "private": false,
     "description": "A simple markdown note-taking app with live executable and editable code blocks.",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "main": "./dist/index.cjs.js",
     "module": "dist/index.es.js",
     "types": "dist/index.d.ts",
