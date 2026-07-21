@@ -264,6 +264,88 @@ $$
         );
     });
 
+    it("maps labels inside list-continuation display equations", () => {
+        const markdown = [
+            "# Title",
+            "",
+            "## Section",
+            "",
+            "1. **Case One**: A displayed equation belongs to this list item:",
+            "",
+            "    $$",
+            "    \\begin{equation} \\label{eq:list-equation}",
+            "    x = 1",
+            "    \\end{equation}",
+            "    $$",
+            "",
+            "    See $\\eqref{eq:list-equation}$ from inside the same item.",
+            "",
+            "See it again from outside: $\\eqref{eq:list-equation}$.",
+            "",
+        ].join("\n");
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        expect(result.equationMapping["eq:list-equation"]).toBeDefined();
+        expect(result.equationMapping["eq:list-equation"].equationNumber).toBe(
+            "1.1",
+        );
+        expect(
+            result.equationMapping["eq:list-equation"].equationString,
+        ).toContain("x = 1");
+    });
+
+    it("maps list-continuation equations after lazy continuation text", () => {
+        const markdown = [
+            "# Title",
+            "",
+            "## Section",
+            "",
+            "3. **Case Three**: A list item begins here,",
+            "and this unindented line lazily continues the same item:",
+            "",
+            "    $$",
+            "    \\begin{align}",
+            "    y &= 1 \\label{eq:lazy-list-align} \\\\",
+            "    \\end{align}",
+            "    $$",
+            "",
+            "The reference $\\eqref{eq:lazy-list-align}$ should resolve.",
+            "",
+        ].join("\n");
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        expect(result.equationMapping["eq:lazy-list-align"]).toBeDefined();
+        expect(
+            result.equationMapping["eq:lazy-list-align"].equationNumber,
+        ).toBe("1.1");
+    });
+
+    it("still ignores labels inside code blocks nested in list items", () => {
+        const markdown = [
+            "# Title",
+            "",
+            "## Section",
+            "",
+            "1. Item with an indented code block:",
+            "",
+            "       $$",
+            "       \\begin{equation} \\label{eq:list-code}",
+            "       x = 1",
+            "       \\end{equation}",
+            "       $$",
+            "",
+        ].join("\n");
+
+        const result = new MarkdownProcessor(markdown, config).process();
+
+        expect(result.equationMapping).toEqual({});
+        expect(result.markdownContent).toContain(
+            "       \\begin{equation} \\label{eq:list-code}",
+        );
+    });
+
     it("does not let a stray ``` in prose swallow later content", () => {
         const markdown = `# Title
 

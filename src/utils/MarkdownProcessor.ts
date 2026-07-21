@@ -192,7 +192,7 @@ export class MarkdownProcessor {
      */
     private warnTitleSectionLabels(content: string): void {
         const equationPattern =
-            /\$\$\s*\\begin\{(equation|align|gather|alignat)\}(?:\{\d+\})?[\s\S]*?\\end\{\1\}\s*\$\$/g;
+            /^[ \t]*\$\$\s*\\begin\{(equation|align|gather|alignat)\}(?:\{\d+\})?[\s\S]*?\\end\{\1\}\s*\$\$/gm;
         let match;
         while ((match = equationPattern.exec(content)) !== null) {
             const labelPattern = /\\label\{(.*?)\}/g;
@@ -281,7 +281,7 @@ export class MarkdownProcessor {
         // optional `\{\d+\}` allows it while the \1 back-reference still
         // pairs \begin{env} with the matching \end{env}.
         const equationPattern =
-            /\$\$\s*\\begin\{(equation|align|gather|alignat)\}(?:\{\d+\})?[\s\S]*?\\end\{\1\}\s*\$\$/g;
+            /^[ \t]*\$\$\s*\\begin\{(equation|align|gather|alignat)\}(?:\{\d+\})?[\s\S]*?\\end\{\1\}\s*\$\$/gm;
         let currEquationNumber = 1;
 
         let match;
